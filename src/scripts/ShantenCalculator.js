@@ -1,3 +1,4 @@
+import { convertRedFives } from "./TileConversions";
 
 // Converted from http://cmj3.web.fc2.com/#syanten
 
@@ -73,6 +74,7 @@ function findMostViableKnittedStraight(handToCheck) {
 
 // Seven Pairs
 function CalculateChiitoitsuShanten(handToCheck) {
+    hand = convertRedFives(handToCheck);
     let pairCount = 0, uniqueTiles = 0;
 
     for (let i = 1; i < hand.length; i++) {
@@ -96,6 +98,7 @@ function CalculateChiitoitsuShanten(handToCheck) {
 
 // Thirteen Orphans
 function CalculateKokushiShanten(handToCheck) {
+    hand = convertRedFives(handToCheck);
     let uniqueTiles = 0;
     let hasPair = 0;
 
@@ -115,7 +118,7 @@ function CalculateKokushiShanten(handToCheck) {
 }
 
 export function CalculateStandardShanten(handToCheck) {
-    hand = handToCheck.slice();
+    hand = convertRedFives(handToCheck);
 
     // Initialize variables
     completeSets = 0;
