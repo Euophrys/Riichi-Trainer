@@ -47,6 +47,59 @@ export function CalculateUkeire(hand, remainingTiles, shantenFunction, baseShant
     return ukeire;
 }
 
+export function CalculateDiscardUkeireUpgrades(hand, remainingTiles, shantenFunction) {
+    let results = Array(hand.length).fill(0);
+    let baseShanten = shantenFunction(hand);
+    let baseUkeire = CalculateUkeire(hand, remainingTiles, shantenFunction);
+
+    for (let handIndex = 0; handIndex < hand.length; handIndex++) {
+        if (hand[handIndex] === 0) continue;
+
+        hand[handIndex]--;
+        let ukeire = CalculateUkeireUpgrades(hand, remainingTiles, shantenFunction, baseShanten, baseUkeire);
+        hand[handIndex]++;
+
+        // Write the results into the array
+        for (let i = 0; i < hand[handIndex]; i++) {
+            results[handIndex] = ukeire;
+        }
+    }
+
+    return results;
+}
+
+export function CalculateUkeireUpgrades(hand, remainingTiles, shantenFunction, baseShanten = -2, baseUkeire = -1) {
+    let convertedHand = convertRedFives(hand);
+    let convertedTiles = convertRedFives(remainingTiles);
+
+    if (baseShanten === -2) {
+        baseShanten = shantenFunction(hand);
+    }
+
+    if (baseUkeire === -1) {
+        baseUkeire = CalculateUkeire(hand, remainingTiles, shantenFunction);
+    }
+
+    let ukeire = 0;
+
+    // Check adding every tile to see if it improves the ukeire
+    for (let addedTile = 1; addedTile < convertedHand.length; addedTile++) {
+        if (remainingTiles[addedTile] === 0) continue;
+        if (addedTile % 10 === 0) continue;
+
+        convertedHand[addedTile]++;
+
+        if (shantenFunction(convertedHand) === baseShanten
+            && CalculateUkeire(convertedHand, remainingTiles, shantenFunction) > baseUkeire) {
+            ukeire += convertedTiles[addedTile];
+        }
+
+        convertedHand[addedTile]--;
+    }
+
+    return ukeire;
+}
+
 export function CalculateUkeireFromOnlyHand(hand, existingTiles, shantenFunction) {
     let convertedHand = convertRedFives(hand);
     let remainingTiles = convertRedFives(existingTiles);
