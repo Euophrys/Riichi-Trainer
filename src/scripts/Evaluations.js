@@ -2,7 +2,7 @@ export function evaluateBestDiscard(ukeire) {
     let bestUkeire = Math.max(...ukeire);
     let bests = [];
 
-    for (let i = 1; i < ukeire.length; i++) {
+    for (let i = 0; i < ukeire.length; i++) {
         if (ukeire[i] === bestUkeire) {
             bests.push(i);
         }
