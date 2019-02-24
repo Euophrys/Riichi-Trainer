@@ -157,7 +157,7 @@ class Quiz extends React.Component {
     onNewHand() {
         let history = [];
         let dora = 1;
-        let hand, testedHand, availableTiles, tilePool;
+        let hand, availableTiles, tilePool;
 
         if (!this.state.settings.reshuffle) {
             this.discardHand();
@@ -176,13 +176,7 @@ class Quiz extends React.Component {
                 tilePool = generationResult.tilePool;
 
                 if(!hand) break;
-
-                testedHand = hand.slice();
-                for(let i = 0; i < 30; i += 10) {
-                    testedHand[i + 5] += testedHand[i];
-                    testedHand[i] = 0;
-                }
-            } while (CalculateMinimumShanten(testedHand) === -1)
+            } while (CalculateMinimumShanten(hand) === -1)
 
             if (!hand) {
                 history.push({feedback: "There aren't enough tiles left in the wall to make a new hand. Shuffling.", hand:""});
@@ -208,13 +202,7 @@ class Quiz extends React.Component {
                 });
                 return;
             }
-            
-            testedHand = hand.slice();
-            for(let i = 0; i < 30; i += 10) {
-                testedHand[i + 5] += testedHand[i];
-                testedHand[i] = 0;
-            }
-        } while (CalculateMinimumShanten(testedHand) === -1)
+        } while (CalculateMinimumShanten(hand) === -1)
 
         if(tilePool.length > 0) {
             dora = tilePool.splice(Math.floor(Math.random() * tilePool.length), 1);
@@ -304,36 +292,17 @@ class Quiz extends React.Component {
         let hand = this.state.hand;
         let historyString = convertHandToTenhouString(hand);
 
-        let testedHand = hand.slice();
-        for(let i = 0; i < 30; i += 10) {
-            testedHand[i + 5] += testedHand[i];
-            testedHand[i] = 0;
-        }
-
         let remainingTiles = this.state.remainingTiles;
-        let testedTiles = remainingTiles.slice();
-        for(let i = 0; i < 30; i += 10) {
-            testedTiles[i + 5] += testedTiles[i];
-            testedTiles[i] = 0;
-        }
 
         let shantenFunction = this.state.settings.exceptions ? CalculateMinimumShanten : CalculateStandardShanten;
-        let ukeire = CalculateDiscardUkeire(testedHand, testedTiles, shantenFunction);
+        let ukeire = CalculateDiscardUkeire(hand, remainingTiles, shantenFunction);
         let bestUkeire = Math.max(...ukeire);
         
         hand[chosenTile]--;
+        let chosenUkeire = ukeire[chosenTile];
         
-        let adjustedChoice = chosenTile;
-        if(adjustedChoice % 10 === 0) {
-            adjustedChoice += 5;
-        }
-        
-        let chosenUkeire = ukeire[adjustedChoice];
-        
-        testedHand[adjustedChoice]--;
-        
-        let shanten = shantenFunction(testedHand);
-        let handUkeire = CalculateUkeireFromOnlyHand(testedHand, this.resetRemainingTiles(), shantenFunction)
+        let shanten = shantenFunction(hand);
+        let handUkeire = CalculateUkeireFromOnlyHand(hand, this.resetRemainingTiles(), shantenFunction)
         let bestTile = evaluateBestDiscard(ukeire);
         let result = this.generateHistoryString(chosenTile, chosenUkeire, bestTile, bestUkeire, shanten);
 
