@@ -71,3 +71,24 @@ export function getTileAsText(index, verbose = true) {
         return `${number}${suit}`;
     }
 }
+
+export function convertRedFives(tiles) {
+    if(typeof tiles === 'number') {
+        if(tiles % 10 === 0) {
+            return tiles + 5;
+        }
+    }
+    
+    if(typeof tiles === 'object' && tiles.length) {
+        let result = tiles.slice();
+        
+        for(let i = 0; i < 30; i += 10) {
+            result[i + 5] += result[i];
+            result[i] = 0;
+        }
+
+        return result;
+    }
+
+    return tiles;
+}

@@ -1,3 +1,5 @@
+import { convertRedFives } from "./TileConversions";
+
 export function CalculateDiscardUkeire(hand, remainingTiles, shantenFunction) {
     let results = Array(hand.length).fill(0);
     let baseShanten = shantenFunction(hand);
@@ -19,6 +21,9 @@ export function CalculateDiscardUkeire(hand, remainingTiles, shantenFunction) {
 }
 
 export function CalculateUkeire(hand, remainingTiles, shantenFunction, baseShanten = -2) {
+    let convertedHand = convertRedFives(hand);
+    let convertedTiles = convertRedFives(remainingTiles);
+
     if (baseShanten === -2) {
         baseShanten = shantenFunction(hand);
     }
@@ -26,32 +31,29 @@ export function CalculateUkeire(hand, remainingTiles, shantenFunction, baseShant
     let ukeire = 0;
 
     // Check adding every tile to see if it improves the shanten
-    for (let addedTile = 1; addedTile < hand.length; addedTile++) {
+    for (let addedTile = 1; addedTile < convertedHand.length; addedTile++) {
         if (remainingTiles[addedTile] === 0) continue;
         if (addedTile % 10 === 0) continue;
 
-        hand[addedTile]++;
+        convertedHand[addedTile]++;
 
-        if (shantenFunction(hand) < baseShanten) {
-            ukeire += remainingTiles[addedTile];
+        if (shantenFunction(convertedHand) < baseShanten) {
+            ukeire += convertedTiles[addedTile];
         }
 
-        hand[addedTile]--;
+        convertedHand[addedTile]--;
     }
 
     return ukeire;
 }
 
 export function CalculateUkeireFromOnlyHand(hand, existingTiles, shantenFunction) {
-    for (let i = 0; i < existingTiles.length; i++) {
-        if (i % 10 === 0) {
-            existingTiles[i + 5] += existingTiles[i];
-            existingTiles[i] = 0;
-            continue;
-        }
+    let convertedHand = convertRedFives(hand);
+    let remainingTiles = convertRedFives(existingTiles);
 
-        existingTiles[i] = Math.max(0, existingTiles[i] - hand[i]);
+    for (let i = 0; i < remainingTiles.length; i++) {
+        existingTiles[i] = Math.max(0, existingTiles[i] - convertedHand[i]);
     }
 
-    return CalculateUkeire(hand, existingTiles, shantenFunction);
+    return CalculateUkeire(convertedHand, existingTiles, shantenFunction);
 }
