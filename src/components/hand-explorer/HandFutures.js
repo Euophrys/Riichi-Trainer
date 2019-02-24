@@ -1,8 +1,7 @@
 import React from 'react';
 import { Row, ListGroup, ListGroupItem } from 'reactstrap';
-import Hand from '../Tile';
 import ResultingHandInfo from './ResultingHandInfo';
-import { CalculateUkeire, CalculateUkeireUpgrades } from '../../scripts/UkeireCalculator';
+import { CalculateUkeire, CalculateUkeireUpgrades, CalculateDiscardUkeire } from '../../scripts/UkeireCalculator';
 import { CalculateMinimumShanten } from '../../scripts/ShantenCalculator';
 
 class HandFutures extends React.Component {
@@ -18,7 +17,7 @@ class HandFutures extends React.Component {
             0,4,4,4,4,4,4,4,4,4,
             0,4,4,4,4,4,4,4
         ];
-        
+
         for (let i = 0; i < remainingTiles.length; i++) {
             remainingTiles[i] = Math.max(0, remainingTiles[i] - hand[i]);
         }
@@ -28,6 +27,8 @@ class HandFutures extends React.Component {
                 tiles.push(i);
             }
         }
+
+        let baseUkeire = Math.max(...CalculateDiscardUkeire(hand, remainingTiles, CalculateMinimumShanten));
 
         let infoObjects = tiles.map((tile) => {
             hand[tile]--;
@@ -39,7 +40,7 @@ class HandFutures extends React.Component {
                 discard: tile,
                 shanten: CalculateMinimumShanten(newHand),
                 ukeire: CalculateUkeire(newHand, remainingTiles, CalculateMinimumShanten),
-                upgrades: CalculateUkeireUpgrades(newHand, remainingTiles, CalculateMinimumShanten)
+                upgrades: CalculateUkeireUpgrades(newHand, remainingTiles, CalculateMinimumShanten, -2, baseUkeire)
             }
         });
 
@@ -48,17 +49,30 @@ class HandFutures extends React.Component {
                 return a.shanten - b.shanten;
             }
 
-            if(a.ukeire !== b.ukeire) {
-                return b.ukeire - a.ukeire;
+            if(a.ukeire.value !== b.ukeire.value) {
+                return b.ukeire.value - a.ukeire.value;
             }
 
-            return b.upgrades - a.upgrades;
+            return b.upgrades.value - a.upgrades.value;
         });
 
-        let handInfos = infoObjects.map((obj) => {
+        let filteredObjects = infoObjects.filter((obj) => {
+            let strictlyBetter = infoObjects.find((other) => {
+                return (other.shanten <= obj.shanten
+                    && (
+                        other.ukeire.value > obj.ukeire.value && other.upgrades.value > obj.upgrades.value
+                        || other.ukeire.value === obj.ukeire.value && other.upgrades.value > obj.upgrades.value
+                        || other.ukeire.value > obj.ukeire.value && other.upgrades.value === obj.upgrades.value
+                    )
+                );
+            });
+            return strictlyBetter === undefined;
+        });
+
+        let handInfos = filteredObjects.map((obj) => {
             return (
                 <ListGroupItem>
-                    <ResultingHandInfo 
+                    <ResultingHandInfo
                         hand={obj.hand}
                         discard={obj.discard}
                         shanten={obj.shanten}
