@@ -1,3 +1,5 @@
+import { ascii } from './TileConversions';
+
 export function convertHandToTenhouString(hand) {
     let string = "";
     let suit = "";
@@ -9,7 +11,6 @@ export function convertHandToTenhouString(hand) {
             }
         }
 
-        if (hand[i] === 0) continue;
         if (i % 10 === 0) continue;
 
         for (let j = 0; j < hand[i]; j++) {
@@ -29,7 +30,6 @@ export function convertHandToTenhouString(hand) {
             }
         }
 
-        if (hand[i] === 0) continue;
         if (i % 10 === 0) continue;
 
         for (let j = 0; j < hand[i]; j++) {
@@ -49,7 +49,6 @@ export function convertHandToTenhouString(hand) {
             }
         }
 
-        if (hand[i] === 0) continue;
         if (i % 10 === 0) continue;
 
         for (let j = 0; j < hand[i]; j++) {
@@ -64,8 +63,6 @@ export function convertHandToTenhouString(hand) {
 
 
     for (let i = 31; i < 38; i++) {
-        if (hand[i] === 0) continue;
-
         for (let j = 0; j < hand[i]; j++) {
             suit += i - 30;
         }
@@ -77,4 +74,16 @@ export function convertHandToTenhouString(hand) {
     }
 
     return string;
+}
+
+export function convertHandToAsciiSymbols(hand) {
+    let result = "";
+    
+    for(let i = 0; i < hand.length; i++) {
+        for(let j = 0; j < hand[i]; j++) {
+            result += ascii[i];
+        }
+    }
+
+    return result;
 }
