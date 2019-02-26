@@ -1,13 +1,13 @@
 import React from 'react';
 import { Container, Row, Button, Col } from 'reactstrap';
 import Hand from '../components/Hand';
-import History from "../components/History";
-import Settings from '../components/Settings';
+import History from "../components/ukeire-quiz/History";
+import Settings from '../components/ukeire-quiz/Settings';
 import CopyButton from '../components/CopyButton';
 import LoadButton from '../components/LoadButton';
 import DiscardPool from "../components/DiscardPool";
 import ValueTileDisplay from "../components/ValueTileDisplay";
-import StatsDisplay from "../components/StatsDisplay";
+import StatsDisplay from "../components/ukeire-quiz/StatsDisplay";
 import { GenerateHand, FillHand } from '../scripts/GenerateHand';
 import { CalculateDiscardUkeire, CalculateUkeireFromOnlyHand } from "../scripts/UkeireCalculator";
 import { CalculateMinimumShanten, CalculateStandardShanten } from "../scripts/ShantenCalculator";
@@ -135,7 +135,7 @@ class Quiz extends React.Component {
     }
 
     getNewHandState(hand, availableTiles, tilePool, history, discards, dora) {
-        history.unshift({ feedback: "Started a new hand: " + convertHandToTenhouString(hand), hand: "" });
+        history.unshift({ message: "Started a new hand: " + convertHandToTenhouString(hand) });
         return {
             hand: hand,
             remainingTiles: availableTiles,
@@ -178,7 +178,7 @@ class Quiz extends React.Component {
             } while (CalculateMinimumShanten(hand) === -1)
 
             if (!hand) {
-                history.push({ feedback: "There aren't enough tiles left in the wall to make a new hand. Shuffling.", hand: "" });
+                history.push({ message: "There aren't enough tiles left in the wall to make a new hand. Shuffling." });
             }
             else {
                 this.setState(this.getNewHandState(hand, availableTiles, tilePool, history, this.state.discardPool, dora));
@@ -194,7 +194,7 @@ class Quiz extends React.Component {
             tilePool = generationResult.tilePool;
 
             if (!hand) {
-                history.push({ feedback: "Did you turn off all the tile types? How do you expect to make a hand with no tiles?", hand: "" });
+                history.push({ message: "Did you turn off all the tile types? How do you expect to make a hand with no tiles?" });
                 this.setState({
                     history: history
                 });
@@ -285,8 +285,7 @@ class Quiz extends React.Component {
         if (isComplete) return;
 
         let chosenTile = parseInt(event.target.name);
-        let hand = this.state.hand;
-        let historyString = convertHandToTenhouString(hand);
+        let hand = this.state.hand.slice();
 
         let remainingTiles = this.state.remainingTiles;
 
@@ -300,7 +299,6 @@ class Quiz extends React.Component {
         let shanten = shantenFunction(hand);
         let handUkeire = CalculateUkeireFromOnlyHand(hand, this.resetRemainingTiles(), shantenFunction).value;
         let bestTile = evaluateBestDiscard(ukeire);
-        let result = this.generateHistoryString(chosenTile, chosenUkeire, bestTile, bestUkeire, shanten);
 
         let discardPool = this.state.discardPool.slice();
         discardPool.push({ tile: chosenTile, player: this.state.settings.simulate });
@@ -309,15 +307,20 @@ class Quiz extends React.Component {
         let tilePool = this.state.tilePool;
         let drawnTile = -1;
 
-        if (shanten <= 0 && handUkeire === 0) {
-            if (this.state.settings.extraConcise) {
-                result += " Keishiki tenpai."
-            } else {
-                result += " You are now in keishiki tenpai. Your hand is ready, but all the winning tiles are in your hand. This doesn't count as ready in almost all rulesets. You may need to break your tenpai in order to progress.";
-            }
-        }
-        else if (shanten <= 0) {
-            result += ` Your hand is now ready. Congratulations! Your efficiency was ${achievedTotal}/${possibleTotal}, or ${Math.floor(achievedTotal / possibleTotal * 100)}%. `;
+        let historyObject = {
+            chosenTile,
+            chosenUkeire,
+            bestTile,
+            bestUkeire,
+            shanten,
+            hand: convertHandToTenhouString(hand),
+            handUkeire,
+            drawnTile: -1,
+            message: ""
+        };
+
+        if (shanten <= 0 && handUkeire > 0) {
+            historyObject.message = ` Your hand is now ready. Congratulations! Your efficiency was ${achievedTotal}/${possibleTotal}, or ${Math.floor(achievedTotal / possibleTotal * 100)}%. `;
             isComplete = true;
         }
 
@@ -337,20 +340,15 @@ class Quiz extends React.Component {
                 hand[drawnTile]++;
                 remainingTiles[drawnTile]--;
 
-                if (this.state.settings.extraConcise) {
-                    result += ` Draw: ${getTileAsText(drawnTile, this.state.settings.verbose)}. `
-                } else {
-                    result += ` You drew the ${getTileAsText(drawnTile, this.state.settings.verbose)}. `;
-                }
+                historyObject.drawnTile = drawnTile;
             }
             else {
-                result += " There are no tiles left in the wall. Better luck next time! ";
                 isComplete = true;
             }
         }
 
         let history = this.state.history;
-        history.unshift({ feedback: result, hand: historyString });
+        history.unshift(historyObject);
 
         this.setState({
             hand: hand,
@@ -403,59 +401,6 @@ class Quiz extends React.Component {
         }
     }
 
-    generateHistoryString(chosenTile, chosenUkeire, bestTile, bestUkeire, shanten) {
-        let result;
-
-        if (this.state.settings.extraConcise) {
-            result = `Discard: ${getTileAsText(chosenTile, this.state.settings.verbose)} (`;
-
-            if (chosenUkeire > 0 || shanten === 0) {
-                result += `${chosenUkeire} tiles). `;
-            }
-            else {
-                result += `lowered shanten). `
-            }
-
-            if (chosenUkeire < bestUkeire) {
-                result += "Best: ";
-
-                if (this.state.settings.spoilers) {
-                    result += `${getTileAsText(bestTile, this.state.settings.verbose)}, with `;
-                }
-
-                result += `${bestUkeire} tiles.`;
-            }
-            else {
-                result += "That was the best choice!";
-            }
-        }
-        else {
-            result = `You chose to discard the ${getTileAsText(chosenTile, this.state.settings.verbose)}, which `;
-
-            if (chosenUkeire > 0 || shanten === 0) {
-                result += `results in ${chosenUkeire} tiles that can improve the hand. `;
-            }
-            else {
-                result += `lowers your shanten - you are now further from ready. `
-            }
-
-            if (chosenUkeire < bestUkeire) {
-                result += "The most efficient tile to discard";
-
-                if (this.state.settings.spoilers) {
-                    result += `, the ${getTileAsText(bestTile, this.state.settings.verbose)},`;
-                }
-
-                result += ` would have resulted in ${bestUkeire} tiles being able to improve your hand.`;
-            }
-            else {
-                result += "That was the best choice. Good work!";
-            }
-        }
-
-        return result;
-    }
-
     loadHand(loadData) {
         if (loadData.tiles === 0) {
             this.logToHistory("Error: Couldn't understand provided hand.");
@@ -486,7 +431,7 @@ class Quiz extends React.Component {
 
     logToHistory(text) {
         let history = this.state.history;
-        history.unshift({ feedback: text, hand: "" });
+        history.unshift({ message: text });
         this.setState({
             history: history,
         });
@@ -510,7 +455,7 @@ class Quiz extends React.Component {
                     <LoadButton callback={this.loadHand} />
                 </Row>
                 <Row className="mt-2 no-gutters">
-                    <History history={this.state.history} />
+                    <History history={this.state.history} concise={this.state.settings.extraConcise} verbose={this.state.settings.verbose} spoilers={this.state.settings.spoilers}/>
                     <DiscardPool discardPool={this.state.discardPool} discardCount={this.state.discardCount} wallCount={this.state.tilePool && this.state.tilePool.length} />
                 </Row>
                 <Row className="mt-4">
