@@ -33,13 +33,15 @@ class ResultingHandInfo extends React.Component {
         let upgradeTiles = this.props.upgrades.tiles.map((tile) => tile.tile);
         let total = this.props.upgrades.tiles.reduce((total, tile) => total + tile.resultingUkeire, 0);
 
-        let upgradeResults = this.props.upgrades.tiles.map((tile) => {
-            return (
-                <Row>
-                    Draw {getTileAsText(tile.tile, false)}, discard {getTileAsText(tile.discard, false)}: {tile.resultingUkeire} ukeire
-                </Row>
-            );
-        });
+        let upgradeResults = this.props.upgrades.tiles
+            .sort((a, b) => b.resultingUkeire - a.resultingUkeire)
+            .map((tile) => {
+                return (
+                    <Row>
+                        Draw {getTileAsText(tile.tile, false)}, discard {getTileAsText(tile.discard, false)}: {tile.resultingUkeire} ukeire
+                    </Row>
+                );
+            });
 
         let shantenResults = <Row/>;
         let totalShantenUkeire = 0;
