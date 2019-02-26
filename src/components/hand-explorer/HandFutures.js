@@ -60,9 +60,9 @@ class HandFutures extends React.Component {
             let strictlyBetter = infoObjects.find((other) => {
                 return (other.shanten <= obj.shanten
                     && (
-                        other.ukeire.value > obj.ukeire.value && other.upgrades.value > obj.upgrades.value
-                        || other.ukeire.value === obj.ukeire.value && other.upgrades.value > obj.upgrades.value
-                        || other.ukeire.value > obj.ukeire.value && other.upgrades.value === obj.upgrades.value
+                        (other.ukeire.value > obj.ukeire.value && other.upgrades.value > obj.upgrades.value)
+                        || (other.ukeire.value === obj.ukeire.value && other.upgrades.value > obj.upgrades.value)
+                        || (other.ukeire.value > obj.ukeire.value && other.upgrades.value === obj.upgrades.value)
                     )
                 );
             });

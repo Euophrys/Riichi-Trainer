@@ -298,7 +298,7 @@ class Quiz extends React.Component {
         let chosenUkeire = ukeire[chosenTile];
 
         let shanten = shantenFunction(hand);
-        let handUkeire = CalculateUkeireFromOnlyHand(hand, this.resetRemainingTiles(), shantenFunction)
+        let handUkeire = CalculateUkeireFromOnlyHand(hand, this.resetRemainingTiles(), shantenFunction).value;
         let bestTile = evaluateBestDiscard(ukeire);
         let result = this.generateHistoryString(chosenTile, chosenUkeire, bestTile, bestUkeire, shanten);
 
