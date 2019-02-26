@@ -108,7 +108,7 @@ export function CalculateUkeireUpgrades(hand, remainingTiles, shantenFunction, b
 
                 if(newUkeire > baseUkeire) {
                     value += convertedTiles[addedTile];
-                    tiles.push({tile: addedTile, discard: bestDiscard, resultingUkeire: newUkeire});
+                    tiles.push({tile: addedTile, discard: bestDiscard, count: convertedTiles[addedTile], resultingUkeire: newUkeire});
                 }
             }
 
