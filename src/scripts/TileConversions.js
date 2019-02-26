@@ -43,6 +43,13 @@ const images = [
     "", east, south, west, north, haku, hatsu, chun
 ];
 
+export const ascii = [
+    "🀋", "🀇", "🀈", "🀉", "🀊", "🀋", "🀌", "🀍", "🀎", "🀏",
+    "🀔", "🀐", "🀑", "🀒", "🀓", "🀔", "🀕", "🀖", "🀗", "🀘",
+    "🀝", "🀙", "🀚", "🀛", "🀜", "🀝", "🀞", "🀟", "🀠", "🀡",
+    "🀪", "🀀", "🀁", "🀂", "🀃", "🀆", "🀅", "🀄"
+]
+
 const numberText = ["red five", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
 const numberCharacter = ["red 5", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 const suitText = ["characters", "bamboo", "circles"]
@@ -73,16 +80,16 @@ export function getTileAsText(index, verbose = true) {
 }
 
 export function convertRedFives(tiles) {
-    if(typeof tiles === 'number') {
-        if(tiles % 10 === 0) {
+    if (typeof tiles === 'number') {
+        if (tiles % 10 === 0) {
             return tiles + 5;
         }
     }
-    
-    if(typeof tiles === 'object' && tiles.length) {
+
+    if (typeof tiles === 'object' && tiles.length) {
         let result = tiles.slice();
-        
-        for(let i = 0; i < 30; i += 10) {
+
+        for (let i = 0; i < 30; i += 10) {
             result[i + 5] += result[i];
             result[i] = 0;
         }
@@ -91,4 +98,22 @@ export function convertRedFives(tiles) {
     }
 
     return tiles;
+}
+
+export function convertTilesToAsciiSymbols(tiles) {
+    if(typeof tiles === 'number') {
+        return ascii[tiles];
+    }
+    
+    if (typeof tiles === 'object' && tiles.length) {
+        let result = "";
+
+        for(let i = 0; i < tiles.length; i++) {
+            result += ascii[tiles[i]];
+        }
+
+        return result;
+    }
+
+    return "";
 }
