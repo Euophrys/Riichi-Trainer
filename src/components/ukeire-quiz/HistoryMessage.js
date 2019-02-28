@@ -1,8 +1,8 @@
 import React from 'react';
-import { ListGroupItem } from 'reactstrap';
+import { ListGroupItem, Collapse } from 'reactstrap';
 import { getTileAsText } from '../../scripts/TileConversions';
 
-class HistoryMessage extends React.Component {
+class HistoryMessage extends React.Component {    
     /* PROPS
         data {
             chosenTile,
@@ -20,6 +20,17 @@ class HistoryMessage extends React.Component {
         concise,
         spoilers
     */
+    constructor(props) {
+        super(props);
+        this.state = { collapsed: true };
+    }
+
+    componentDidMount() {
+        this.setState({
+            collapsed: false
+        });
+    }
+
     render() {
         if(!this.props.data.hand) {
             if(!this.props.data.message) {
@@ -48,10 +59,12 @@ class HistoryMessage extends React.Component {
 
         return (
             <ListGroupItem key={this.props.key} className={this.getClassName()}>
-                {message}
-                <a className="tenhouLink" href={tenhouLink} target="_blank" rel="noopener noreferrer">
-                    [Accepted Tiles]
-                </a>
+                <Collapse isOpen={!this.state.collapsed}>
+                    {message}
+                    <a className="tenhouLink" href={tenhouLink} target="_blank" rel="noopener noreferrer">
+                        [Accepted Tiles]
+                    </a>
+                </Collapse>
             </ListGroupItem>
         );
     }
