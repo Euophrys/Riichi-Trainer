@@ -3,17 +3,18 @@ import { evaluateBestDiscard } from './Evaluations';
 
 export function CalculateDiscardUkeire(hand, remainingTiles, shantenFunction) {
     let results = Array(hand.length).fill(0);
-    let baseShanten = shantenFunction(hand);
+    let convertedHand = convertRedFives(hand);
+    let baseShanten = shantenFunction(convertedHand);
 
-    for (let handIndex = 0; handIndex < hand.length; handIndex++) {
-        if (hand[handIndex] === 0) continue;
+    for (let handIndex = 0; handIndex < convertedHand.length; handIndex++) {
+        if (convertedHand[handIndex] === 0) continue;
 
-        hand[handIndex]--;
-        let ukeire = CalculateUkeire(hand, remainingTiles, shantenFunction, baseShanten).value;
-        hand[handIndex]++;
+        convertedHand[handIndex]--;
+        let ukeire = CalculateUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten).value;
+        convertedHand[handIndex]++;
 
         // Write the results into the array
-        for (let i = 0; i < hand[handIndex]; i++) {
+        for (let i = 0; i < convertedHand[handIndex]; i++) {
             results[handIndex] = ukeire;
         }
     }

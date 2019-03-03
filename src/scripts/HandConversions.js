@@ -1,4 +1,4 @@
-import { ascii } from './TileConversions';
+import { ascii, convertTenhouTilesToIndex } from './TileConversions';
 
 export function convertHandToTenhouString(hand) {
     let string = "";
@@ -38,7 +38,7 @@ export function convertHandToTenhouString(hand) {
     }
 
     if (suit !== "") {
-        string += suit + "s";
+        string += suit + "p";
         suit = "";
     }
 
@@ -57,7 +57,7 @@ export function convertHandToTenhouString(hand) {
     }
 
     if (suit !== "") {
-        string += suit + "p";
+        string += suit + "s";
         suit = "";
     }
 
@@ -86,4 +86,16 @@ export function convertHandToAsciiSymbols(hand) {
     }
 
     return result;
+}
+
+export function convertTenhouHandToHand(tenhouHand) {
+    let handTiles = tenhouHand.split(",");
+    let convertedTiles = convertTenhouTilesToIndex(handTiles);
+    let hand = Array(38).fill(0);
+
+    for(let i = 0; i < convertedTiles.length; i++) {
+        hand[convertedTiles[i]]++;
+    }
+
+    return hand;
 }
