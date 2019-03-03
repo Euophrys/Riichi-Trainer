@@ -96,7 +96,8 @@ class ReplayAnalysis extends React.Component {
 
         if(this.state.messages.length) {
             messages = this.state.messages.map((message) => {
-                return <ListGroupItem>{message}</ListGroupItem>;
+                let rows = message.split('|').map((row) => <Row>{row}</Row>)
+                return <ListGroupItem>{rows}</ListGroupItem>;
             });
         }
 
