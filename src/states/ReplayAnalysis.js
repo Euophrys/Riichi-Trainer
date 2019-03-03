@@ -1,5 +1,8 @@
 import React from 'react';
-import { Container, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Row, ListGroup, ListGroupItem, Col, Button } from 'reactstrap';
+import { 
+    Container, Dropdown, DropdownItem, DropdownMenu, DropdownToggle,
+    Row, ListGroup, ListGroupItem, Col, Input,
+    Card, CardBody } from 'reactstrap';
 import { parseRounds, parseRound, parseRoundNames, parsePlayers } from '../scripts/ParseReplay';
 
 class ReplayAnalysis extends React.Component {
@@ -12,13 +15,37 @@ class ReplayAnalysis extends React.Component {
             roundDropdownOpen: false,
             playerDropdownOpen: false,
             player: 0,
-            messages: []
+            currentRound: 0,
+            messages: [],
+            URLfeedback: ""
         }
 
+        this.onURLChanged = this.onURLChanged.bind(this);
         this.onFileChanged = this.onFileChanged.bind(this);
         this.onFileLoaded = this.onFileLoaded.bind(this);
         this.toggleRoundDropdown = this.toggleRoundDropdown.bind(this);
         this.togglePlayerDropdown = this.togglePlayerDropdown.bind(this);
+    }
+
+    onURLChanged() {
+        let URLfeedback = <div/>
+        if(document.getElementById('tenhouURL')) {
+            let URL = document.getElementById('tenhouURL').value;
+            if(URL !== "") {
+                let gameRegex = /\/\?log=(.+?)&tw/;
+                let match = gameRegex.exec(URL);
+
+                if(match) {
+                    URLfeedback = <a href={`http://e0.mjv.jp/0/log/?${match[1]}`}>Right click this link and choose Save As!</a>;
+                } else {
+                    URLfeedback = <div>Invalid URL</div>;
+                }
+            }
+        }
+
+        this.setState({
+            URLfeedback: URLfeedback
+        });
     }
 
     onFileChanged(files) {
@@ -66,13 +93,23 @@ class ReplayAnalysis extends React.Component {
     onRoundChoice(index) {
         let messages = parseRound(this.state.rounds[index], this.state.player);
         this.setState({
-            messages: messages
+            messages: messages,
+            currentRound: index
         });
     }
 
     onPlayerChoice(index) {
+        let messages = parseRound(this.state.rounds[this.state.currentRound], index);
         this.setState({
+            messages: messages,
             player: index
+        });
+    }
+
+    parseRound() {
+        let messages = parseRound(this.state.rounds[this.state.currentRound], this.state.player);
+        this.setState({
+            messages: messages
         });
     }
 
@@ -104,16 +141,22 @@ class ReplayAnalysis extends React.Component {
         return (
             <Container>
                 <Row>
-                    Please rename your replay file to end with '.zip' instead of '.mjlog'. <br/>
-                    Then, extract the contents and upload that. <br/>
-                    I'll try to find a way to make this easier later. <br/>
-                    Also, only 4-player replays are supported.
+                    <Card><CardBody>
+                        Instructions:<br/>
+                        Paste the URL for your replay into the text box.<br/>
+                        Then, right click the link that appears and choose "Save As" or "Save Link As".<br/>
+                        Finally, click "Browse..." and upload the file you saved.<br/><br/>
+                        Alternatively, if you have a mjlog file on your computer, you can rename it to end in .zip.<br/>
+                        Then, upload the file contained within that zip.<br/>
+                        You can also just upload replay XML files directly if you have a program that fetches them for you.
+                    </CardBody></Card>
                 </Row>
                 <Row>
-                    <input type="file" id="fileInput" onChange={this.onFileChanged} />
+                    <Input id="tenhouURL" placeholder="Tenhou Replay URL" onChange={this.onURLChanged}/> <br/>
+                    {this.state.URLfeedback}
                 </Row>
                 <Row>
-                    { !!this.state.fileName && <a href={`http://tenhou.net/3/?log=${this.state.fileName}`}>View on Tenhou</a> }
+                    <Input type="file" id="fileInput" onChange={this.onFileChanged} />
                 </Row>
                 { this.state.rounds.length && (
                     <Row>
