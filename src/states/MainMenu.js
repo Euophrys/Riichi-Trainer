@@ -1,7 +1,6 @@
 import React from 'react';
 import { Container, Row, Button } from 'reactstrap';
 import UkeireQuiz from "./UkeireQuiz";
-import HandExplorer from "./HandExplorer";
 import ReplayAnalysis from "./ReplayAnalysis";
 
 class MainMenu extends React.Component {
