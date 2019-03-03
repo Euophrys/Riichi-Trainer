@@ -40,10 +40,15 @@ const roundNames = [
 ]
 
 export function parseRoundNames(roundTexts) {
-    let regex = /seed="(\d),(\d)/;
+    let regex = /seed="(\d+?),(\d+?),/;
 
     return roundTexts.map((roundText) => {
         let match = regex.exec(roundText);
+
+        if(!match) {
+            return "Send me this replay, something broke."
+        }
+
         let roundName = roundNames[parseInt(match[1])];
         let repeats = parseInt(match[2]);
         
