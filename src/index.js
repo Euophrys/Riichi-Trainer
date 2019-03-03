@@ -6,6 +6,7 @@ import './index.css';
 //import UkeireQuiz from './states/UkeireQuiz';
 //import ScoreToPointsQuiz from './states/ScoreToPointsQuiz';
 //import HandExplorer from './states/HandExplorer';
-import ReplayAnalysis from './states/ReplayAnalysis';
+//import ReplayAnalysis from './states/ReplayAnalysis';
+import MainMenu from './states/MainMenu';
 
-ReactDOM.render(<ReplayAnalysis />, document.getElementById('root'));
+ReactDOM.render(<MainMenu />, document.getElementById('root'));

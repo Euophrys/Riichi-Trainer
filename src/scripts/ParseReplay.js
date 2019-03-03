@@ -4,7 +4,6 @@ import { convertTenhouTilesToIndex, getTileAsText, convertTilesToAsciiSymbols } 
 import { CalculateDiscardUkeire, CalculateUkeireFromOnlyHand, CalculateUkeire } from './UkeireCalculator';
 import CalculateMinimumShanten from './ShantenCalculator';
 import { evaluateBestDiscard, evaluateSafestDiscards } from './Evaluations';
-import { freemem } from 'os';
 
 export function parseRounds(replayText) {
     let games = replayText.split("<INIT ");
@@ -65,7 +64,8 @@ export function parseRound(roundText, player) {
             hand: parseHand(roundText, i),
             discards: [],
             discardsAfterRiichi: [],
-            riichiTile: -1
+            riichiTile: -1,
+            calledTiles: []
         });
     }
 
@@ -73,10 +73,18 @@ export function parseRound(roundText, player) {
         remainingTiles[j] = Math.max(remainingTiles[j] - players[player].hand[j], 0);
     }
 
+    let doraRegex = /seed=".+?,.+?,.+?,.+?,.+?,(\d+)"/;
+    let dora = doraRegex.exec(roundText);
+
+    if(dora) {
+        dora = convertTenhouTilesToIndex(parseInt(dora[1]));
+        remainingTiles[dora]--;
+    }
+
     let regex = /<(\w{1})(.+?)\/>/g;
     let whoRegex = /who="(\d)"/;
     let messages = [];
-    messages.push("Your starting hand is " + convertHandToTenhouString(players[player].hand));
+    messages.push(`Your starting hand is ${convertHandToTenhouString(players[player].hand)}. It's ${CalculateMinimumShanten(players[player].hand)} tiles from ready.`);
     let match;
 
     do {
@@ -86,14 +94,27 @@ export function parseRound(roundText, player) {
             let actionInfo = parseActionType(match[1]);
 
             if(actionInfo.call) {
-                let who = whoRegex.exec(match[2]);
-
-                if(parseInt(who[1]) === player) {
-                    messages.push("You called a tile, which isn't supported yet. Ending analysis.");
-                    break;
+                let who = parseInt(whoRegex.exec(match[2])[1]);
+                let calledTiles = getTilesFromCall(match[2]);
+                players[who].calledTiles.concat(calledTiles);
+                if(who !== player) {
+                    for(let i = 1; i < calledTiles.length; i++) {
+                        remainingTiles[calledTiles[i]]--;
+                    }
                 } else {
-                    continue;
+                    messages.push("You made a call, which might make the ukeire numbers weird. I'll work on fixing it later.");
                 }
+
+                if(calledTiles.length === 1) {
+                    players[who].hand[calledTiles[0]]--;
+                } else if(calledTiles.length === 4) {
+                    players[who].hand[calledTiles[0]] = 0;
+                } else {
+                    for(let i = 1; i < calledTiles.length; i++) {
+                        players[who].hand[calledTiles[i]]--;
+                    }
+                }
+                continue;
             }
 
             if(actionInfo.riichi) {
@@ -136,10 +157,23 @@ export function parseRound(roundText, player) {
             }
 
             if(actionInfo.discard) {
+                if(actionInfo.player === 0) {
+                    // Might be DORA
+                    let doraRegex = /hai="(\d+?)"/;
+                    let doraMatch = doraRegex.exec(match[2]);
+
+                    if(doraMatch) {
+                        let newDoraIndicator = convertTenhouTilesToIndex(parseInt(doraMatch[1]));
+                        remainingTiles[newDoraIndicator]--;
+                        messages.push(`The new dora indicator is the ${getTileAsText(newDoraIndicator)}.`);
+                        continue;
+                    }
+                }
+
                 let index = convertTenhouTilesToIndex(parseInt(match[2]));
 
                 if(actionInfo.player === player) {
-                    let message = analyzeDiscard(players[player].hand, index, remainingTiles);
+                    let message = analyzeDiscard(players[player], index, remainingTiles);
                     messages[messages.length - 1] += message;
                     message = analyzeSafestDiscard(players[player].hand, index, players, remainingTiles);
                     messages[messages.length - 1] += message;
@@ -230,16 +264,21 @@ function analyzeSafestDiscard(playerHand, chosenTile, players, remainingTiles) {
     return result;
 }
 
-function analyzeDiscard(playerHand, chosenTile, remainingTiles) {
-    let hand = playerHand.slice();
+function analyzeDiscard(player, chosenTile, remainingTiles) {
+    let hand = player.hand.slice();
     let ukeire = CalculateDiscardUkeire(hand, remainingTiles, CalculateMinimumShanten);
     let bestUkeire = Math.max(...ukeire);
-
     hand[chosenTile]--;
+
+    let combinedHand = hand.slice();
+    for(let i = 0; i < player.calledTiles.length; i++) {
+        combinedHand[player.calledTiles[i]]++;
+    }    
+
     let chosenUkeire = ukeire[chosenTile];
 
-    let shanten = CalculateMinimumShanten(hand);
-    let handUkeire = CalculateUkeireFromOnlyHand(hand, allTilesRemaining.slice(), CalculateMinimumShanten).value;
+    let shanten = CalculateMinimumShanten(combinedHand);
+    let handUkeire = CalculateUkeireFromOnlyHand(combinedHand, allTilesRemaining.slice(), CalculateMinimumShanten).value;
     let bestTile = evaluateBestDiscard(ukeire);
     let result = `Discard: ${getTileAsText(chosenTile, true)}, `;
 
@@ -309,5 +348,63 @@ function parseActionType(letter) {
     }
     if(letter === 'R') {
         return {riichi: true};
+    }
+}
+
+function getTilesFromCall(call) {
+    let meldRegex = /m="(\d+?)"/;
+    let match = meldRegex.exec(call);
+    let meldInt = parseInt(match[1]);
+    let meldBinary = meldInt.toString(2);
+    meldBinary = meldBinary.padStart(16, '0');
+
+    if(meldBinary.charAt(meldBinary.length - 3) === '1') {
+        // Chii
+        let tile = meldBinary.substr(0, 6);
+        tile = parseInt(tile, 2);
+        let order = tile % 3;
+        tile = Math.floor(tile / 3);
+        tile = 9 * Math.floor(tile / 7) + (tile % 7);
+        tile = convertTenhouTilesToIndex(tile * 4);
+
+        if(order === 0) {
+            return [tile, tile + 1, tile + 2];
+        }
+        
+        if (order === 1) {
+            return [tile + 1, tile, tile + 2];
+        }
+
+        return [tile + 2, tile, tile + 1];
+    }
+    else if(meldBinary.charAt(meldBinary.length - 4) === '1') {
+        // Pon
+        let tile = meldBinary.substr(0, 7);
+        tile = parseInt(tile, 2);
+        tile = Math.floor(tile / 3);
+        tile = convertTenhouTilesToIndex(tile * 4);
+
+        return [tile, tile, tile];
+    }
+    else if(meldBinary.charAt(meldBinary.length - 5) === '1') {
+        // Added kan
+        let tile = meldBinary.substr(0, 7);
+        tile = parseInt(tile, 2);
+        tile = Math.floor(tile / 3);
+        tile = convertTenhouTilesToIndex(tile * 4);
+
+        return [tile];
+    }
+    else if(meldBinary.charAt(meldBinary.length - 6) === '1') {
+        // Nuki
+        return [34];
+    }
+    else {
+        // Kan
+        let tile = meldBinary.substr(0, 8);
+        tile = parseInt(tile, 2);
+        tile = Math.floor(tile / 4);
+        tile = convertTenhouTilesToIndex(tile * 4);
+        return [tile, tile, tile, tile];
     }
 }
