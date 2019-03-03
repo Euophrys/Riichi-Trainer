@@ -11,7 +11,7 @@ import StatsDisplay from "../components/ukeire-quiz/StatsDisplay";
 import { GenerateHand, FillHand } from '../scripts/GenerateHand';
 import { CalculateDiscardUkeire, CalculateUkeireFromOnlyHand } from "../scripts/UkeireCalculator";
 import { CalculateMinimumShanten, CalculateStandardShanten } from "../scripts/ShantenCalculator";
-import { getTileAsText } from "../scripts/TileConversions";
+import { getTileAsText, convertRedFives } from "../scripts/TileConversions";
 import { convertHandToTenhouString } from "../scripts/HandConversions";
 import { evaluateBestDiscard } from "../scripts/Evaluations";
 
@@ -292,9 +292,9 @@ class Quiz extends React.Component {
         let shantenFunction = this.state.settings.exceptions ? CalculateMinimumShanten : CalculateStandardShanten;
         let ukeire = CalculateDiscardUkeire(hand, remainingTiles, shantenFunction);
         let bestUkeire = Math.max(...ukeire);
-
+        let handString = convertHandToTenhouString(hand);
         hand[chosenTile]--;
-        let chosenUkeire = ukeire[chosenTile];
+        let chosenUkeire = ukeire[convertRedFives(chosenTile)];
 
         let shanten = shantenFunction(hand);
         let handUkeire = CalculateUkeireFromOnlyHand(hand, this.resetRemainingTiles(), shantenFunction).value;
@@ -313,7 +313,7 @@ class Quiz extends React.Component {
             bestTile,
             bestUkeire,
             shanten,
-            hand: convertHandToTenhouString(hand),
+            hand: handString,
             handUkeire,
             drawnTile: -1,
             message: ""
