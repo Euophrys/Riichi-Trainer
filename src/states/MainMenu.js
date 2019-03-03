@@ -38,8 +38,8 @@ class MainMenu extends React.Component {
             <React.Fragment>
                 <Container className="mb-4">
                     <Row>
-                        <Button xs="4" onClick={()=>this.onTrainerClicked()}>Trainer</Button>
-                        <Button xs="4" onClick={()=>this.onAnalyzerClicked()}>Analyzer</Button>
+                        <Button xs="4" disabled={this.state.active === 0} onClick={()=>this.onTrainerClicked()}>Trainer</Button>
+                        <Button xs="4" disabled={this.state.active === 1} onClick={()=>this.onAnalyzerClicked()}>Analyzer [BETA]</Button>
                     </Row>
                 </Container>
                 {page}

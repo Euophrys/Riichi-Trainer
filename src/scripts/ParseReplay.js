@@ -96,7 +96,8 @@ export function parseRound(roundText, player) {
             if(actionInfo.call) {
                 let who = parseInt(whoRegex.exec(match[2])[1]);
                 let calledTiles = getTilesFromCall(match[2]);
-                players[who].calledTiles.concat(calledTiles);
+                players[who].calledTiles = players[who].calledTiles.concat(calledTiles);
+                
                 if(who !== player) {
                     for(let i = 1; i < calledTiles.length; i++) {
                         remainingTiles[calledTiles[i]]--;
@@ -135,7 +136,12 @@ export function parseRound(roundText, player) {
 
                 if(players[parseInt(who[1])].riichiTile > -1) continue;
 
-                let shanten = CalculateMinimumShanten(players[player].hand);
+                let combinedHand = players[player].hand.slice();
+                for(let i = 0; i < players[player].calledTiles.length; i++) {
+                    combinedHand[players[player].calledTiles[i]]++;
+                }
+
+                let shanten = CalculateMinimumShanten(combinedHand);
                 let message = `Player ${who[1]} declared riichi. `;
 
                 if(shanten > 1) {
@@ -283,7 +289,7 @@ function analyzeDiscard(player, chosenTile, remainingTiles) {
     let result = `Discard: ${getTileAsText(chosenTile, true)}, `;
 
     if (chosenUkeire > 0 || shanten === 0) {
-        let ukeireTiles = CalculateUkeire(hand, remainingTiles, CalculateMinimumShanten, shanten);
+        let ukeireTiles = CalculateUkeire(hand, remainingTiles, CalculateMinimumShanten);
         result += `with ${chosenUkeire} tiles that can improve the hand: ${convertTilesToAsciiSymbols(ukeireTiles.tiles)}|`;
     }
     else {
