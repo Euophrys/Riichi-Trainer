@@ -29,14 +29,14 @@ class Settings extends React.Component {
                                 <Label className="form-check-label" for="characters">Characters</Label>
                             </Col>
                             <Col className="form-check form-check-inline">
-                                <Input className="form-check-input" type="checkbox" id="bamboo"
-                                    checked={this.props.values.bamboo} onChange={this.props.onChange} />
-                                <Label className="form-check-label" for="bamboo">Bamboo</Label>
-                            </Col>
-                            <Col className="form-check form-check-inline">
                                 <Input className="form-check-input" type="checkbox" id="circles"
                                     checked={this.props.values.circles} onChange={this.props.onChange} />
                                 <Label className="form-check-label" for="circles">Circles</Label>
+                            </Col>
+                            <Col className="form-check form-check-inline">
+                                <Input className="form-check-input" type="checkbox" id="bamboo"
+                                    checked={this.props.values.bamboo} onChange={this.props.onChange} />
+                                <Label className="form-check-label" for="bamboo">Bamboo</Label>
                             </Col>
                             <Col className="form-check form-check-inline">
                                 <Input className="form-check-input" type="checkbox" id="honors"

@@ -53,11 +53,11 @@ class LoadButton extends React.Component {
             return 0;
         }
 
-        if (character === "s" || character === "b") {
+        if (character === "p" || character === "d") {
             return 10;
         }
 
-        if (character === "p" || character === "d") {
+        if (character === "s" || character === "b") {
             return 20;
         }
 

@@ -36,7 +36,7 @@ class ReplayAnalysis extends React.Component {
                 let match = gameRegex.exec(URL);
 
                 if(match) {
-                    URLfeedback = <a href={`http://e0.mjv.jp/0/log/?${match[1]}`}>Right click this link and choose Save As!</a>;
+                    URLfeedback = <a href={`http://e0.mjv.jp/0/log/?${match[1]}`} target="_blank" rel="noopener noreferrer">Right click this link and choose Save As!</a>;
                 } else {
                     URLfeedback = <div>Invalid URL</div>;
                 }
