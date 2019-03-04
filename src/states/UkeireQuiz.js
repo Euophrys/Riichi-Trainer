@@ -225,13 +225,13 @@ class Quiz extends React.Component {
             }
         }
 
-        if (this.state.settings.bamboo) {
+        if (this.state.settings.circles) {
             for (let i = 11; i < 20; i++) {
                 remainingTiles[i] = 4;
             }
         }
 
-        if (this.state.settings.circles) {
+        if (this.state.settings.bamboo) {
             for (let i = 21; i < 30; i++) {
                 remainingTiles[i] = 4;
             }
