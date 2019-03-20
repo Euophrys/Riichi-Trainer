@@ -1,6 +1,7 @@
 
-export function GenerateHand(availableTiles) {
+export function GenerateHand(remainingTiles) {
     let tilePool = [];
+    let availableTiles = remainingTiles.slice();
 
     for (let i = 0; i < availableTiles.length; i++) {
         if (availableTiles[i] === 0) continue;
