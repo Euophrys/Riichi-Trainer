@@ -96,7 +96,7 @@ class HistoryMessage extends React.Component {
             result += " Keishiki tenpai."
         }
         
-        if(this.props.shanten > 0) {
+        if(this.props.data.shanten > 0) {
             if(this.props.data.drawnTile === -1) {
                 result += " There are no tiles left in the wall. Better luck next time! ";
             } else {
@@ -134,7 +134,7 @@ class HistoryMessage extends React.Component {
             result += " You are now in keishiki tenpai. Your hand is ready, but all the winning tiles are in your hand. This doesn't count as ready in almost all rulesets. You may need to break your tenpai in order to progress.";
         }
         
-        if(this.props.shanten > 0) {
+        if(this.props.data.shanten > 0) {
             if(this.props.data.drawnTile === -1) {
                 result += " There are no tiles left in the wall. Better luck next time! ";
             } else {
