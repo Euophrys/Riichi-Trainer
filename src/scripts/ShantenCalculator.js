@@ -78,11 +78,11 @@ function CalculateChiitoitsuShanten(handToCheck) {
     let pairCount = 0, uniqueTiles = 0;
 
     for (let i = 1; i < hand.length; i++) {
-        if (handToCheck[i] === 0) continue;
+        if (hand[i] === 0) continue;
 
         uniqueTiles++;
 
-        if (handToCheck[i] >= 2) {
+        if (hand[i] >= 2) {
             pairCount++;
         }
     }
@@ -98,11 +98,10 @@ function CalculateChiitoitsuShanten(handToCheck) {
 
 // Thirteen Orphans
 function CalculateKokushiShanten(handToCheck) {
-    hand = convertRedFives(handToCheck);
     let uniqueTiles = 0;
     let hasPair = 0;
 
-    for (let i = 1; i < hand.length; i++) {
+    for (let i = 1; i < handToCheck.length; i++) {
         if (i % 10 === 1 || i % 10 === 9 || i > 30) {
             if (handToCheck[i] !== 0) {
                 uniqueTiles++;
