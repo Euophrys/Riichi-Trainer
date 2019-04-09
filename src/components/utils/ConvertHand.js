@@ -1,9 +1,18 @@
 import React from 'react';
-import { Button, Input, InputGroup, InputGroupAddon, Col } from 'reactstrap';
+import { Container, Button, Input, InputGroup, InputGroupAddon, ListGroupItem, ListGroup } from 'reactstrap';
+import { convertHandToAsciiSymbols, convertHandToDiscordEmoji } from '../../scripts/HandConversions';
 
-class LoadButton extends React.Component {
+class ConvertHand extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            hand: [0, 1]
+        }
+    }
+
     onClick() {
-        let string = document.getElementById("loadHandString").value;
+        let string = document.getElementById("convertHandString").value;
         let characters = string.toLowerCase().split('').reverse();
         let hand = Array(38).fill(0);
         let index = 0;
@@ -40,12 +49,9 @@ class LoadButton extends React.Component {
             }
         }
 
-        let ret = {
-            hand: hand,
-            tiles: tiles
-        };
-
-        this.props.callback(ret);
+        this.setState({
+            hand: hand
+        });
     }
 
     getOffset(character) {
@@ -70,16 +76,20 @@ class LoadButton extends React.Component {
 
     render() {
         return (
-            <Col xs="12" sm="6" md="6" lg="8">
+            <Container>
                 <InputGroup>
-                    <Input id="loadHandString" placeholder="123m456p789s12345z" />
+                    <Input id="convertHandString" placeholder="123m456p789s12345z" />
                     <InputGroupAddon addonType="append">
-                        <Button color="warning" onClick={() => this.onClick()}>Load Hand</Button>
+                        <Button color="primary" onClick={() => this.onClick()}>Convert Hand</Button>
                     </InputGroupAddon>
                 </InputGroup>
-            </Col>
+                <ListGroup>
+                    <ListGroupItem>ASCII: {convertHandToAsciiSymbols(this.state.hand)}</ListGroupItem>
+                    <ListGroupItem>Emoji: {convertHandToDiscordEmoji(this.state.hand)}</ListGroupItem>
+                </ListGroup>
+            </Container>
         )
     }
 }
 
-export default LoadButton;
+export default ConvertHand;

@@ -35,6 +35,7 @@ import north from '../tileImages/north.png';
 import haku from '../tileImages/haku.png';
 import hatsu from '../tileImages/hatsu.png';
 import chun from '../tileImages/chun.png';
+import { convertHandToTenhouString } from './HandConversions';
 
 const images = [
     redFiveMan, oneMan, twoMan, threeMan, fourMan, fiveMan, sixMan, sevenMan, eightMan, nineMan,
@@ -116,6 +117,22 @@ export function convertTilesToAsciiSymbols(tiles) {
     }
 
     return "";
+}
+
+export function convertIndexesToTenhouTiles(indexes) {
+    let hand = Array(38).fill(0);
+
+    if(typeof indexes === 'number') {
+        hand[indexes] = 1;
+    } else if (typeof indexes === 'object' && indexes.length) {
+        for(let i = 0; i < indexes.length; i++) {
+            hand[indexes[i]] += 1;
+        }
+    } else {
+        return "Error."
+    }
+
+    return convertHandToTenhouString(hand);
 }
 
 export function convertTenhouTilesToIndex(tenhouTiles) {

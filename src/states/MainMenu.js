@@ -2,6 +2,7 @@ import React from 'react';
 import { Container, Row, Button } from 'reactstrap';
 import UkeireQuiz from "./UkeireQuiz";
 import ReplayAnalysis from "./ReplayAnalysis";
+import UtilsState from "./UtilsState";
 
 class MainMenu extends React.Component {
     constructor(props) {
@@ -24,6 +25,12 @@ class MainMenu extends React.Component {
         });
     }
 
+    onUtilsClicked() {
+        this.setState({
+            active: 2
+        });
+    }
+
     render() {
         let page = <Row/>;
         switch(this.state.active) {
@@ -31,6 +38,8 @@ class MainMenu extends React.Component {
                 page = <UkeireQuiz/>; break;
             case 1:
                 page = <ReplayAnalysis/>; break;
+            case 2:
+                page = <UtilsState/>; break;
         }
 
         return (
@@ -39,6 +48,7 @@ class MainMenu extends React.Component {
                     <Row>
                         <Button xs="4" disabled={this.state.active === 0} onClick={()=>this.onTrainerClicked()}>Trainer</Button>
                         <Button xs="4" disabled={this.state.active === 1} onClick={()=>this.onAnalyzerClicked()}>Analyzer [BETA]</Button>
+                        <Button xs="4" disabled={this.state.active === 2} onClick={()=>this.onUtilsClicked()}>Misc. Utils</Button>
                     </Row>
                 </Container>
                 {page}
