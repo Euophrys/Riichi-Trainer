@@ -26,7 +26,7 @@ class RandomGameState extends React.Component {
     }
 
     generateState() {
-        let round = 8;//Math.floor(Math.random() * rounds.length);
+        let round = Math.floor(Math.random() * rounds.length);
 
         let players = [];
         for(let i = 0; i < 4; i++) {
