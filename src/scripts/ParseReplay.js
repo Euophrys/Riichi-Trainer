@@ -1,4 +1,4 @@
-import { allTilesRemaining } from '../Constants';
+import { ALL_TILES_REMAINING } from '../Constants';
 import { convertTenhouHandToHand, convertHandToTenhouString } from './HandConversions';
 import { convertTenhouTilesToIndex, getTileAsText, convertTilesToAsciiSymbols } from './TileConversions';
 import { CalculateDiscardUkeire, CalculateUkeireFromOnlyHand, CalculateUkeire } from './UkeireCalculator';
@@ -61,7 +61,7 @@ export function parseRoundNames(roundTexts) {
 }
 
 export function parseRound(roundText, player) {
-    let remainingTiles = allTilesRemaining.slice();
+    let remainingTiles = ALL_TILES_REMAINING.slice();
     let players = [];
 
     for(let i = 0; i < 4; i++) {
@@ -278,7 +278,7 @@ function analyzeSafestDiscard(playerHand, chosenTile, players, remainingTiles) {
 function analyzeDiscard(player, chosenTile, remainingTiles) {
     let hand = player.hand.slice();
     let ukeire = CalculateDiscardUkeire(hand, remainingTiles, CalculateMinimumShanten);
-    let bestUkeire = Math.max(...ukeire);
+    let bestUkeire = Math.max(...ukeire.map(o => o.value));
     hand[chosenTile]--;
 
     let combinedHand = hand.slice();
@@ -289,31 +289,29 @@ function analyzeDiscard(player, chosenTile, remainingTiles) {
     let chosenUkeire = ukeire[chosenTile];
 
     let shanten = CalculateMinimumShanten(combinedHand);
-    let handUkeire = CalculateUkeireFromOnlyHand(combinedHand, allTilesRemaining.slice(), CalculateMinimumShanten).value;
+    let handUkeire = CalculateUkeireFromOnlyHand(combinedHand, ALL_TILES_REMAINING.slice(), CalculateMinimumShanten).value;
     let bestTile = evaluateBestDiscard(ukeire);
     let result = `Discard: ${getTileAsText(chosenTile, true)}, `;
 
-    if (chosenUkeire > 0 || shanten === 0) {
-        let ukeireTiles = CalculateUkeire(hand, remainingTiles, CalculateMinimumShanten);
-        result += `with ${chosenUkeire} tiles that can improve the hand: ${convertTilesToAsciiSymbols(ukeireTiles.tiles)}|`;
+    if (chosenUkeire.value > 0 || shanten === 0) {
+        result += `with ${chosenUkeire.value} tiles that can improve the hand: ${convertTilesToAsciiSymbols(chosenUkeire.tiles)}|`;
     }
     else {
         result += `which lowers your shanten.|`
     }
 
-    if (chosenUkeire < bestUkeire) {
+    if (chosenUkeire.value < bestUkeire) {
         hand[chosenTile]++;
-        hand[bestTile]--;
-        let bestUkeireTiles = CalculateUkeire(hand, remainingTiles, CalculateMinimumShanten);
-        result += `Most efficient: the ${getTileAsText(bestTile, true)}, `;
-        result += `with ${bestUkeire} tiles being able to improve your hand: ${convertTilesToAsciiSymbols(bestUkeireTiles.tiles)}|`;
+        hand[bestTile]--;;
+        result += `Most efficient: ${getTileAsText(bestTile, true)}, `;
+        result += `with ${bestUkeire} tiles being able to improve your hand: ${convertTilesToAsciiSymbols(ukeire[bestTile].tiles)}|`;
     }
     else {
         result += "That was the most efficient choice.|";
     }
 
     if (shanten <= 0 && handUkeire === 0) {
-        result += "You are now in keishiki tenpai. Your hand is ready, but all the winning tiles are in your hand. This doesn't count as ready.|";
+        result += "Your hand is ready, but all the winning tiles are in your hand.|";
     }
 
     return result;

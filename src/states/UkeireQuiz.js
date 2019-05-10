@@ -11,9 +11,13 @@ import StatsDisplay from "../components/ukeire-quiz/StatsDisplay";
 import { GenerateHand, FillHand } from '../scripts/GenerateHand';
 import { CalculateDiscardUkeire, CalculateUkeireFromOnlyHand } from "../scripts/UkeireCalculator";
 import { CalculateMinimumShanten, CalculateStandardShanten } from "../scripts/ShantenCalculator";
-import { getTileAsText, convertRedFives } from "../scripts/TileConversions";
-import { convertHandToTenhouString } from "../scripts/HandConversions";
+import { convertRedFives } from "../scripts/TileConversions";
+import { convertHandToTenhouString, convertHandToTileArray } from "../scripts/HandConversions";
 import { evaluateBestDiscard } from "../scripts/Evaluations";
+import { shuffleArray, removeRandomItem } from '../scripts/Utils';
+import SortedHand from '../components/SortedHand';
+import Player from '../models/Player';
+import { PLAYER_NAMES } from '../Constants';
 
 class Quiz extends React.Component {
     constructor(props) {
@@ -27,6 +31,7 @@ class Quiz extends React.Component {
             remainingTiles: null,
             tilePool: null,
             discardPool: [],
+            players: [],
             discardCount: 0,
             optimalCount: 0,
             achievedTotal: 0,
@@ -44,6 +49,7 @@ class Quiz extends React.Component {
                 reshuffle: true,
                 simulate: false,
                 exceptions: true,
+                sort: true,
             },
             stats: {
                 totalDiscards: 0,
@@ -56,7 +62,8 @@ class Quiz extends React.Component {
             isComplete: false,
             roundWind: 31,
             seatWind: 31,
-            dora: 1
+            dora: 1,
+            shuffle: []
         }
     }
 
@@ -80,6 +87,7 @@ class Quiz extends React.Component {
                         reshuffle: savedSettings.reshuffle,
                         simulate: savedSettings.simulate,
                         exceptions: savedSettings.exceptions,
+                        sort: savedSettings.sort === undefined ? true : savedSettings.sort
                     }
                 }, () => this.onNewHand());
             }
@@ -136,10 +144,25 @@ class Quiz extends React.Component {
 
     getNewHandState(hand, availableTiles, tilePool, history, discards, dora) {
         history.unshift({ message: "Started a new hand: " + convertHandToTenhouString(hand) });
+
+        let players = [];
+        let numberOfPlayers = this.state.settings.threePlayer ? 3 : 4;
+        let seatWind = this.pickSeatWind();
+
+        for(let i = 0; i < numberOfPlayers; i++) {
+            let player = new Player();
+            player.name = PLAYER_NAMES[i];
+            player.seat = (seatWind - 31 + i) % numberOfPlayers;
+            players.push(player);
+        }
+
+        let shuffle = convertHandToTileArray(hand);
+        shuffle = shuffleArray(shuffle);
         return {
             hand: hand,
             remainingTiles: availableTiles,
             tilePool: tilePool,
+            players: players,
             discardPool: discards,
             discardCount: 0,
             optimalCount: 0,
@@ -147,10 +170,11 @@ class Quiz extends React.Component {
             possibleTotal: 0,
             history: history,
             isComplete: false,
-            lastDraw: -1,
+            lastDraw: shuffle.pop(),
             roundWind: this.pickRoundWind(),
-            seatWind: this.pickSeatWind(),
-            dora: dora
+            seatWind: seatWind,
+            dora: dora,
+            shuffle: shuffle
         }
     }
 
@@ -291,18 +315,22 @@ class Quiz extends React.Component {
 
         let shantenFunction = this.state.settings.exceptions ? CalculateMinimumShanten : CalculateStandardShanten;
         let ukeire = CalculateDiscardUkeire(hand, remainingTiles, shantenFunction);
-        let bestUkeire = Math.max(...ukeire);
+        let ukeireValues = ukeire.map(o => o.value);
+        let bestUkeire = Math.max(...ukeireValues);
         let handString = convertHandToTenhouString(hand);
         hand[chosenTile]--;
         let chosenUkeire = ukeire[convertRedFives(chosenTile)];
 
         let shanten = shantenFunction(hand);
-        let handUkeire = CalculateUkeireFromOnlyHand(hand, this.resetRemainingTiles(), shantenFunction).value;
-        let bestTile = evaluateBestDiscard(ukeire);
+        let handUkeire = CalculateUkeireFromOnlyHand(hand, this.resetRemainingTiles(), shantenFunction);
+        let bestTile = evaluateBestDiscard(ukeire, this.state.dora + 1);
 
         let discardPool = this.state.discardPool.slice();
         discardPool.push({ tile: chosenTile, player: this.state.settings.simulate });
-        let achievedTotal = this.state.achievedTotal + chosenUkeire;
+        let players = this.state.players.slice();
+        players[0].discards.push(chosenTile);
+
+        let achievedTotal = this.state.achievedTotal + chosenUkeire.value;
         let possibleTotal = this.state.possibleTotal + bestUkeire;
         let tilePool = this.state.tilePool;
         let drawnTile = -1;
@@ -316,27 +344,29 @@ class Quiz extends React.Component {
             hand: handString,
             handUkeire,
             drawnTile: -1,
-            message: ""
+            message: "",
+            discards: players[0].discards.slice()
         };
 
-        if (shanten <= 0 && handUkeire > 0) {
+        if (shanten <= 0 && handUkeire.value > 0) {
             historyObject.message = ` Your hand is now ready. Congratulations! Your efficiency was ${achievedTotal}/${possibleTotal}, or ${Math.floor(achievedTotal / possibleTotal * 100)}%. `;
             isComplete = true;
         }
 
         if (!isComplete) {
             if (this.state.settings.simulate) {
-                for (let i = 0; i < 3; i++) {
+                for (let i = 1; i < players.length; i++) {
                     if (tilePool.length === 0) continue;
 
-                    let simulatedDiscard = tilePool.splice(Math.floor(Math.random() * tilePool.length), 1);
+                    let simulatedDiscard = removeRandomItem(tilePool);
                     discardPool.push({ tile: simulatedDiscard, player: false });
+                    players[i].discards.push(simulatedDiscard);
                     remainingTiles[simulatedDiscard]--;
                 }
             }
 
             if (tilePool.length > 0) {
-                drawnTile = tilePool.splice(Math.floor(Math.random() * tilePool.length), 1);
+                drawnTile = removeRandomItem(tilePool);
                 hand[drawnTile]++;
                 remainingTiles[drawnTile]--;
 
@@ -346,23 +376,36 @@ class Quiz extends React.Component {
                 isComplete = true;
             }
         }
-
+        
         let history = this.state.history;
         history.unshift(historyObject);
+
+        let shuffle = this.state.shuffle.slice();
+
+        if(chosenTile !== this.state.lastDraw) {
+            for(let i = 0; i < shuffle.length; i++) {
+                if(shuffle[i] == chosenTile) {
+                    shuffle[i] = this.state.lastDraw;
+                    break;
+                }
+            }
+        }
 
         this.setState({
             hand: hand,
             tilePool: tilePool,
             remainingTiles: remainingTiles,
             discardPool: discardPool,
+            players: players,
             discardCount: this.state.discardCount + 1,
-            optimalCount: this.state.optimalCount + (chosenUkeire === bestUkeire ? 1 : 0),
+            optimalCount: this.state.optimalCount + (chosenUkeire.value === bestUkeire ? 1 : 0),
             hasCopied: false,
             achievedTotal: achievedTotal,
             possibleTotal: possibleTotal,
             history: history,
             isComplete: isComplete,
-            lastDraw: drawnTile
+            lastDraw: drawnTile,
+            shuffle: shuffle
         }, isComplete ? () => this.saveStats() : undefined);
     }
 
@@ -446,7 +489,10 @@ class Quiz extends React.Component {
                 <Row className="mb-2 mt-2">
                     <span>Click the tile you want to discard.</span>
                 </Row>
-                <Hand tiles={this.state.hand} lastDraw={this.state.lastDraw} onTileClick={this.onTileClicked} />
+                { this.state.settings.sort
+                    ? <Hand tiles={this.state.hand} lastDraw={this.state.lastDraw} onTileClick={this.onTileClicked} />
+                    : <SortedHand tiles={this.state.shuffle} lastDraw={this.state.lastDraw} onTileClick={this.onTileClicked}/>
+                }
                 <Row className="mt-2">
                     <Col xs="6" sm="3" md="3" lg="2">
                         <Button className="btn-block" color={this.state.isComplete ? "success" : "warning"} onClick={() => this.onNewHand()}>New Hand</Button>
@@ -456,7 +502,7 @@ class Quiz extends React.Component {
                 </Row>
                 <Row className="mt-2 no-gutters">
                     <History history={this.state.history} concise={this.state.settings.extraConcise} verbose={this.state.settings.verbose} spoilers={this.state.settings.spoilers}/>
-                    <DiscardPool discardPool={this.state.discardPool} discardCount={this.state.discardCount} wallCount={this.state.tilePool && this.state.tilePool.length} />
+                    <DiscardPool players={this.state.players} discardPool={this.state.discardPool} discardCount={this.state.discardCount} wallCount={this.state.tilePool && this.state.tilePool.length} />
                 </Row>
                 <Row className="mt-4">
                     <Col xs="12"><span>Credits</span></Col>

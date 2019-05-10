@@ -2,7 +2,7 @@ import React from 'react';
 import { Row, ListGroup, ListGroupItem } from 'reactstrap';
 import ResultingHandInfo from './ResultingHandInfo';
 import { CalculateUkeire, CalculateUkeireUpgrades, CalculateDiscardUkeire } from '../../scripts/UkeireCalculator';
-import { CalculateMinimumShanten } from '../../scripts/ShantenCalculator';
+import { CalculateStandardShanten } from '../../scripts/ShantenCalculator';
 
 class HandFutures extends React.Component {
     render() {
@@ -28,7 +28,7 @@ class HandFutures extends React.Component {
             }
         }
 
-        let baseUkeire = Math.max(...CalculateDiscardUkeire(hand, remainingTiles, CalculateMinimumShanten));
+        let baseUkeire = Math.max(...CalculateDiscardUkeire(hand, remainingTiles, CalculateStandardShanten).map(u => u.value));
 
         let infoObjects = tiles.map((tile) => {
             hand[tile]--;
@@ -38,9 +38,9 @@ class HandFutures extends React.Component {
             return {
                 hand: newHand,
                 discard: tile,
-                shanten: CalculateMinimumShanten(newHand),
-                ukeire: CalculateUkeire(newHand, remainingTiles, CalculateMinimumShanten),
-                upgrades: CalculateUkeireUpgrades(newHand, remainingTiles, CalculateMinimumShanten, -2, baseUkeire)
+                shanten: CalculateStandardShanten(newHand),
+                ukeire: CalculateUkeire(newHand, remainingTiles, CalculateStandardShanten),
+                upgrades: CalculateUkeireUpgrades(newHand, remainingTiles, CalculateStandardShanten, -2, baseUkeire)
             }
         });
 
@@ -56,20 +56,22 @@ class HandFutures extends React.Component {
             return b.upgrades.value - a.upgrades.value;
         });
 
-        let filteredObjects = infoObjects.filter((obj) => {
-            let strictlyBetter = infoObjects.find((other) => {
-                return (other.shanten <= obj.shanten
-                    && (
-                        (other.ukeire.value > obj.ukeire.value && other.upgrades.value > obj.upgrades.value)
-                        || (other.ukeire.value === obj.ukeire.value && other.upgrades.value > obj.upgrades.value)
-                        || (other.ukeire.value > obj.ukeire.value && other.upgrades.value === obj.upgrades.value)
-                    )
-                );
+        if(!this.props.showAll) {
+            infoObjects = infoObjects.filter((obj) => {
+                let strictlyBetter = infoObjects.find((other) => {
+                    return (other.shanten <= obj.shanten
+                        && (
+                            (other.ukeire.value > obj.ukeire.value && other.upgrades.value > obj.upgrades.value)
+                            || (other.ukeire.value === obj.ukeire.value && other.upgrades.value > obj.upgrades.value)
+                            || (other.ukeire.value > obj.ukeire.value && other.upgrades.value === obj.upgrades.value)
+                        )
+                    );
+                });
+                return strictlyBetter === undefined;
             });
-            return strictlyBetter === undefined;
-        });
+        }
 
-        let handInfos = filteredObjects.map((obj) => {
+        let handInfos = infoObjects.map((obj) => {
             return (
                 <ListGroupItem>
                     <ResultingHandInfo

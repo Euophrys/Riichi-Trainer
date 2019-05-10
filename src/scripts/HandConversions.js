@@ -122,3 +122,15 @@ export function convertHandToDiscordEmoji(hand) {
 
     return result;
 }
+
+export function convertHandToTileArray(hand) {
+    let result = [];
+
+    for(let i = 0; i < hand.length; i++) {
+        for(let j = 0; j < hand[i]; j++) {
+            result.push(i);
+        }
+    }
+
+    return result;
+}

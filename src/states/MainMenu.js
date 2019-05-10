@@ -3,6 +3,7 @@ import { Container, Row, Button } from 'reactstrap';
 import UkeireQuiz from "./UkeireQuiz";
 import ReplayAnalysis from "./ReplayAnalysis";
 import UtilsState from "./UtilsState";
+import HandExplorer from "./HandExplorer";
 
 class MainMenu extends React.Component {
     constructor(props) {
@@ -31,6 +32,12 @@ class MainMenu extends React.Component {
         });
     }
 
+    onExplorerClicked() {
+        this.setState({
+            active: 3
+        });
+    }
+
     render() {
         let page = <Row/>;
         switch(this.state.active) {
@@ -40,14 +47,17 @@ class MainMenu extends React.Component {
                 page = <ReplayAnalysis/>; break;
             case 2:
                 page = <UtilsState/>; break;
+            case 3:
+                page = <HandExplorer/>; break;
         }
 
         return (
             <React.Fragment>
                 <Container className="mb-4">
                     <Row>
-                        <Button xs="4" disabled={this.state.active === 0} onClick={()=>this.onTrainerClicked()}>Trainer</Button>
-                        <Button xs="4" disabled={this.state.active === 1} onClick={()=>this.onAnalyzerClicked()}>Analyzer [BETA]</Button>
+                        <Button color="success" xs="4" disabled={this.state.active === 0} onClick={()=>this.onTrainerClicked()}>Trainer</Button>
+                        <Button color="warning" xs="4" disabled={this.state.active === 1} onClick={()=>this.onAnalyzerClicked()}>Analyzer [BETA]</Button>
+                        <Button xs="4" disabled={this.state.active === 3} onClick={()=>this.onExplorerClicked()}>Explorer</Button>
                         <Button xs="4" disabled={this.state.active === 2} onClick={()=>this.onUtilsClicked()}>Misc. Utils</Button>
                     </Row>
                 </Container>

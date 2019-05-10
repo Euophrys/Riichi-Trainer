@@ -6,7 +6,7 @@ class HistoryMessage extends React.Component {
     /* PROPS
         data {
             chosenTile,
-            chosenUkeire,
+            chosenUkeire.value,
             bestTile,
             bestUkeire,
             shanten,
@@ -72,14 +72,14 @@ class HistoryMessage extends React.Component {
     getConciseMessage() {
         let result = `Discard: ${getTileAsText(this.props.data.chosenTile, this.props.verbose)} (`;
 
-        if (this.props.data.chosenUkeire > 0 || this.props.data.shanten === 0) {
-            result += `${this.props.data.chosenUkeire} tiles). `;
+        if (this.props.data.chosenUkeire.value > 0 || this.props.data.shanten === 0) {
+            result += `${this.props.data.chosenUkeire.value} tiles). `;
         }
         else {
             result += `lowered shanten). `
         }
 
-        if (this.props.data.chosenUkeire < this.props.data.bestUkeire) {
+        if (this.props.data.chosenUkeire.value < this.props.data.bestUkeire) {
             result += "Best: ";
 
             if (this.props.spoilers) {
@@ -92,8 +92,16 @@ class HistoryMessage extends React.Component {
             result += "That was the best choice!";
         }
         
-        if (this.props.data.shanten <= 0 && this.props.data.handUkeire === 0) {
-            result += " Keishiki tenpai."
+        if (this.props.data.shanten <= 0 && this.props.data.handUkeire.value === 0) {
+            result += " All of your winning tiles are in your hand, so you aren't tenpai yet.";
+        }
+
+        if (this.isFuriten()) {
+            if (this.props.data.shanten <= 0) {
+                result += " Furiten.";
+            } else {
+                result += " Be careful of future furiten.";
+            }
         }
         
         if(this.props.data.shanten > 0) {
@@ -110,14 +118,14 @@ class HistoryMessage extends React.Component {
     getVerboseMessage() {
         let result = `You chose to discard the ${getTileAsText(this.props.data.chosenTile, this.props.verbose)}, which `;
 
-        if (this.props.data.chosenUkeire > 0 || this.props.data.shanten === 0) {
-            result += `results in ${this.props.data.chosenUkeire} tiles that can improve the hand. `;
+        if (this.props.data.chosenUkeire.value > 0 || this.props.data.shanten === 0) {
+            result += `results in ${this.props.data.chosenUkeire.value} tiles that can improve the hand. `;
         }
         else {
             result += `lowers your shanten - you are now further from ready. `
         }
 
-        if (this.props.data.chosenUkeire < this.props.data.bestUkeire) {
+        if (this.props.data.chosenUkeire.value < this.props.data.bestUkeire) {
             result += "The most efficient tile to discard";
 
             if (this.props.spoilers) {
@@ -130,8 +138,16 @@ class HistoryMessage extends React.Component {
             result += "That was the best choice. Good work!";
         }
 
-        if (this.props.data.shanten <= 0 && this.props.data.handUkeire === 0) {
-            result += " You are now in keishiki tenpai. Your hand is ready, but all the winning tiles are in your hand. This doesn't count as ready in almost all rulesets. You may need to break your tenpai in order to progress.";
+        if (this.props.data.shanten <= 0 && this.props.data.handUkeire.value === 0) {
+            result += " Your hand is ready, but all the winning tiles are in your hand. This doesn't count as ready in almost all rulesets, so you'll need to change your hand.";
+        }
+
+        if (this.isFuriten()) {
+            if (this.props.data.shanten <= 0) {
+                result += " You are in furiten. You cannot win this hand by ron, because you have a winning tile in your discards.";
+            } else {
+                result += " Be careful of future furiten. Some of the tiles that improve your hand are in your discards.";
+            }
         }
         
         if(this.props.data.shanten > 0) {
@@ -148,10 +164,10 @@ class HistoryMessage extends React.Component {
     getClassName() {
         let className = "";
 
-        if (this.props.data.chosenUkeire <= 0 && this.props.data.shanten > 0) {
+        if (this.props.data.chosenUkeire.value <= 0 && this.props.data.shanten > 0) {
             className = "bg-danger text-white";
         }
-        else if (this.props.data.bestUkeire === this.props.data.chosenUkeire) {
+        else if (this.props.data.bestUkeire === this.props.data.chosenUkeire.value) {
             className = "bg-success text-white";
         }
         else {
@@ -159,6 +175,10 @@ class HistoryMessage extends React.Component {
         }
 
         return className;
+    }
+
+    isFuriten() {
+        return this.props.data.chosenUkeire.tiles.some(tile => this.props.data.discards.includes(tile));
     }
 }
 
