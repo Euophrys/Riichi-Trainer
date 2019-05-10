@@ -1,5 +1,6 @@
 class Player {
     constructor() {
+        this.name = "";
         this.hand = [];
         this.discards = [];
         this.calls = [];

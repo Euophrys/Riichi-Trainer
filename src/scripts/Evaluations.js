@@ -1,4 +1,5 @@
-export function evaluateBestDiscard(ukeire) {
+export function evaluateBestDiscard(ukeireObjects, dora = -1) {
+    let ukeire = ukeireObjects.map(o => o.value);
     let bestUkeire = Math.max(...ukeire);
     let bests = [];
 
@@ -7,10 +8,11 @@ export function evaluateBestDiscard(ukeire) {
             bests.push(i);
         }
     }
-
+    
     if (!bests.length) return -1;
     if (bests.length === 1) return bests[0];
-
+    
+    if (bests.indexOf(dora) > -1) bests.splice(bests.indexOf(dora), 1);
     if (bests.indexOf(32) > -1) return 32;
     if (bests.indexOf(33) > -1) return 33;
     if (bests.indexOf(34) > -1) return 34;

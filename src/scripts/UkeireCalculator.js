@@ -7,10 +7,13 @@ export function CalculateDiscardUkeire(hand, remainingTiles, shantenFunction) {
     let baseShanten = shantenFunction(convertedHand);
 
     for (let handIndex = 0; handIndex < convertedHand.length; handIndex++) {
-        if (convertedHand[handIndex] === 0) continue;
+        if (convertedHand[handIndex] === 0) {
+            results[handIndex] = {value: 0, tiles: []};
+            continue;
+        }
 
         convertedHand[handIndex]--;
-        let ukeire = CalculateUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten).value;
+        let ukeire = CalculateUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten);
         convertedHand[handIndex]++;
 
         // Write the results into the array
@@ -63,7 +66,7 @@ export function CalculateDiscardUkeireUpgrades(hand, remainingTiles, shantenFunc
         if (hand[handIndex] === 0) continue;
 
         hand[handIndex]--;
-        let ukeire = CalculateUkeireUpgrades(hand, remainingTiles, shantenFunction, baseShanten, baseUkeire).value;
+        let ukeire = CalculateUkeireUpgrades(hand, remainingTiles, shantenFunction, baseShanten, baseUkeire);
         hand[handIndex]++;
 
         // Write the results into the array
@@ -96,6 +99,7 @@ export function CalculateUkeireUpgrades(hand, remainingTiles, shantenFunction, b
         if (addedTile % 10 === 0) continue;
 
         convertedHand[addedTile]++;
+        remainingTiles[addedTile]--;
 
         if (shantenFunction(convertedHand) === baseShanten
             && CalculateUkeire(convertedHand, remainingTiles, shantenFunction).value > baseUkeire) {
@@ -117,6 +121,7 @@ export function CalculateUkeireUpgrades(hand, remainingTiles, shantenFunction, b
         }
 
         convertedHand[addedTile]--;
+        remainingTiles[addedTile]++;
     }
 
     return {

@@ -4,8 +4,8 @@ import Hand from '../Tile';
 import { convertHandToTenhouString, convertHandToAsciiSymbols } from '../../scripts/HandConversions';
 import { getTileAsText, convertTilesToAsciiSymbols } from '../../scripts/TileConversions';
 import { CalculateDiscardUkeire } from '../../scripts/UkeireCalculator';
-import CalculateMinimumShanten from '../../scripts/ShantenCalculator';
-import { allTilesRemaining } from '../../Constants';
+import CalculateStandardShanten from '../../scripts/ShantenCalculator';
+import { ALL_TILES_REMAINING } from '../../Constants';
 import { evaluateBestDiscard } from '../../scripts/Evaluations';
 
 class ResultingHandInfo extends React.Component {
@@ -49,13 +49,13 @@ class ResultingHandInfo extends React.Component {
             shantenResults = this.props.ukeire.tiles.map((tile) => {
                 let resultHand = this.props.hand.slice();
                 resultHand[tile]++;
-                let discards = CalculateDiscardUkeire(resultHand, allTilesRemaining, CalculateMinimumShanten);
+                let discards = CalculateDiscardUkeire(resultHand, ALL_TILES_REMAINING, CalculateStandardShanten);
                 let bestDiscard = evaluateBestDiscard(discards);
                 resultHand[bestDiscard]--;
-                totalShantenUkeire += discards[bestDiscard];
+                totalShantenUkeire += discards[bestDiscard].value;
                 return (
                     <Row>
-                        Draw {getTileAsText(tile, false)}, discard {getTileAsText(bestDiscard, false)}: {discards[bestDiscard]} ukeire
+                        Draw {getTileAsText(tile, false)}, discard {getTileAsText(bestDiscard, false)}: {discards[bestDiscard].value} ukeire
                     </Row>
                 );
             });

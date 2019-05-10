@@ -101,6 +101,13 @@ class Settings extends React.Component {
                                 <Label className="form-check-label" for="exceptions">Consider exception hands (Kokushi/Thirteen Orphans and Chiitoitsu/Seven Pairs)</Label>
                             </Col>
                         </Row>
+                        <Row>
+                            <Col className="form-check form-check-inline">
+                                <Input className="form-check-input" type="checkbox" id="sort"
+                                    checked={this.props.values.sort} onChange={this.props.onChange} />
+                                <Label className="form-check-label" for="sort">Sort hand</Label>
+                            </Col>
+                        </Row>
                     </CardBody></Card>
                 </Collapse>
             </Container>
