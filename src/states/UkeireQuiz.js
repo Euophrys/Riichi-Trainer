@@ -36,21 +36,7 @@ class Quiz extends React.Component {
             optimalCount: 0,
             achievedTotal: 0,
             possibleTotal: 0,
-            settings: {
-                characters: true,
-                bamboo: true,
-                circles: true,
-                honors: false,
-                threePlayer: false,
-                redFives: 3,
-                verbose: true,
-                extraConcise: false,
-                spoilers: true,
-                reshuffle: true,
-                simulate: false,
-                exceptions: true,
-                sort: true,
-            },
+            settings: { /* See ../components/ukeire-quiz/Settings.js */ },
             stats: {
                 totalDiscards: 0,
                 totalTenpai: 0,
@@ -69,29 +55,6 @@ class Quiz extends React.Component {
 
     componentDidMount() {
         if (typeof (Storage) !== "undefined") {
-            let savedSettings = window.localStorage.getItem("settings");
-            if (savedSettings) {
-                savedSettings = JSON.parse(savedSettings);
-
-                this.setState({
-                    settings: {
-                        characters: savedSettings.characters,
-                        bamboo: savedSettings.bamboo,
-                        circles: savedSettings.circles,
-                        honors: savedSettings.honors,
-                        threePlayer: savedSettings.threePlayer,
-                        redFives: savedSettings.redFives || 3,
-                        verbose: savedSettings.verbose,
-                        extraConcise: savedSettings.extraConcise,
-                        spoilers: savedSettings.spoilers,
-                        reshuffle: savedSettings.reshuffle,
-                        simulate: savedSettings.simulate,
-                        exceptions: savedSettings.exceptions,
-                        sort: savedSettings.sort === undefined ? true : savedSettings.sort
-                    }
-                }, () => this.onNewHand());
-            }
-
             let savedStats = window.localStorage.getItem("stats");
             if (savedStats) {
                 savedStats = JSON.parse(savedStats);
@@ -107,8 +70,15 @@ class Quiz extends React.Component {
                 }, () => this.onNewHand());
             }
         }
+        else {
+            this.onNewHand();
+        }
+    }
 
-        this.onNewHand();
+    onSettingsChanged(settings) {
+        this.setState({
+            settings: settings
+        });
     }
 
     discardHand() {
@@ -183,7 +153,15 @@ class Quiz extends React.Component {
         let dora = 1;
         let hand, availableTiles, tilePool;
 
-        if (!this.state.settings.reshuffle) {
+        let minShanten = this.state.settings.minShanten;
+        minShanten = Math.max(0, minShanten);
+        let allowedSuits = +this.state.settings.honors
+            + +this.state.settings.bamboo
+            + +this.state.settings.characters
+            + +this.state.settings.circles;
+        minShanten = Math.min(minShanten, allowedSuits);
+
+        if (!this.state.settings.reshuffle && this.state.hand) {
             this.discardHand();
             let remainingTiles = this.state.remainingTiles;
 
@@ -199,7 +177,7 @@ class Quiz extends React.Component {
                 tilePool = generationResult.tilePool;
 
                 if (!hand) break;
-            } while (CalculateMinimumShanten(hand) === -1)
+            } while (CalculateMinimumShanten(hand) < minShanten)
 
             if (!hand) {
                 history.push({ message: "There aren't enough tiles left in the wall to make a new hand. Shuffling." });
@@ -218,13 +196,13 @@ class Quiz extends React.Component {
             tilePool = generationResult.tilePool;
 
             if (!hand) {
-                history.push({ message: "Did you turn off all the tile types? How do you expect to make a hand with no tiles?" });
+                history.push({ message: "There are not enough tiles to create a hand." });
                 this.setState({
                     history: history
                 });
                 return;
             }
-        } while (CalculateMinimumShanten(hand) === -1)
+        } while (CalculateMinimumShanten(hand) < minShanten)
 
         if (tilePool.length > 0) {
             dora = tilePool.splice(Math.floor(Math.random() * tilePool.length), 1);
@@ -281,27 +259,6 @@ class Quiz extends React.Component {
         }
 
         return remainingTiles;
-    }
-
-    onSettingsChanged(event, numberString, numberInput) {
-        if (!event) return;
-
-        let settings = this.state.settings;
-
-        if (typeof event === "number") {
-            settings[numberInput.id] = event;
-        }
-        else {
-            settings[event.target.id] = !settings[event.target.id];
-        }
-
-        this.setState({
-            settings: settings
-        });
-
-        if (typeof (Storage) !== "undefined") {
-            window.localStorage.setItem("settings", JSON.stringify(settings));
-        }
     }
 
     onTileClicked(event) {
@@ -483,7 +440,7 @@ class Quiz extends React.Component {
     render() {
         return (
             <Container>
-                <Settings values={this.state.settings} onChange={this.onSettingsChanged} />
+                <Settings onChange={this.onSettingsChanged} />
                 <StatsDisplay values={this.state.stats} onReset={() => this.resetStats()} />
                 <ValueTileDisplay roundWind={this.state.roundWind} seatWind={this.state.seatWind} dora={this.state.dora} />
                 <Row className="mb-2 mt-2">
