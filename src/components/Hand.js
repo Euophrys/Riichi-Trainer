@@ -13,8 +13,9 @@ class Hand extends React.Component {
         }
 
         let lastDraw = this.props.lastDraw;
+        let hasLastDraw = lastDraw > -1;
 
-        if (lastDraw > -1) {
+        if (hasLastDraw) {
             hand[lastDraw]--;
         }
 
@@ -24,6 +25,7 @@ class Hand extends React.Component {
                     tiles.push((
                         <Tile className="handTile"
                             tile={i - 5}
+                            displayTile={hasLastDraw && this.props.blind ? 30 : i - 5}
                             onClick={this.props.onTileClick}
                         />
                     ));
@@ -37,6 +39,7 @@ class Hand extends React.Component {
                 tiles.push((
                     <Tile className="handTile"
                         tile={i}
+                        displayTile={hasLastDraw && this.props.blind ? 30 : i}
                         onClick={this.props.onTileClick}
                     />
                 ));
@@ -44,11 +47,12 @@ class Hand extends React.Component {
 
         }
 
-        if (lastDraw > -1) {
+        if (hasLastDraw) {
             hand[lastDraw]++;
             tiles.push((
                 <Tile className="handTile"
                     tile={lastDraw}
+                    displayTile={lastDraw}
                     onClick={this.props.onTileClick}
                 />
             ));

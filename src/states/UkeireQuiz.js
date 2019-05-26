@@ -14,7 +14,7 @@ import { CalculateMinimumShanten, CalculateStandardShanten } from "../scripts/Sh
 import { convertRedFives } from "../scripts/TileConversions";
 import { convertHandToTenhouString, convertHandToTileArray } from "../scripts/HandConversions";
 import { evaluateBestDiscard } from "../scripts/Evaluations";
-import { shuffleArray, removeRandomItem } from '../scripts/Utils';
+import { shuffleArray, removeRandomItem, getRandomItem } from '../scripts/Utils';
 import SortedHand from '../components/SortedHand';
 import Player from '../models/Player';
 import { PLAYER_NAMES } from '../Constants';
@@ -166,7 +166,7 @@ class Quiz extends React.Component {
             let remainingTiles = this.state.remainingTiles;
 
             if (this.state.tilePool.length > 0) {
-                dora = this.state.tilePool[Math.floor(Math.random() * this.state.tilePool.length)];
+                dora = getRandomItem(this.state.tilePool);
                 remainingTiles[dora]--;
             }
 
@@ -205,7 +205,7 @@ class Quiz extends React.Component {
         } while (CalculateMinimumShanten(hand) < minShanten)
 
         if (tilePool.length > 0) {
-            dora = tilePool.splice(Math.floor(Math.random() * tilePool.length), 1);
+            dora = removeRandomItem(tilePool);
             remainingTiles[dora]--;
         }
 
@@ -438,6 +438,8 @@ class Quiz extends React.Component {
     }
 
     render() {
+        let blind = this.state.players.length && this.state.players[0].discards.length && this.state.settings.blind && !this.state.isComplete;
+
         return (
             <Container>
                 <Settings onChange={this.onSettingsChanged} />
@@ -447,8 +449,14 @@ class Quiz extends React.Component {
                     <span>Click the tile you want to discard.</span>
                 </Row>
                 { this.state.settings.sort
-                    ? <Hand tiles={this.state.hand} lastDraw={this.state.lastDraw} onTileClick={this.onTileClicked} />
-                    : <SortedHand tiles={this.state.shuffle} lastDraw={this.state.lastDraw} onTileClick={this.onTileClicked}/>
+                    ? <Hand tiles={this.state.hand}
+                        lastDraw={this.state.lastDraw}
+                        onTileClick={this.onTileClicked}
+                        blind={blind} />
+                    : <SortedHand tiles={this.state.shuffle}
+                        lastDraw={this.state.lastDraw} 
+                        onTileClick={this.onTileClicked} 
+                        blind={blind}/>
                 }
                 <Row className="mt-2">
                     <Col xs="6" sm="3" md="3" lg="2">

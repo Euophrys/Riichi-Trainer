@@ -35,13 +35,14 @@ import north from '../tileImages/north.png';
 import haku from '../tileImages/haku.png';
 import hatsu from '../tileImages/hatsu.png';
 import chun from '../tileImages/chun.png';
+import back from '../tileImages/back.png';
 import { convertHandToTenhouString } from './HandConversions';
 
 const images = [
     redFiveMan, oneMan, twoMan, threeMan, fourMan, fiveMan, sixMan, sevenMan, eightMan, nineMan,
     redFivePin, onePin, twoPin, threePin, fourPin, fivePin, sixPin, sevenPin, eightPin, ninePin,
     redFiveSou, oneSou, twoSou, threeSou, fourSou, fiveSou, sixSou, sevenSou, eightSou, nineSou,
-    "", east, south, west, north, haku, hatsu, chun
+    back, east, south, west, north, haku, hatsu, chun
 ];
 
 export const ascii = [
@@ -55,14 +56,14 @@ const numberText = ["red five", "one", "two", "three", "four", "five", "six", "s
 const numberCharacter = ["red 5", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 const suitText = ["characters", "circles", "bamboo"]
 const suitCharacter = ["m", "p", "s"];
-const honors = ["", "east wind", "south wind", "west wind", "north wind", "white dragon", "green dragon", "red dragon"]
+const honors = ["hidden tile", "east wind", "south wind", "west wind", "north wind", "white dragon", "green dragon", "red dragon"]
 
 export function getTileImage(index) {
     return images[index];
 }
 
 export function getTileAsText(index, verbose = true) {
-    if (index > 30) {
+    if (index >= 30) {
         return honors[index - 30];
     }
 
