@@ -21,8 +21,9 @@ class Settings extends React.Component {
                 reshuffle: true,
                 simulate: false,
                 exceptions: true,
-                sort: true,
                 minShanten: 0,
+                sort: true,
+                blind: false
             }
         };
 
@@ -52,8 +53,9 @@ class Settings extends React.Component {
                     reshuffle: savedSettings.reshuffle,
                     simulate: savedSettings.simulate,
                     exceptions: savedSettings.exceptions,
-                    sort: savedSettings.sort === undefined ? true : savedSettings.sort,
                     minShanten: savedSettings.minShanten || 0,
+                    sort: savedSettings.sort === undefined ? true : savedSettings.sort,
+                    blind: savedSettings.blind
                 }
 
                 this.setState({
@@ -61,7 +63,11 @@ class Settings extends React.Component {
                 });
 
                 this.props.onChange(settings);
+            } else {
+                this.props.onChange(this.state.settings);
             }
+        } else {
+            this.props.onChange(this.state.settings);
         }
     }
 
@@ -190,6 +196,13 @@ class Settings extends React.Component {
                                 <Input className="form-check-input" type="checkbox" id="sort"
                                     checked={this.state.settings.sort} onChange={this.onSettingChanged} />
                                 <Label className="form-check-label" for="sort">Sort hand</Label>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col className="form-check form-check-inline">
+                                <Input className="form-check-input" type="checkbox" id="blind"
+                                    checked={this.state.settings.blind} onChange={this.onSettingChanged} />
+                                <Label className="form-check-label" for="blind">Conceal hand tiles</Label>
                             </Col>
                         </Row>
                     </CardBody></Card>
