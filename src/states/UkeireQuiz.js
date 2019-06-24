@@ -68,6 +68,8 @@ class Quiz extends React.Component {
                         totalOptimalDiscards: savedStats.totalOptimalDiscards
                     }
                 }, () => this.onNewHand());
+            } else {
+                this.onNewHand();
             }
         }
         else {

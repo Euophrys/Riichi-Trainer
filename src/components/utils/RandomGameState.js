@@ -2,9 +2,7 @@ import React from 'react';
 import { Container, Button, ListGroup, ListGroupItem, Row } from 'reactstrap';
 import Player from '../../models/Player';
 import { convertTilesToAsciiSymbols, convertIndexesToTenhouTiles, getTileAsText } from '../../scripts/TileConversions';
-
-const rounds = [ "East 1", "East 2", "East 3", "East 4", "South 1", "South 2", "South 3", "South 4", "West 1" ];
-const seats = [ "East", "South", "West", "North" ];
+import { ROUND_NAMES, SEAT_NAMES } from '../../Constants';
 
 class RandomGameState extends React.Component {
     constructor(props) {
@@ -26,7 +24,7 @@ class RandomGameState extends React.Component {
     }
 
     generateState() {
-        let round = Math.floor(Math.random() * rounds.length);
+        let round = Math.floor(Math.random() * 9);
 
         let players = [];
         for(let i = 0; i < 4; i++) {
@@ -123,7 +121,7 @@ class RandomGameState extends React.Component {
         let playerItems = this.state.players.map((player) => {
             return (
                 <ListGroupItem>
-                    <Row>{seats[player.seat]} Player {player.seat === this.state.userSeat ? "(YOU)" : ""}</Row>
+                    <Row>{SEAT_NAMES[player.seat]} Player {player.seat === this.state.userSeat ? "(YOU)" : ""}</Row>
                     <Row>Points: {player.points}</Row>
                     <Row>Discards: {convertTilesToAsciiSymbols(player.discards)} ({convertIndexesToTenhouTiles(player.discards)})</Row>
                 </ListGroupItem>
@@ -135,7 +133,7 @@ class RandomGameState extends React.Component {
                 <Button xs="12" color="primary" className="btn-block" onClick={()=>this.generateState()}>Generate New State</Button>
                 <ListGroup>
                     <ListGroupItem>
-                        <Row>It's turn {this.state.turn} in {rounds[this.state.round]}. You are the {seats[this.state.userSeat]} player.</Row>
+                        <Row>It's turn {this.state.turn} in {ROUND_NAMES[this.state.round]}. You are the {SEAT_NAMES[this.state.userSeat]} player.</Row>
                         <Row>The dora indicator is the {getTileAsText(this.state.doraIndicator, true)}.</Row>
                     </ListGroupItem>
                     {playerItems}

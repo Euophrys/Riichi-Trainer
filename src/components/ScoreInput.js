@@ -29,7 +29,7 @@ class ScoreInput extends React.Component {
     }
 
     onFuChanged(event) {
-        let fu = this.validateFu(event.target.value);
+        let fu = this.validateFu(event.target.value, this.state.fu);
         event.target.value = fu;
         this.setState({
             fu: fu
@@ -53,7 +53,7 @@ class ScoreInput extends React.Component {
     }
 
     onScoreSubmit() {
-        this.props.onScoreSubmit(this.state.han, this.state.fu);
+        this.props.onScoreSubmit(this.state.han, this.state.fu, this.props.tsumo, this.props.ronTarget, this.props.index);
     }
 
     onNumberChanged(event) {

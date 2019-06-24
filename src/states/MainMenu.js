@@ -4,6 +4,7 @@ import UkeireQuiz from "./UkeireQuiz";
 import ReplayAnalysis from "./ReplayAnalysis";
 import UtilsState from "./UtilsState";
 import HandExplorer from "./HandExplorer";
+import SouthFourQuiz from './SouthFourQuiz';
 
 class MainMenu extends React.Component {
     constructor(props) {
@@ -38,6 +39,12 @@ class MainMenu extends React.Component {
         });
     }
 
+    onSouthFourClicked() {
+        this.setState({
+            active: 4
+        });
+    }
+
     render() {
         let page = <Row/>;
         switch(this.state.active) {
@@ -49,6 +56,10 @@ class MainMenu extends React.Component {
                 page = <UtilsState/>; break;
             case 3:
                 page = <HandExplorer/>; break;
+            case 4:
+                page = <SouthFourQuiz/>; break;
+            default:
+                page = <UkeireQuiz/>;
         }
 
         return (
@@ -57,6 +68,7 @@ class MainMenu extends React.Component {
                     <Row>
                         <Button color="success" xs="4" disabled={this.state.active === 0} onClick={()=>this.onTrainerClicked()}>Trainer</Button>
                         <Button color="warning" xs="4" disabled={this.state.active === 1} onClick={()=>this.onAnalyzerClicked()}>Analyzer [BETA]</Button>
+                        <Button xs="4" disabled={this.state.active === 4} onClick={()=>this.onSouthFourClicked()}>South Four Trainer</Button>
                         <Button xs="4" disabled={this.state.active === 3} onClick={()=>this.onExplorerClicked()}>Explorer</Button>
                         <Button xs="4" disabled={this.state.active === 2} onClick={()=>this.onUtilsClicked()}>Misc. Utils</Button>
                     </Row>
