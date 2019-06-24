@@ -119,10 +119,10 @@ class SouthFourQuiz extends React.Component {
             <Container>
                 <Row>{feedback}&nbsp;<span>{required.han} han {required.fu} fu</span></Row>
                 <Row>Results:</Row>
-                <Row>{SEAT_NAMES[players[0].seat] + ": " + scores[0]}</Row>
-                <Row>{SEAT_NAMES[players[1].seat] + ": " + scores[1]}</Row>
-                <Row>{SEAT_NAMES[players[2].seat] + ": " + scores[2]}</Row>
-                <Row>{SEAT_NAMES[players[3].seat] + ": " + scores[3]}</Row>
+                <Row>{SEAT_NAMES[players[0].seat] + ": " + scores[0]} (YOU)</Row>
+                <Row>{SEAT_NAMES[players[1].seat] + ": " + scores[1]} ({scores[1] - scores[0]})</Row>
+                <Row>{SEAT_NAMES[players[2].seat] + ": " + scores[2]} ({scores[2] - scores[0]})</Row>
+                <Row>{SEAT_NAMES[players[3].seat] + ": " + scores[3]} ({scores[3] - scores[0]})</Row>
             </Container>
         );
 
@@ -158,8 +158,8 @@ class SouthFourQuiz extends React.Component {
             );
         }
 
-        let scores = this.state.players.map((player) => {
-            return <Row>{SEAT_NAMES[player.seat] + ": " + player.points}</Row>
+        let scores = this.state.players.map((player, index) => {
+            return <Row>{SEAT_NAMES[player.seat] + ": " + player.points} ({index === 0 ? "YOU" : "+" + (player.points - this.state.players[0].points)})</Row>
         });
 
         return (
@@ -206,7 +206,7 @@ class SouthFourQuiz extends React.Component {
     }
 }
 
-function findMinimumTsumoValue(fourthScore, thirdScore, dealerScore, maxFu) {
+function findMinimumTsumoValue(fourthScore, thirdScore, dealerScore, maxFu, canBeEqual) {
     for(let i = 0; i < NON_DEALER_TSUMO_SCORES.length; i++) {
         if(NON_DEALER_TSUMO_SCORES[i].fu > maxFu) continue;
 
@@ -214,15 +214,19 @@ function findMinimumTsumoValue(fourthScore, thirdScore, dealerScore, maxFu) {
         let resultingThirdScore = thirdScore - NON_DEALER_TSUMO_SCORES[i].nondealer;
         let resultingDealerScore = dealerScore - NON_DEALER_TSUMO_SCORES[i].dealer;
 
-        if(resultingFourthScore > resultingThirdScore || resultingFourthScore > resultingDealerScore) {
+        if(resultingFourthScore > resultingThirdScore || resultingFourthScore > resultingDealerScore
+            || (canBeEqual && (resultingFourthScore === resultingThirdScore || resultingFourthScore === resultingDealerScore))) {
             return NON_DEALER_TSUMO_SCORES[i];
         }
     }
 }
 
-function findMinimumRonValue(target, maxFu) {
+function findMinimumRonValue(target, maxFu, canBeEqual) {
     for(let i = 0; i < NON_DEALER_RON_SCORES.length; i++) {
-        if(NON_DEALER_RON_SCORES[i].value > target && NON_DEALER_RON_SCORES[i].fu <= maxFu) {
+        if(NON_DEALER_TSUMO_SCORES[i].fu <= maxFu) continue;
+
+        if(NON_DEALER_RON_SCORES[i].value > target
+            || (NON_DEALER_TSUMO_SCORES[i].value === target && canBeEqual)) {
             return NON_DEALER_RON_SCORES[i];
         }
     }
