@@ -5,6 +5,7 @@ import Tile from './Tile';
 class Hand extends React.Component {
     render() {
         const tiles = [];
+        let index = 0;
 
         let hand = this.props.tiles;
 
@@ -24,6 +25,7 @@ class Hand extends React.Component {
                 for (let j = 0; j < hand[i - 5]; j++) {
                     tiles.push((
                         <Tile className="handTile"
+                            key={index++}
                             tile={i - 5}
                             displayTile={hasLastDraw && this.props.blind ? 30 : i - 5}
                             onClick={this.props.onTileClick}
@@ -38,6 +40,7 @@ class Hand extends React.Component {
             for (let j = 0; j < hand[i]; j++) {
                 tiles.push((
                     <Tile className="handTile"
+                        key={index++}
                         tile={i}
                         displayTile={hasLastDraw && this.props.blind ? 30 : i}
                         onClick={this.props.onTileClick}
@@ -51,6 +54,7 @@ class Hand extends React.Component {
             hand[lastDraw]++;
             tiles.push((
                 <Tile className="handTile"
+                    key={index++}
                     tile={lastDraw}
                     displayTile={lastDraw}
                     onClick={this.props.onTileClick}

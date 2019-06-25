@@ -14,7 +14,7 @@ import { CalculateMinimumShanten, CalculateStandardShanten } from "../scripts/Sh
 import { convertRedFives } from "../scripts/TileConversions";
 import { convertHandToTenhouString, convertHandToTileArray } from "../scripts/HandConversions";
 import { evaluateBestDiscard } from "../scripts/Evaluations";
-import { shuffleArray, removeRandomItem, getRandomItem } from '../scripts/Utils';
+import { shuffleArray, removeRandomItem } from '../scripts/Utils';
 import SortedHand from '../components/SortedHand';
 import Player from '../models/Player';
 import { PLAYER_NAMES } from '../Constants';
@@ -30,7 +30,6 @@ class Quiz extends React.Component {
             lastDraw: -1,
             remainingTiles: null,
             tilePool: null,
-            discardPool: [],
             players: [],
             discardCount: 0,
             optimalCount: 0,
@@ -69,11 +68,11 @@ class Quiz extends React.Component {
                     }
                 }, () => this.onNewHand());
             } else {
-                this.onNewHand();
+                this.setState({}, () => this.onNewHand());
             }
         }
         else {
-            this.onNewHand();
+            this.setState({}, () => this.onNewHand());
         }
     }
 
@@ -85,18 +84,18 @@ class Quiz extends React.Component {
 
     discardHand() {
         let hand = this.state.hand;
-        let discards = this.state.discardPool;
+        let players = this.state.players.slice();
 
         for (let i = 0; i < hand.length; i++) {
             if (hand[i] === 0) continue;
 
             for (let j = 0; j < hand[i]; j++) {
-                discards.push({ tile: i, player: false });
+                players[0].discards.push(i);
             }
         }
 
         this.setState({
-            discardPool: discards
+            players: players
         });
     }
 
@@ -114,7 +113,7 @@ class Quiz extends React.Component {
         return possibilities[Math.floor(Math.random() * possibilities.length)];
     }
 
-    getNewHandState(hand, availableTiles, tilePool, history, discards, dora) {
+    getNewHandState(hand, availableTiles, tilePool, history, dora) {
         history.unshift({ message: "Started a new hand: " + convertHandToTenhouString(hand) });
 
         let players = [];
@@ -135,7 +134,6 @@ class Quiz extends React.Component {
             remainingTiles: availableTiles,
             tilePool: tilePool,
             players: players,
-            discardPool: discards,
             discardCount: 0,
             optimalCount: 0,
             achievedTotal: 0,
@@ -165,10 +163,10 @@ class Quiz extends React.Component {
 
         if (!this.state.settings.reshuffle && this.state.hand) {
             this.discardHand();
-            let remainingTiles = this.state.remainingTiles;
+            let remainingTiles = this.state.remainingTiles.slice();
 
             if (this.state.tilePool.length > 0) {
-                dora = getRandomItem(this.state.tilePool);
+                dora = removeRandomItem(this.state.tilePool);
                 remainingTiles[dora]--;
             }
 
@@ -185,7 +183,7 @@ class Quiz extends React.Component {
                 history.push({ message: "There aren't enough tiles left in the wall to make a new hand. Shuffling." });
             }
             else {
-                this.setState(this.getNewHandState(hand, availableTiles, tilePool, history, this.state.discardPool, dora));
+                this.setState(this.getNewHandState(hand, availableTiles, tilePool, history, dora));
                 return;
             }
         }
@@ -208,10 +206,10 @@ class Quiz extends React.Component {
 
         if (tilePool.length > 0) {
             dora = removeRandomItem(tilePool);
-            remainingTiles[dora]--;
+            availableTiles[dora]--;
         }
 
-        this.setState(this.getNewHandState(hand, availableTiles, tilePool, history, [], dora));
+        this.setState(this.getNewHandState(hand, availableTiles, tilePool, history, dora));
     }
 
     resetRemainingTiles() {
@@ -270,7 +268,7 @@ class Quiz extends React.Component {
         let chosenTile = parseInt(event.target.name);
         let hand = this.state.hand.slice();
 
-        let remainingTiles = this.state.remainingTiles;
+        let remainingTiles = this.state.remainingTiles.slice();
 
         let shantenFunction = this.state.settings.exceptions ? CalculateMinimumShanten : CalculateStandardShanten;
         let ukeire = CalculateDiscardUkeire(hand, remainingTiles, shantenFunction);
@@ -284,8 +282,6 @@ class Quiz extends React.Component {
         let handUkeire = CalculateUkeireFromOnlyHand(hand, this.resetRemainingTiles(), shantenFunction);
         let bestTile = evaluateBestDiscard(ukeire, this.state.dora + 1);
 
-        let discardPool = this.state.discardPool.slice();
-        discardPool.push({ tile: chosenTile, player: this.state.settings.simulate });
         let players = this.state.players.slice();
         players[0].discards.push(chosenTile);
 
@@ -318,7 +314,6 @@ class Quiz extends React.Component {
                     if (tilePool.length === 0) continue;
 
                     let simulatedDiscard = removeRandomItem(tilePool);
-                    discardPool.push({ tile: simulatedDiscard, player: false });
                     players[i].discards.push(simulatedDiscard);
                     remainingTiles[simulatedDiscard]--;
                 }
@@ -354,7 +349,6 @@ class Quiz extends React.Component {
             hand: hand,
             tilePool: tilePool,
             remainingTiles: remainingTiles,
-            discardPool: discardPool,
             players: players,
             discardCount: this.state.discardCount + 1,
             optimalCount: this.state.optimalCount + (chosenUkeire.value === bestUkeire ? 1 : 0),
@@ -424,11 +418,11 @@ class Quiz extends React.Component {
 
         let dora = 1;
         if (tilePool.length > 0) {
-            dora = tilePool.splice(Math.floor(Math.random() * tilePool.length), 1);
-            remainingTiles[dora]--;
+            dora = removeRandomItem(tilePool);
+            availableTiles[dora]--;
         }
 
-        this.setState(this.getNewHandState(hand, availableTiles, tilePool, [], [], dora));
+        this.setState(this.getNewHandState(hand, availableTiles, tilePool, [], dora));
     }
 
     logToHistory(text) {
@@ -446,6 +440,9 @@ class Quiz extends React.Component {
             <Container>
                 <Settings onChange={this.onSettingsChanged} />
                 <StatsDisplay values={this.state.stats} onReset={() => this.resetStats()} />
+                <Row>
+                    {this.state.discardCount ? "" : <span>Disclaimer: This trainer will train your ability to maximize your hand's efficiency in the current turn. It won't help you maximize efficiency in future turns, or to learn when it's proper to ignore efficiency, or how to build value. Playing the way this trainer suggests in every hand is not the optimal way to play mahjong, but the are hands where you want to play this way. High level players don't always play like this, but all high level players CAN play like this. Make sure to supplement this training with further reading to learn when it might not be the best line of play, and check the settings for more targeted training.</span>}
+                </Row>
                 <ValueTileDisplay roundWind={this.state.roundWind} seatWind={this.state.seatWind} dora={this.state.dora} />
                 <Row className="mb-2 mt-2">
                     <span>Click the tile you want to discard.</span>
@@ -469,7 +466,7 @@ class Quiz extends React.Component {
                 </Row>
                 <Row className="mt-2 no-gutters">
                     <History history={this.state.history} concise={this.state.settings.extraConcise} verbose={this.state.settings.verbose} spoilers={this.state.settings.spoilers}/>
-                    <DiscardPool players={this.state.players} discardPool={this.state.discardPool} discardCount={this.state.discardCount} wallCount={this.state.tilePool && this.state.tilePool.length} />
+                    <DiscardPool players={this.state.players} discardCount={this.state.discardCount} wallCount={this.state.tilePool && this.state.tilePool.length} />
                 </Row>
                 <Row className="mt-4">
                     <Col xs="12"><span>Credits</span></Col>
