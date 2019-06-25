@@ -58,7 +58,6 @@ class SouthFourQuiz extends React.Component {
 
         // Give the lowest score a random non-dealer wind, then give the rest of the winds to the others
         players.sort((a, b) => a.points - b.points);
-
         let wind = randomInt(SEAT_NAMES.length, 1);
 
         for( let i = 0; i < players.length; i++)
@@ -69,19 +68,27 @@ class SouthFourQuiz extends React.Component {
 
         this.setState({
             players: players,
-            messages: Array(4).fill(""),
+            messages: Array(6).fill(""),
         });
     }
 
-    onSubmit(han, fu, tsumo, ronTarget, index) {
+    onSubmit(han, fu, tsumo, ronTarget, index, riichis) {
         let players = this.state.players;
         let scores = players.map((player) => player.points);
+
+        for(let i = 1; i < riichis.length; i++) {
+            scores[i] -= riichis[i] * 1000;
+            scores[0] += riichis[i] * 1000;
+        }
+
         let distanceFromThird = scores[1] - scores[0];
         let required;
         let feedback = "Wrong! That score doesn't get you out of fourth! Highlight for the answer: ";
+        let canBeEqual = (players[0].seat + 1) % 4 < (players[1].seat + 1) % 4;
 
         if(tsumo) {
-            required = findMinimumTsumoValue(scores[0], scores[1], players.find((player) => player.seat === 0).points);
+            console.log("tsumo");
+            required = findMinimumTsumoValue(scores[0], scores[1], players.find((player) => player.seat === 0).points, this.state.maxFu, canBeEqual);
 
             let points = getPoints(han, fu);
             scores[0] += points[0] * 2 + points[1];
@@ -98,9 +105,9 @@ class SouthFourQuiz extends React.Component {
             let distanceFromTarget = scores[ronTarget] - scores[0];
 
             if(distanceFromTarget / 2 < distanceFromThird) {
-                required = findMinimumRonValue(distanceFromTarget / 2, this.state.maxFu);
+                required = findMinimumRonValue(distanceFromTarget / 2, this.state.maxFu, canBeEqual);
             } else {
-                required = findMinimumRonValue(distanceFromThird, this.state.maxFu);
+                required = findMinimumRonValue(distanceFromThird, this.state.maxFu, canBeEqual);
             }
 
             let points = getPoints(han, fu, false, false);
@@ -182,23 +189,33 @@ class SouthFourQuiz extends React.Component {
                 </ListGroupItem>
                 <ListGroupItem>
                     <Row className="mb-2">What is the minimum tsumo score you need in order to escape fourth?</Row>
-                    <ScoreInput onScoreSubmit={this.onSubmit} tsumo={true} ronTarget={0} index={0}/>
+                    <ScoreInput onScoreSubmit={this.onSubmit} tsumo={true} ronTarget={0} index={0} riichis={[0, 0, 0, 0]}/>
                     {this.state.messages[0]}
                 </ListGroupItem>
                 <ListGroupItem>
                     <Row className="mb-2">What is the minimum ron score you need to hit third with in order to escape fourth?</Row>
-                    <ScoreInput onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={1} index={1}/>
+                    <ScoreInput onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={1} index={1} riichis={[0, 0, 0, 0]}/>
                     {this.state.messages[1]}
                 </ListGroupItem>
                 <ListGroupItem>
                     <Row className="mb-2">What is the minimum ron score you need to hit second with in order to escape fourth?</Row>
-                    <ScoreInput onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={2} index={2}/>
+                    <ScoreInput onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={2} index={2} riichis={[0, 0, 0, 0]}/>
                     {this.state.messages[2]}
                 </ListGroupItem>
                 <ListGroupItem>
                     <Row className="mb-2">What is the minimum ron score you need to hit first with in order to escape fourth?</Row>
-                    <ScoreInput onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={3} index={3}/>
+                    <ScoreInput onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={3} index={3} riichis={[0, 0, 0, 0]}/>
                     {this.state.messages[3]}
+                </ListGroupItem>
+                <ListGroupItem>
+                    <Row className="mb-2">If first place declares riichi, what is the minimum tsumo score you need in order to escape fourth?</Row>
+                    <ScoreInput onScoreSubmit={this.onSubmit} tsumo={true} ronTarget={0} index={4} riichis={[0, 0, 0, 1]}/>
+                    {this.state.messages[4]}
+                </ListGroupItem>
+                <ListGroupItem>
+                    <Row className="mb-2">If third place declares riichi, what is the minimum tsumo score you need in order to escape fourth?</Row>
+                    <ScoreInput onScoreSubmit={this.onSubmit} tsumo={true} ronTarget={0} index={5} riichis={[0, 1, 0, 0]}/>
+                    {this.state.messages[5]}
                 </ListGroupItem>
                 </ListGroup>
             </Container>
@@ -214,22 +231,26 @@ function findMinimumTsumoValue(fourthScore, thirdScore, dealerScore, maxFu, canB
         let resultingThirdScore = thirdScore - NON_DEALER_TSUMO_SCORES[i].nondealer;
         let resultingDealerScore = dealerScore - NON_DEALER_TSUMO_SCORES[i].dealer;
 
-        if(resultingFourthScore > resultingThirdScore || resultingFourthScore > resultingDealerScore
-            || (canBeEqual && (resultingFourthScore === resultingThirdScore || resultingFourthScore === resultingDealerScore))) {
+        if(resultingFourthScore > resultingThirdScore || resultingFourthScore >= resultingDealerScore
+            || (canBeEqual && resultingFourthScore === resultingThirdScore)) {
             return NON_DEALER_TSUMO_SCORES[i];
         }
     }
+
+    return NON_DEALER_TSUMO_SCORES[0];
 }
 
 function findMinimumRonValue(target, maxFu, canBeEqual) {
     for(let i = 0; i < NON_DEALER_RON_SCORES.length; i++) {
-        if(NON_DEALER_TSUMO_SCORES[i].fu <= maxFu) continue;
+        if(NON_DEALER_RON_SCORES[i].fu > maxFu) continue;
 
         if(NON_DEALER_RON_SCORES[i].value > target
-            || (NON_DEALER_TSUMO_SCORES[i].value === target && canBeEqual)) {
+            || (NON_DEALER_RON_SCORES[i].value === target && canBeEqual)) {
             return NON_DEALER_RON_SCORES[i];
         }
     }
+
+    return NON_DEALER_RON_SCORES[0];
 }
 
 export default SouthFourQuiz;

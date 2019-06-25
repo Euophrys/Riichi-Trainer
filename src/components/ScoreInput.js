@@ -53,7 +53,7 @@ class ScoreInput extends React.Component {
     }
 
     onScoreSubmit() {
-        this.props.onScoreSubmit(this.state.han, this.state.fu, this.props.tsumo, this.props.ronTarget, this.props.index);
+        this.props.onScoreSubmit(this.state.han, this.state.fu, this.props.tsumo, this.props.ronTarget, this.props.index, this.props.riichis);
     }
 
     onNumberChanged(event) {
@@ -68,13 +68,13 @@ class ScoreInput extends React.Component {
     render() {
         return (
             <Row>
-                <Col xs="2">
+                <Col xs="4" sm="3">
                     <InputGroup>
                         <InputGroupAddon addonType="prepend">Han</InputGroupAddon>
                         <Input type="number" placeholder="Han" step="1" min="1" max="13" onBlur={this.onHanChanged} onChange={(this.onNumberChanged)} />
                     </InputGroup>
                 </Col>
-                <Col xs="2">
+                <Col xs="4" sm="3">
                     <InputGroup>
                         <InputGroupAddon addonType="prepend">Fu</InputGroupAddon>
                         <Input type="number" placeholder="Fu" step="5" min="20" max="130" onBlur={this.onFuChanged} onChange={this.onNumberChanged} />
