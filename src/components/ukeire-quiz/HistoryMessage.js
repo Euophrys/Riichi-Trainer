@@ -15,7 +15,6 @@ class HistoryMessage extends React.Component {
             drawnTile,
             message
         },
-        key,
         verbose,
         concise,
         spoilers
@@ -43,7 +42,7 @@ class HistoryMessage extends React.Component {
             }
 
             return (
-                <ListGroupItem key={this.props.key} className={className}>{this.props.data.message}</ListGroupItem>
+                <ListGroupItem className={className}>{this.props.data.message}</ListGroupItem>
             )
         }
 
@@ -58,7 +57,7 @@ class HistoryMessage extends React.Component {
         let tenhouLink = "http://tenhou.net/2/?q=" + this.props.data.hand;
 
         return (
-            <ListGroupItem key={this.props.key} className={this.getClassName()}>
+            <ListGroupItem className={this.getClassName()}>
                 <Collapse isOpen={!this.state.collapsed}>
                     {message}
                     <a className="tenhouLink" href={tenhouLink} target="_blank" rel="noopener noreferrer">
