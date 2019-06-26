@@ -1,4 +1,4 @@
-import { ALL_TILES_REMAINING } from '../Constants';
+import { ALL_TILES_REMAINING, ROUND_NAMES } from '../Constants';
 import { convertTenhouHandToHand, convertHandToTenhouString } from './HandConversions';
 import { convertTenhouTilesToIndex, getTileAsText, convertTilesToAsciiSymbols } from './TileConversions';
 import { CalculateDiscardUkeire, CalculateUkeireFromOnlyHand, CalculateUkeire } from './UkeireCalculator';
@@ -33,12 +33,6 @@ function parseName(replayText, player) {
     return "Unknown";
 }
 
-const roundNames = [
-    "East 1", "East 2", "East 3", "East 4",
-    "South 1", "South 2", "South 3", "South 4",
-    "West 1", "West 2", "West 3", "West 4"
-]
-
 export function parseRoundNames(roundTexts) {
     let regex = /seed="(\d+?),(\d+?),/;
 
@@ -49,7 +43,7 @@ export function parseRoundNames(roundTexts) {
             return "Send me this replay, something broke."
         }
 
-        let roundName = roundNames[parseInt(match[1])];
+        let roundName = ROUND_NAMES[parseInt(match[1])];
         let repeats = parseInt(match[2]);
         
         if(repeats > 0) {
