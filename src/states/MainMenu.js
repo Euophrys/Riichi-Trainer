@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Row, Button } from 'reactstrap';
+import { Container, Row, Button, Col } from 'reactstrap';
 import UkeireQuiz from "./UkeireQuiz";
 import ReplayAnalysis from "./ReplayAnalysis";
 import UtilsState from "./UtilsState";
@@ -39,7 +39,7 @@ class MainMenu extends React.Component {
         });
     }
 
-    onSouthFourClicked() {
+    onAllLastClicked() {
         this.setState({
             active: 4
         });
@@ -68,12 +68,19 @@ class MainMenu extends React.Component {
                     <Row>
                         <Button color="success" xs="4" disabled={this.state.active === 0} onClick={()=>this.onTrainerClicked()}>Trainer</Button>
                         <Button color="warning" xs="4" disabled={this.state.active === 1} onClick={()=>this.onAnalyzerClicked()}>Analyzer [BETA]</Button>
-                        <Button xs="4" disabled={this.state.active === 4} onClick={()=>this.onSouthFourClicked()}>South Four Trainer</Button>
+                        <Button xs="4" disabled={this.state.active === 4} onClick={()=>this.onAllLastClicked()}>All Last Trainer</Button>
                         <Button xs="4" disabled={this.state.active === 3} onClick={()=>this.onExplorerClicked()}>Explorer</Button>
                         <Button xs="4" disabled={this.state.active === 2} onClick={()=>this.onUtilsClicked()}>Misc. Utils</Button>
                     </Row>
                 </Container>
                 {page}
+                <Container className="mt-4">
+                    <Row className="mt-4">
+                        <Col xs="12"><span>Credits</span></Col>
+                        <Col xs="12"><span>Tile images combined from <a href="https://github.com/FluffyStuff/riichi-mahjong-tiles">riichi-mahjong-tiles by FluffyStuff on Github</a>, licensed under the <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License.</a></span></Col>
+                        <Col xs="12"><span>Shanten calculation algorithm adapted from <a href="http://cmj3.web.fc2.com/#syanten">this C program collection.</a></span></Col>
+                    </Row>
+                </Container>
             </React.Fragment>
         );
     }
