@@ -40,4 +40,8 @@ export const NON_DEALER_TSUMO_SCORES = [
     {han: 2, fu: 90, nondealer: 1500, dealer: 2900}, {han: 4, fu: 25, nondealer: 1600, dealer: 3200}, {han: 2, fu: 110, nondealer: 1800, dealer: 3600},
     {han: 4, fu: 30, nondealer: 2000, dealer: 3900}, {han: 5, fu: 20, nondealer: 2000, dealer: 4000}, {han: 6, fu: 20, nondealer: 3000, dealer: 6000},
     {han: 8, fu: 20, nondealer: 4000, dealer: 8000}, {han: 11, fu: 20, nondealer: 6000, dealer: 12000}, {han: 13, fu: 20, nondealer: 8000, dealer: 16000}
-]
+];
+
+export const PLACEMENTS = [
+    "fourth", "third", "second", "first"
+];

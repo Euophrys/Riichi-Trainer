@@ -53,7 +53,7 @@ class ScoreInput extends React.Component {
     }
 
     onScoreSubmit() {
-        this.props.onScoreSubmit(this.state.han, this.state.fu, this.props.tsumo, this.props.ronTarget, this.props.index, this.props.riichis);
+        this.props.onScoreSubmit(this.state.han, this.state.fu, this.props.tsumo, this.props.ronTarget, this.props.placementTarget, this.props.index, this.props.riichis);
     }
 
     onNumberChanged(event) {

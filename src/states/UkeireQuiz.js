@@ -468,11 +468,6 @@ class Quiz extends React.Component {
                     <History history={this.state.history} concise={this.state.settings.extraConcise} verbose={this.state.settings.verbose} spoilers={this.state.settings.spoilers}/>
                     <DiscardPool players={this.state.players} discardCount={this.state.discardCount} wallCount={this.state.tilePool && this.state.tilePool.length} />
                 </Row>
-                <Row className="mt-4">
-                    <Col xs="12"><span>Credits</span></Col>
-                    <Col xs="12"><span>Tile images combined from <a href="https://github.com/FluffyStuff/riichi-mahjong-tiles">riichi-mahjong-tiles by FluffyStuff on Github</a>, licensed under the <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License.</a></span></Col>
-                    <Col xs="12"><span>Shanten calculation algorithm adapted from <a href="http://cmj3.web.fc2.com/#syanten">this C program collection.</a></span></Col>
-                </Row>
             </Container>
         );
     }

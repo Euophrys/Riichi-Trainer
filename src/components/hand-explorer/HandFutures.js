@@ -3,6 +3,7 @@ import { Row, ListGroup, ListGroupItem } from 'reactstrap';
 import ResultingHandInfo from './ResultingHandInfo';
 import { CalculateUkeire, CalculateUkeireUpgrades, CalculateDiscardUkeire } from '../../scripts/UkeireCalculator';
 import { CalculateStandardShanten } from '../../scripts/ShantenCalculator';
+import { ALL_TILES_REMAINING } from '../../Constants';
 
 class HandFutures extends React.Component {
     render() {
@@ -10,13 +11,7 @@ class HandFutures extends React.Component {
 
         let tiles = [];
         let hand = this.props.hand.slice();
-
-        let remainingTiles = [
-            0,4,4,4,4,4,4,4,4,4,
-            0,4,4,4,4,4,4,4,4,4,
-            0,4,4,4,4,4,4,4,4,4,
-            0,4,4,4,4,4,4,4
-        ];
+        let remainingTiles = ALL_TILES_REMAINING.slice();
 
         for (let i = 0; i < remainingTiles.length; i++) {
             remainingTiles[i] = Math.max(0, remainingTiles[i] - hand[i]);
@@ -31,9 +26,8 @@ class HandFutures extends React.Component {
         let baseUkeire = Math.max(...CalculateDiscardUkeire(hand, remainingTiles, CalculateStandardShanten).map(u => u.value));
 
         let infoObjects = tiles.map((tile) => {
-            hand[tile]--;
             let newHand = hand.slice();
-            hand[tile]++;
+            newHand[tile]--;
 
             return {
                 hand: newHand,
