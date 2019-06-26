@@ -139,7 +139,7 @@ class SouthFourQuiz extends React.Component {
                 feedback = `That score gets you to ${PLACEMENTS[placementTarget]}, but it's not the lowest possible. Highlight for the answer: `;
             }
         } else {
-            required = _findMinimumRonValue(scores, ronTarget, placementTarget, this.state.maxFu, canBeEqual);
+            required = findMinimumRonValue(scores, ronTarget, placementTarget, this.state.maxFu, canBeEqual);
 
             let points = getPoints(han, fu, false, false);
             scores[0] += points;
@@ -288,20 +288,7 @@ function findMinimumTsumoValue(players, scores, placementTarget, maxFu, canBeEqu
     return NON_DEALER_TSUMO_SCORES[0];
 }
 
-function findMinimumRonValue(target, maxFu, canBeEqual) {
-    for(let i = 0; i < NON_DEALER_RON_SCORES.length; i++) {
-        if(NON_DEALER_RON_SCORES[i].fu > maxFu) continue;
-
-        if(NON_DEALER_RON_SCORES[i].value > target
-            || (NON_DEALER_RON_SCORES[i].value === target && canBeEqual)) {
-            return NON_DEALER_RON_SCORES[i];
-        }
-    }
-
-    return NON_DEALER_RON_SCORES[0];
-}
-
-function _findMinimumRonValue(scores, ronTarget, placementTarget, maxFu, canBeEqual) {
+function findMinimumRonValue(scores, ronTarget, placementTarget, maxFu, canBeEqual) {
     for(let i = 0; i < NON_DEALER_RON_SCORES.length; i++) {
         if(NON_DEALER_RON_SCORES[i].fu > maxFu) continue;
 
