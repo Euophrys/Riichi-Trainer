@@ -4,6 +4,7 @@ import { convertTenhouTilesToIndex, getTileAsText, convertTilesToAsciiSymbols } 
 import { CalculateDiscardUkeire, CalculateUkeireFromOnlyHand, CalculateUkeire } from './UkeireCalculator';
 import CalculateMinimumShanten from './ShantenCalculator';
 import { evaluateBestDiscard, evaluateSafestDiscards } from './Evaluations';
+import { getShantenOffset } from './Utils';
 
 export function parseRounds(replayText) {
     let games = replayText.split("<INIT ");
@@ -92,6 +93,13 @@ export function parseRound(roundText, player) {
         if(match) {
             let actionInfo = parseActionType(match[1]);
 
+            if(!actionInfo) {
+                console.log('what');
+                console.log(roundText);
+                console.log(match);
+                continue;
+            }
+
             if(actionInfo.call) {
                 let who = parseInt(whoRegex.exec(match[2])[1]);
                 let calledTiles = getTilesFromCall(match[2]);
@@ -154,10 +162,15 @@ export function parseRound(roundText, player) {
                 continue;
             }
 
-
             if(actionInfo.end) {
                 let who = whoRegex.exec(match[2]);
                 messages.push(`Player ${who[1]} won the round.`);
+                break;
+            }
+
+            if(actionInfo.disconnect) {
+                let who = whoRegex.exec(match[2]);
+                messages.push(`Player ${who[1]} disconnected.`);
                 break;
             }
 
@@ -271,19 +284,20 @@ function analyzeSafestDiscard(playerHand, chosenTile, players, remainingTiles) {
 
 function analyzeDiscard(player, chosenTile, remainingTiles) {
     let hand = player.hand.slice();
-    let ukeire = CalculateDiscardUkeire(hand, remainingTiles, CalculateMinimumShanten);
-    let bestUkeire = Math.max(...ukeire.map(o => o.value));
-    hand[chosenTile]--;
+    
+    let paddedHand = hand.slice();
+    for(let i = 0; i < getShantenOffset(hand); i += 2) {
+        paddedHand[31] += 3;
+    }
 
-    let combinedHand = hand.slice();
-    for(let i = 0; i < player.calledTiles.length; i++) {
-        combinedHand[player.calledTiles[i]]++;
-    }    
+    let ukeire = CalculateDiscardUkeire(paddedHand, remainingTiles, CalculateMinimumShanten);
+    let bestUkeire = Math.max(...ukeire.map(o => o.value));
+    paddedHand[chosenTile]--;
 
     let chosenUkeire = ukeire[chosenTile];
 
-    let shanten = CalculateMinimumShanten(combinedHand);
-    let handUkeire = CalculateUkeireFromOnlyHand(combinedHand, ALL_TILES_REMAINING.slice(), CalculateMinimumShanten).value;
+    let shanten = CalculateMinimumShanten(paddedHand);
+    let handUkeire = CalculateUkeireFromOnlyHand(paddedHand, ALL_TILES_REMAINING.slice(), CalculateMinimumShanten).value;
     let bestTile = evaluateBestDiscard(ukeire);
     let result = `Discard: ${getTileAsText(chosenTile, true)}, `;
 
@@ -351,6 +365,9 @@ function parseActionType(letter) {
     }
     if(letter === 'R') {
         return {riichi: true};
+    }
+    if(letter === 'B') {
+        return {disconnect: true};
     }
 }
 
