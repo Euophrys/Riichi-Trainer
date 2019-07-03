@@ -48,7 +48,8 @@ class Quiz extends React.Component {
             roundWind: 31,
             seatWind: 31,
             dora: 1,
-            shuffle: []
+            shuffle: [],
+            disclaimerSeen: false,
         }
     }
 
@@ -358,7 +359,8 @@ class Quiz extends React.Component {
             history: history,
             isComplete: isComplete,
             lastDraw: drawnTile,
-            shuffle: shuffle
+            shuffle: shuffle,
+            disclaimerSeen: true,
         }, isComplete ? () => this.saveStats() : undefined);
     }
 
@@ -441,7 +443,7 @@ class Quiz extends React.Component {
                 <Settings onChange={this.onSettingsChanged} />
                 <StatsDisplay values={this.state.stats} onReset={() => this.resetStats()} />
                 <Row>
-                    {this.state.discardCount ? "" : <span>Disclaimer: This trainer will train your ability to maximize your hand's efficiency in the current turn. It won't help you maximize efficiency in future turns, or to learn when it's proper to ignore efficiency, or how to build value. Playing the way this trainer suggests in every hand is not the optimal way to play mahjong, but the are hands where you want to play this way. High level players don't always play like this, but all high level players CAN play like this. Make sure to supplement this training with further reading to learn when it might not be the best line of play, and check the settings for more targeted training.</span>}
+                    {this.state.disclaimerSeen ? "" : <span>Disclaimer: This trainer will train your ability to maximize your hand's efficiency in the current turn. It won't help you maximize efficiency in future turns, or to learn when it's proper to ignore efficiency, or how to build value. Playing the way this trainer suggests in every hand is not the optimal way to play mahjong, but the are hands where you want to play this way. High level players don't always play like this, but all high level players CAN play like this. Make sure to supplement this training with further reading to learn when it might not be the best line of play, and check the settings for more targeted training.</span>}
                 </Row>
                 <ValueTileDisplay roundWind={this.state.roundWind} seatWind={this.state.seatWind} dora={this.state.dora} />
                 <Row className="mb-2 mt-2">
