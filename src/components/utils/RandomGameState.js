@@ -118,9 +118,9 @@ class RandomGameState extends React.Component {
             return <Row>Please wait...</Row>;
         }
 
-        let playerItems = this.state.players.map((player) => {
+        let playerItems = this.state.players.map((player, index) => {
             return (
-                <ListGroupItem>
+                <ListGroupItem key={index + 1}>
                     <Row>{SEAT_NAMES[player.seat]} Player {player.seat === this.state.userSeat ? "(YOU)" : ""}</Row>
                     <Row>Points: {player.points}</Row>
                     <Row>Discards: {convertTilesToAsciiSymbols(player.discards)} ({convertIndexesToTenhouTiles(player.discards)})</Row>
@@ -132,7 +132,7 @@ class RandomGameState extends React.Component {
             <Container>
                 <Button xs="12" color="primary" className="btn-block" onClick={()=>this.generateState()}>Generate New State</Button>
                 <ListGroup>
-                    <ListGroupItem>
+                    <ListGroupItem key={0}>
                         <Row>It's turn {this.state.turn} in {ROUND_NAMES[this.state.round]}. You are the {SEAT_NAMES[this.state.userSeat]} player.</Row>
                         <Row>The dora indicator is the {getTileAsText(this.state.doraIndicator, true)}.</Row>
                     </ListGroupItem>
