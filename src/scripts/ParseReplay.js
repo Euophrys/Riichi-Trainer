@@ -1,8 +1,8 @@
 import { ALL_TILES_REMAINING, ROUND_NAMES } from '../Constants';
 import { convertTenhouHandToHand, convertHandToTenhouString } from './HandConversions';
-import { convertTenhouTilesToIndex, getTileAsText, convertTilesToAsciiSymbols } from './TileConversions';
+import { convertTenhouTilesToIndex, getTileAsText, convertTilesToAsciiSymbols, convertIndexesToTenhouTiles } from './TileConversions';
 import { CalculateDiscardUkeire, CalculateUkeireFromOnlyHand } from './UkeireCalculator';
-import CalculateMinimumShanten from './ShantenCalculator';
+import CalculateMinimumShanten, { CalculateStandardShanten } from './ShantenCalculator';
 import { evaluateBestDiscard, evaluateSafestDiscards } from './Evaluations';
 import { getShantenOffset } from './Utils';
 
@@ -94,7 +94,7 @@ export function parseRound(roundText, player) {
             let actionInfo = parseActionType(match[1]);
 
             if(!actionInfo) {
-                messages.push("Hey, something went wrong. Please send me this replay. ");
+                messages.push("Hey, this replay has something I don't account for. Please send me this replay so I can add it.|");
                 console.log(roundText);
                 console.log(match);
                 continue;
@@ -104,24 +104,37 @@ export function parseRound(roundText, player) {
                 let who = parseInt(whoRegex.exec(match[2])[1]);
                 let calledTiles = getTilesFromCall(match[2]);
                 players[who].calledTiles = players[who].calledTiles.concat(calledTiles);
+                let baseShanten = 0;
                 
                 if(who !== player) {
                     for(let i = 1; i < calledTiles.length; i++) {
                         remainingTiles[calledTiles[i]]--;
                     }
                 } else {
-                    messages.push("You made a call, which might make the ukeire numbers weird. I'll work on fixing it later. ");
+                    baseShanten = CalculateStandardShanten(players[player].hand);
                 }
 
                 if(calledTiles.length === 1) {
+                    // kita
                     players[who].hand[calledTiles[0]]--;
                 } else if(calledTiles.length === 4) {
+                    // kan
                     players[who].hand[calledTiles[0]] = 0;
                 } else {
+                    // pon / chi
                     for(let i = 1; i < calledTiles.length; i++) {
                         players[who].hand[calledTiles[i]]--;
                     }
                 }
+
+                if(who === player) {
+                    messages.push(`You called the ${getTileAsText(calledTiles[0])} to complete ${convertIndexesToTenhouTiles(calledTiles)}. (${convertHandToTenhouString(players[who].hand)})|`);
+                    let newShanten = CalculateStandardShanten(padHand(players[player].hand));
+                    if(newShanten >= baseShanten) {
+                        messages.push("That call didn't bring you closer to ready.|")
+                    }
+                }
+
                 continue;
             }
 
@@ -133,7 +146,9 @@ export function parseRound(roundText, player) {
                     break;
                 }
 
-                if(parseInt(who[1]) === player) {
+                who = parseInt(who[1]);
+
+                if(who === player) {
                     if(players[player].riichiTile > -1) {
                         messages.push("You declared riichi. Ending analysis.");
                         break;
@@ -141,12 +156,12 @@ export function parseRound(roundText, player) {
                     continue;
                 }
 
-                if(players[parseInt(who[1])].riichiTile > -1) continue;
+                if(players[who].riichiTile > -1) continue;
 
                 let paddedHand = padHand(players[player].hand.slice());
                 let shanten = CalculateMinimumShanten(paddedHand);
 
-                let message = `Player ${who[1]} declared riichi. `;
+                let message = `Player ${who} declared riichi. `;
 
                 if(shanten > 1) {
                     message += `You are still ${shanten} tiles from ready, so you should fold.`;
@@ -168,7 +183,6 @@ export function parseRound(roundText, player) {
             if(actionInfo.disconnect) {
                 let who = whoRegex.exec(match[2]);
                 messages.push(`Player ${who[1]} disconnected.`);
-                break;
             }
 
             if(actionInfo.discard) {
@@ -284,6 +298,8 @@ function padHand(hand) {
     for(let i = 0; i < getShantenOffset(hand); i += 2) {
         paddedHand[31] += 3;
     }
+
+    return paddedHand;
 }
 
 function analyzeDiscard(player, chosenTile, remainingTiles) {
