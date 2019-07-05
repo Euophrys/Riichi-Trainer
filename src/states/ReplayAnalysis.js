@@ -2,8 +2,10 @@ import React from 'react';
 import { 
     Container, Dropdown, DropdownItem, DropdownMenu, DropdownToggle,
     Row, ListGroup, ListGroupItem, Col, Input,
-    Card, CardBody } from 'reactstrap';
+    Card, CardBody, Button } from 'reactstrap';
 import { parseRounds, parseRound, parseRoundNames, parsePlayers } from '../scripts/ParseReplay';
+import Hand from '../components/Hand';
+import { convertIndexesToTenhouTiles, convertTilesToAsciiSymbols } from '../scripts/TileConversions';
 
 class ReplayAnalysis extends React.Component {
     constructor(props) {
@@ -15,9 +17,10 @@ class ReplayAnalysis extends React.Component {
             roundDropdownOpen: false,
             playerDropdownOpen: false,
             player: 0,
-            currentRound: 0,
-            messages: [],
-            URLfeedback: ""
+            currentRound: -1,
+            turns: [],
+            URLfeedback: "",
+            currentTurn: 0,
         }
 
         this.onURLChanged = this.onURLChanged.bind(this);
@@ -91,51 +94,87 @@ class ReplayAnalysis extends React.Component {
     }
 
     onRoundChoice(index) {
-        let messages = parseRound(this.state.rounds[index], this.state.player);
+        let turns = parseRound(this.state.rounds[index], this.state.player);
         this.setState({
-            messages: messages,
-            currentRound: index
+            turns: turns,
+            currentRound: index,
+            currentTurn: 0,
         });
     }
 
     onPlayerChoice(index) {
-        let messages = parseRound(this.state.rounds[this.state.currentRound], index);
+        let currentRound = Math.max(0, this.state.currentRound);
+        let turns = parseRound(this.state.rounds[currentRound], index);
         this.setState({
-            messages: messages,
-            player: index
+            turns: turns,
+            player: index,
+            currentTurn: 0,
+            currentRound: currentRound,
         });
     }
 
     parseRound() {
-        let messages = parseRound(this.state.rounds[this.state.currentRound], this.state.player);
+        let turns = parseRound(this.state.rounds[this.state.currentRound], this.state.player);
         this.setState({
-            messages: messages
+            turns: turns
         });
+    }
+
+    onNextTurn() {
+        if(this.state.currentTurn < this.state.turns.length - 1) {
+            this.setState({currentTurn: this.state.currentTurn + 1});
+        }
+    }
+
+    onPreviousTurn() {
+        if(this.state.currentTurn > 0) {
+            this.setState({currentTurn: this.state.currentTurn - 1});
+        }
+    }
+
+    onNextIssue() {
+        if(this.state.currentTurn >= this.state.turns.length - 1) return;
+        let currentTurn = this.state.currentTurn;
+
+        while(currentTurn < this.state.turns.length - 1) {
+            currentTurn++;
+
+            if(this.state.turns[currentTurn].className !== "bg-success text-white") {
+                break;
+            }
+        }
+        
+        this.setState({currentTurn: currentTurn});
     }
 
     render() {
         let roundItems;
         let playerItems;
+        let roundNames = parseRoundNames(this.state.rounds);
 
         if(this.state.rounds.length) {
-            let roundNames = parseRoundNames(this.state.rounds);
             roundItems = roundNames.map((roundName, index) => {
-                return <DropdownItem onClick={()=>this.onRoundChoice(index)}>{roundName}</DropdownItem>;
+                return <DropdownItem disabled={index === this.state.currentRound} onClick={()=>this.onRoundChoice(index)}>{roundName}</DropdownItem>;
             });
 
             let PLAYER_NAMES = parsePlayers(this.state.text);
             playerItems = PLAYER_NAMES.map((player, index) => {
-                return <DropdownItem onClick={()=>this.onPlayerChoice(index)}>{index}: {player.name}</DropdownItem>
+                return <DropdownItem disabled={index === this.state.player} onClick={()=>this.onPlayerChoice(index)}>{index}: {player.name}</DropdownItem>
             });
         }
 
-        let messages = <ListGroupItem/>;
+        let message = <ListGroupItem/>;
+        let currentTurn = this.state.turns[this.state.currentTurn];
 
-        if(this.state.messages.length) {
-            messages = this.state.messages.map((message) => {
-                let rows = message.split('|').map((row) => <Row>{row}</Row>)
-                return <ListGroupItem>{rows}</ListGroupItem>;
-            });
+        if(this.state.turns.length) {
+            message = <ListGroupItem className={currentTurn.className}>{currentTurn.message.split('|').map((row) => <Row>{row}</Row>)}</ListGroupItem>;
+        }
+
+        let calls = "";
+
+        for(let i = 0; currentTurn && i < currentTurn.calls.length; i++) {
+            if(calls) calls += ", ";
+            calls += `${convertTilesToAsciiSymbols(currentTurn.calls[i])} (${convertIndexesToTenhouTiles(currentTurn.calls[i])})`;
         }
 
         return (
@@ -148,7 +187,10 @@ class ReplayAnalysis extends React.Component {
                         Finally, click "Browse..." and upload the file you saved.<br/><br/>
                         Alternatively, if you have a mjlog file on your computer, you can rename it to end in .zip.<br/>
                         Then, upload the file contained within that zip.<br/>
-                        You can also just upload replay XML files directly if you have a program that fetches them for you.
+                        You can also just upload replay XML files directly if you have a program that fetches them for you.<br/>
+                        <br/>
+                        The disclaimer from the efficiency trainer applies here as well.<br/>
+                        For safety ratings, higher is better. 1 is the worst, and 15 is the best.
                     </CardBody></Card>
                 </Row>
                 <Row>
@@ -182,14 +224,32 @@ class ReplayAnalysis extends React.Component {
                         </Col>
                     </Row>
                 )}
-                { this.state.messages.length && (
-                    <Row>
-                        <Col xs="12">
-                            <ListGroup>
-                                {messages}
-                            </ListGroup>
-                        </Col>
-                    </Row>
+                { this.state.turns.length && (
+                    <React.Fragment>
+                        <br/>
+                        <Hand tiles={currentTurn.hand} lastDraw={currentTurn.draw}/>
+                        <br/>
+                        <Row>
+                            <Col xs="4">
+                                <Button color="primary" block={true} xs="6" disabled={this.state.currentTurn <= 0} onClick={() => this.onPreviousTurn()}>Previous Turn</Button>
+                            </Col>
+                            <Col xs="4">
+                                <Button color="primary" block={true} xs="6" disabled={this.state.currentTurn >= this.state.turns.length - 1} onClick={() => this.onNextTurn()}>Next Turn</Button>
+                            </Col>
+                            <Col xs="4">
+                                <Button color="primary" block={true} xs="6" disabled={this.state.currentTurn >= this.state.turns.length - 1} onClick={() => this.onNextIssue()}>Next Issue</Button>
+                            </Col>
+                        </Row>
+                        <br/>
+                        <ListGroup>
+                            <ListGroupItem>
+                                <Row>{roundNames[this.state.currentRound]}, Turn {this.state.currentTurn + 1}</Row>
+                                <Row>{currentTurn.discards.length ? `Tiles In Your Discards: ${convertTilesToAsciiSymbols(currentTurn.discards)} (${convertIndexesToTenhouTiles(currentTurn.discards)})` : ""}</Row>
+                                <Row>{calls.length > 0 ? `Your Calls: ${calls}` : ""}</Row>
+                            </ListGroupItem>
+                            {message}
+                        </ListGroup>
+                    </React.Fragment>
                 )}
             </Container>
         );

@@ -67,7 +67,7 @@ class MainMenu extends React.Component {
                 <Container className="mb-4">
                     <Row>
                         <Button color="success" xs="4" disabled={this.state.active === 0} onClick={()=>this.onTrainerClicked()}>Trainer</Button>
-                        <Button color="warning" xs="4" disabled={this.state.active === 1} onClick={()=>this.onAnalyzerClicked()}>Analyzer [BETA]</Button>
+                        <Button xs="4" disabled={this.state.active === 1} onClick={()=>this.onAnalyzerClicked()}>Analyzer</Button>
                         <Button xs="4" disabled={this.state.active === 4} onClick={()=>this.onAllLastClicked()}>All Last Trainer</Button>
                         <Button xs="4" disabled={this.state.active === 3} onClick={()=>this.onExplorerClicked()}>Explorer</Button>
                         <Button xs="4" disabled={this.state.active === 2} onClick={()=>this.onUtilsClicked()}>Misc. Utils</Button>
