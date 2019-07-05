@@ -5,6 +5,7 @@ import { CalculateDiscardUkeire, CalculateUkeireFromOnlyHand } from './UkeireCal
 import CalculateMinimumShanten, { CalculateStandardShanten } from './ShantenCalculator';
 import { evaluateBestDiscard, evaluateSafestDiscards } from './Evaluations';
 import { getShantenOffset } from './Utils';
+import ReplayTurn from '../models/ReplayTurn';
 
 export function parseRounds(replayText) {
     let games = replayText.split("<INIT ");
@@ -83,10 +84,14 @@ export function parseRound(roundText, player) {
 
     let regex = /<(\w{1})(.+?)\/>/g;
     let whoRegex = /who="(\d)"/;
-    let messages = [];
-    messages.push(`Your starting hand is ${convertHandToTenhouString(players[player].hand)}. It's ${CalculateMinimumShanten(players[player].hand)} tiles from ready.`);
+    let turns = [];
     let match;
 
+    let currentTurn = new ReplayTurn(
+        players[player].hand.slice(),
+        `Your starting hand is ${convertHandToTenhouString(players[player].hand)}. It's ${CalculateMinimumShanten(players[player].hand)} tiles from ready.|`
+    );
+    
     do {
         match = regex.exec(roundText);
         
@@ -94,16 +99,17 @@ export function parseRound(roundText, player) {
             let actionInfo = parseActionType(match[1]);
 
             if(!actionInfo) {
-                messages.push("Hey, this replay has something I don't account for. Please send me this replay so I can add it.|");
-                console.log(roundText);
-                console.log(match);
+                currentTurn.message += `Hey, this replay has something I don't account for. Please send me this replay so I can add it.|${roundText}|${match}`;
+                currentTurn.hand = turns[turns.length - 1].hand.slice();
+                turns.push(currentTurn);
+                currentTurn = new ReplayTurn();
                 continue;
             }
 
             if(actionInfo.call) {
                 let who = parseInt(whoRegex.exec(match[2])[1]);
                 let calledTiles = getTilesFromCall(match[2]);
-                players[who].calledTiles = players[who].calledTiles.concat(calledTiles);
+                players[who].calledTiles.push(calledTiles);
                 let baseShanten = 0;
                 
                 if(who !== player) {
@@ -128,10 +134,11 @@ export function parseRound(roundText, player) {
                 }
 
                 if(who === player) {
-                    messages.push(`You called the ${getTileAsText(calledTiles[0])} to complete ${convertIndexesToTenhouTiles(calledTiles)}. (${convertHandToTenhouString(players[who].hand)})|`);
+                    currentTurn.hand = players[player].hand.slice();
+                    currentTurn.message += `You called the ${getTileAsText(calledTiles[0])} to complete ${convertIndexesToTenhouTiles(calledTiles)}. (${convertHandToTenhouString(players[who].hand)})|`;
                     let newShanten = CalculateStandardShanten(padHand(players[player].hand));
                     if(newShanten >= baseShanten) {
-                        messages.push("That call didn't bring you closer to ready.|")
+                        currentTurn.message += "That call didn't bring you closer to ready.|";
                     }
                 }
 
@@ -142,7 +149,9 @@ export function parseRound(roundText, player) {
                 let who = whoRegex.exec(match[2]);
 
                 if(!who) {
-                    messages.push("Ryuukyoku.");
+                    currentTurn.hand = turns[turns.length - 1].hand.slice();
+                    currentTurn.message += "The round ended in a draw.";
+                    turns.push(currentTurn);
                     break;
                 }
 
@@ -150,7 +159,9 @@ export function parseRound(roundText, player) {
 
                 if(who === player) {
                     if(players[player].riichiTile > -1) {
-                        messages.push("You declared riichi. Ending analysis.");
+                        currentTurn.hand = turns[turns.length - 1].hand.slice();
+                        currentTurn.message += "You declared riichi. Ending analysis.";
+                        turns.push(currentTurn);
                         break;
                     }
                     continue;
@@ -164,25 +175,26 @@ export function parseRound(roundText, player) {
                 let message = `Player ${who} declared riichi. `;
 
                 if(shanten > 1) {
-                    message += `You are still ${shanten} tiles from ready, so you should fold.`;
+                    message += `You are still ${shanten} tiles from ready, so you should fold.|`;
                 } else if (shanten === 1) {
-                    message += `You are one tile from ready. You should consider folding.`;
+                    message += `You are one tile from ready. You should consider folding.|`;
                 }
 
-                messages.push(message);
-                players[parseInt(who[1])].riichiTile = -2;
+                currentTurn.message += message;
+                players[who].riichiTile = -2;
                 continue;
             }
 
             if(actionInfo.end) {
                 let who = whoRegex.exec(match[2]);
-                messages.push(`Player ${who[1]} won the round.`);
+                if(currentTurn.hand.length === 0) currentTurn.hand = turns[turns.length - 1].hand.slice();
+                currentTurn.message += `Player ${who[1]} won the round.`;
+                turns.push(currentTurn);
                 break;
             }
 
             if(actionInfo.disconnect) {
-                let who = whoRegex.exec(match[2]);
-                messages.push(`Player ${who[1]} disconnected.`);
+
             }
 
             if(actionInfo.discard) {
@@ -194,39 +206,42 @@ export function parseRound(roundText, player) {
                     if(doraMatch) {
                         let newDoraIndicator = convertTenhouTilesToIndex(parseInt(doraMatch[1]));
                         remainingTiles[newDoraIndicator]--;
-                        messages.push(`The new dora indicator is the ${getTileAsText(newDoraIndicator)}.`);
+                        currentTurn.message += `The new dora indicator is the ${getTileAsText(newDoraIndicator)}.`;
                         continue;
                     }
                 }
 
-                let index = convertTenhouTilesToIndex(parseInt(match[2]));
+                let discardIndex = convertTenhouTilesToIndex(parseInt(match[2]));
 
                 if(actionInfo.player === player) {
-                    let message = analyzeDiscard(players[player], index, remainingTiles);
-                    messages[messages.length - 1] += message;
-                    message = analyzeSafestDiscard(players[player].hand, index, players, remainingTiles);
-                    messages[messages.length - 1] += message;
-                }
-
-                players[actionInfo.player].hand[index]--;
-
-                if(actionInfo.player !== player) {
-                    remainingTiles[index]--;
+                    currentTurn.hand = players[player].hand.slice();
+                    analyzeDiscard(players[player].hand, discardIndex, remainingTiles, currentTurn);
+                    analyzeSafestDiscard(players[player].hand, discardIndex, players, remainingTiles, currentTurn);
+                    currentTurn.discards = players[player].discards.slice();
+                    currentTurn.calls = players[player].calledTiles.slice();
+                    turns.push(currentTurn);
+                    currentTurn = new ReplayTurn();
                 }
                 
                 for(let i = 0; i < players.length; i++) {
                     if(players[i].riichiTile > -1) {
-                        players[i].discardsAfterRiichi.push(index);
+                        players[i].discardsAfterRiichi.push(discardIndex);
                     }
                     else if(i === actionInfo.player) {
-                        players[actionInfo.player].discards.push(index);
+                        players[actionInfo.player].discards.push(discardIndex);
                     }
 
                     if(players[i].riichiTile === -2) {
-                        players[i].riichiTile = index;
+                        players[i].riichiTile = discardIndex;
                     }
                 }
 
+                players[actionInfo.player].hand[discardIndex]--;
+
+                if(actionInfo.player !== player) {
+                    remainingTiles[discardIndex]--;
+                }
+                
                 continue;
             }
 
@@ -235,7 +250,9 @@ export function parseRound(roundText, player) {
                 players[actionInfo.player].hand[index]++;
 
                 if(actionInfo.player === player) {
-                    messages.push(`You drew the ${getTileAsText(index)}. (${convertHandToTenhouString(players[player].hand)})|`);
+                    currentTurn.hand = players[player].hand;
+                    currentTurn.draw = index;
+                    currentTurn.message += `You drew the ${getTileAsText(index)}. (${convertHandToTenhouString(players[player].hand)})|`;
                     remainingTiles[index]--;
                 }
 
@@ -244,7 +261,7 @@ export function parseRound(roundText, player) {
         }
     } while (match);
 
-    return messages;
+    return turns;
 }
 
 const safetyRatingExplanations = [
@@ -252,10 +269,10 @@ const safetyRatingExplanations = [
     "non-suji 4/5/6", "non-suji 3/7", "non-suji 2/8", "one-chance", "non-suji 1/9",
     "first honor tile", "suji 3/7", "suji 2/8", "suji 4/5/6", "second honor tile",
     "first suji terminal", "second suji terminal", "third suji terminal / third honor",
-    "fourth suji terminal / fourth honor", "genbutsu"
+    "fourth suji terminal / fourth honor", "genbutsu, 100% safe"
 ];
 
-function analyzeSafestDiscard(playerHand, chosenTile, players, remainingTiles) {
+function analyzeSafestDiscard(playerHand, chosenTile, players, remainingTiles, currentTurn) {
     let riichis = 0;
     let totalSafety = Array(38).fill(0);
 
@@ -290,7 +307,7 @@ function analyzeSafestDiscard(playerHand, chosenTile, players, remainingTiles) {
         result += `Safest tile: ${getTileAsText(bestChoice, true)}, with a safety rating of ${bestSafety} (${safetyRatingExplanations[Math.floor(bestSafety / riichis)]}).|`;
     }
 
-    return result;
+    currentTurn.message += result;
 }
 
 function padHand(hand) {
@@ -302,8 +319,7 @@ function padHand(hand) {
     return paddedHand;
 }
 
-function analyzeDiscard(player, chosenTile, remainingTiles) {
-    let hand = player.hand.slice();
+function analyzeDiscard(hand, chosenTile, remainingTiles, currentTurn) {
     let paddedHand = padHand(hand);
 
     let ukeire = CalculateDiscardUkeire(paddedHand, remainingTiles, CalculateMinimumShanten);
@@ -318,27 +334,31 @@ function analyzeDiscard(player, chosenTile, remainingTiles) {
     let result = `Discard: ${getTileAsText(chosenTile, true)}, `;
 
     if (chosenUkeire.value > 0 || shanten === 0) {
-        result += `with ${chosenUkeire.value} tiles that can improve the hand: ${convertTilesToAsciiSymbols(chosenUkeire.tiles)}|`;
+        result += `with ${chosenUkeire.value} tiles that can improve the hand: ${convertTilesToAsciiSymbols(chosenUkeire.tiles)} (${convertIndexesToTenhouTiles(chosenUkeire.tiles)})|`;
     }
     else {
-        result += `which lowers your shanten.|`
+        result += `which lowers your shanten.|`;
+        currentTurn.className = "bg-danger text-white";
     }
 
     if (chosenUkeire.value < bestUkeire) {
-        hand[chosenTile]++;
-        hand[bestTile]--;;
         result += `Most efficient: ${getTileAsText(bestTile, true)}, `;
-        result += `with ${bestUkeire} tiles being able to improve your hand: ${convertTilesToAsciiSymbols(ukeire[bestTile].tiles)}|`;
+        result += `with ${bestUkeire} tiles being able to improve your hand: ${convertTilesToAsciiSymbols(ukeire[bestTile].tiles)} (${convertIndexesToTenhouTiles(ukeire[bestTile].tiles)})|`;
+
+        if(!currentTurn.className) {
+            currentTurn.className = "bg-warning";
+        }
     }
     else {
         result += "That was the most efficient choice.|";
+        currentTurn.className = "bg-success text-white";
     }
 
     if (shanten <= 0 && handUkeire === 0) {
         result += "Your hand is ready, but all the winning tiles are in your hand.|";
     }
 
-    return result;
+    currentTurn.message += result;
 }
 
 function parseHand(roundText, player) {
