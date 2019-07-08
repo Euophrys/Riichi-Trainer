@@ -4,12 +4,18 @@ import { Button, Input, InputGroup, InputGroupAddon, Col } from 'reactstrap';
 class LoadButton extends React.Component {
     onClick() {
         let string = document.getElementById("loadHandString").value;
-        let characters = string.toLowerCase().split('').reverse();
+        let characters = string.toLowerCase();
         let hand = Array(38).fill(0);
         let index = 0;
         let offset = -1;
         let tiles = 0;
 
+        let draw = this.tryRegex(/(\d{1,2})t/, characters);
+        let dora = this.tryRegex(/(\d{1,2})d/, characters);
+        let seatWind = this.tryRegex(/(\d)j/, characters);
+        let roundWind = this.tryRegex(/(\d)[br]/, characters);
+
+        characters = characters.split('').reverse();
         while (index < characters.length && tiles < 14) {
             do {
                 offset = this.getOffset(characters[index]);
@@ -25,6 +31,7 @@ class LoadButton extends React.Component {
                     if (hand[tile] < 4) {
                         hand[tile]++;
                         tiles++;
+                        if(draw === false) draw = tile;
                     }
                 }
                 else if (tile === 0) {
@@ -33,6 +40,7 @@ class LoadButton extends React.Component {
                     if (tile !== 30 && hand[tile] + hand[tile + 5] < 4) {
                         hand[tile]++;
                         tiles++;
+                        if(draw === false) draw = tile;
                     }
                 }
 
@@ -41,11 +49,25 @@ class LoadButton extends React.Component {
         }
 
         let ret = {
-            hand: hand,
-            tiles: tiles
+            hand,
+            tiles,
+            draw,
+            dora,
+            seatWind,
+            roundWind
         };
 
         this.props.callback(ret);
+    }
+
+    tryRegex(regex, string) {
+        let match = regex.exec(string);
+
+        if (match) {
+            return parseInt(match[1]);
+        }
+
+        return false;
     }
 
     getOffset(character) {
@@ -53,7 +75,7 @@ class LoadButton extends React.Component {
             return 0;
         }
 
-        if (character === "p" || character === "d") {
+        if (character === "p") {
             return 10;
         }
 

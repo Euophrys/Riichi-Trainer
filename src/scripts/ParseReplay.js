@@ -89,7 +89,7 @@ export function parseRound(roundText, player) {
 
     let currentTurn = new ReplayTurn(
         players[player].hand.slice(),
-        `Your starting hand is ${convertHandToTenhouString(players[player].hand)}. It's ${CalculateMinimumShanten(players[player].hand)} tiles from ready.|`
+        `Your starting hand is ${convertHandToTenhouString(players[player].hand)}. It's ${CalculateMinimumShanten(players[player].hand)} tiles from ready. The dora indicator is ${convertIndexesToTenhouTiles(dora)}|`
     );
     
     do {
