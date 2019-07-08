@@ -114,12 +114,12 @@ class Quiz extends React.Component {
         return possibilities[Math.floor(Math.random() * possibilities.length)];
     }
 
-    getNewHandState(hand, availableTiles, tilePool, history, dora) {
+    getNewHandState(hand, availableTiles, tilePool, history, dora, lastDraw = false, seatWind = false, roundWind = false) {
         history.unshift({ message: "Started a new hand: " + convertHandToTenhouString(hand) });
 
         let players = [];
         let numberOfPlayers = this.state.settings.threePlayer ? 3 : 4;
-        let seatWind = this.pickSeatWind();
+        seatWind = seatWind || this.pickSeatWind();
 
         for(let i = 0; i < numberOfPlayers; i++) {
             let player = new Player();
@@ -128,8 +128,11 @@ class Quiz extends React.Component {
             players.push(player);
         }
 
+        if(lastDraw !== false) hand[lastDraw]--;
         let shuffle = convertHandToTileArray(hand);
+        if(lastDraw !== false) hand[lastDraw]++;
         shuffle = shuffleArray(shuffle);
+
         return {
             hand: hand,
             remainingTiles: availableTiles,
@@ -141,8 +144,8 @@ class Quiz extends React.Component {
             possibleTotal: 0,
             history: history,
             isComplete: false,
-            lastDraw: shuffle.pop(),
-            roundWind: this.pickRoundWind(),
+            lastDraw: lastDraw || shuffle.pop(),
+            roundWind: roundWind || this.pickRoundWind(),
             seatWind: seatWind,
             dora: dora,
             shuffle: shuffle
@@ -411,6 +414,12 @@ class Quiz extends React.Component {
             remainingTiles[i] = Math.max(0, remainingTiles[i] - loadData.hand[i]);
         }
 
+        let dora = loadData.dora;
+        if(dora !== false) {
+            dora = Math.min(Math.max(0, dora), 37);
+            remainingTiles[dora]--;
+        }
+
         let { hand, availableTiles, tilePool } = FillHand(remainingTiles, loadData.hand, 14 - loadData.tiles);
 
         if (!hand) {
@@ -418,13 +427,29 @@ class Quiz extends React.Component {
             return;
         }
 
-        let dora = 1;
-        if (tilePool.length > 0) {
-            dora = removeRandomItem(tilePool);
-            availableTiles[dora]--;
+        if(dora === false) {
+            if (tilePool.length > 0) {
+                dora = removeRandomItem(tilePool);
+                availableTiles[dora]--;
+            }
         }
 
-        this.setState(this.getNewHandState(hand, availableTiles, tilePool, [], dora));
+        let roundWind = loadData.roundWind;
+        let seatWind = loadData.seatWind;
+        let draw = loadData.draw;
+
+        if(roundWind !== false) {
+            roundWind = Math.min(Math.max(1, roundWind), 4) + 30;
+        }
+        if(seatWind !== false) {
+            seatWind = Math.min(Math.max(1, seatWind), 4) + 30;
+        }
+        if(draw !== false) {
+            draw = Math.min(Math.max(0, draw), 37);
+            if(hand[draw] <= 0) draw = false;
+        }
+
+        this.setState(this.getNewHandState(hand, availableTiles, tilePool, [], dora, draw, seatWind, roundWind));
     }
 
     logToHistory(text) {

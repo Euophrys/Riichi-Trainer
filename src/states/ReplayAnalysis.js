@@ -6,6 +6,7 @@ import {
 import { parseRounds, parseRound, parseRoundNames, parsePlayers } from '../scripts/ParseReplay';
 import Hand from '../components/Hand';
 import { convertIndexesToTenhouTiles, convertTilesToAsciiSymbols } from '../scripts/TileConversions';
+import { convertHandToTenhouString } from '../scripts/HandConversions';
 
 class ReplayAnalysis extends React.Component {
     constructor(props) {
@@ -248,6 +249,11 @@ class ReplayAnalysis extends React.Component {
                                 <Row>{calls.length > 0 ? `Your Calls: ${calls}` : ""}</Row>
                             </ListGroupItem>
                             {message}
+                            <ListGroupItem>
+                                <a className="tenhouLink" href={"http://tenhou.net/2/?q=" + convertHandToTenhouString(currentTurn.hand)} target="_blank" rel="noopener noreferrer">
+                                    [Tenhou Ukeire Analysis]
+                                </a>
+                            </ListGroupItem>
                         </ListGroup>
                     </React.Fragment>
                 )}
