@@ -1,22 +1,24 @@
 import React from 'react';
-import { Button, Input, InputGroup, InputGroupAddon, Col } from 'reactstrap';
-import { withTranslation } from 'react-i18next';
+import { Container, Button, Input, InputGroup, InputGroupAddon, ListGroupItem, ListGroup } from 'reactstrap';
+import { convertHandToAsciiSymbols, convertHandToDiscordEmoji } from '../../scripts/HandConversions';
 
-class LoadButton extends React.Component {
+class ConvertHand extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            hand: [0, 1]
+        }
+    }
+
     onClick() {
-        let string = document.getElementById("loadHandString").value;
-        let characters = string.toLowerCase();
+        let string = document.getElementById("convertHandString").value;
+        let characters = string.toLowerCase().split('').reverse();
         let hand = Array(38).fill(0);
         let index = 0;
         let offset = -1;
         let tiles = 0;
 
-        let draw = this.tryRegex(/(\d{1,2})t/, characters);
-        let dora = this.tryRegex(/(\d{1,2})d/, characters);
-        let seatWind = this.tryRegex(/(\d)j/, characters);
-        let roundWind = this.tryRegex(/(\d)[br]/, characters);
-
-        characters = characters.split('').reverse();
         while (index < characters.length && tiles < 14) {
             do {
                 offset = this.getOffset(characters[index]);
@@ -32,7 +34,6 @@ class LoadButton extends React.Component {
                     if (hand[tile] < 4) {
                         hand[tile]++;
                         tiles++;
-                        if(draw === false) draw = tile;
                     }
                 }
                 else if (tile === 0) {
@@ -41,7 +42,6 @@ class LoadButton extends React.Component {
                     if (tile !== 30 && hand[tile] + hand[tile + 5] < 4) {
                         hand[tile]++;
                         tiles++;
-                        if(draw === false) draw = tile;
                     }
                 }
 
@@ -49,26 +49,9 @@ class LoadButton extends React.Component {
             }
         }
 
-        let ret = {
-            hand,
-            tiles,
-            draw,
-            dora,
-            seatWind,
-            roundWind
-        };
-
-        this.props.callback(ret);
-    }
-
-    tryRegex(regex, string) {
-        let match = regex.exec(string);
-
-        if (match) {
-            return parseInt(match[1]);
-        }
-
-        return false;
+        this.setState({
+            hand: hand
+        });
     }
 
     getOffset(character) {
@@ -76,7 +59,7 @@ class LoadButton extends React.Component {
             return 0;
         }
 
-        if (character === "p") {
+        if (character === "p" || character === "d") {
             return 10;
         }
 
@@ -92,18 +75,21 @@ class LoadButton extends React.Component {
     }
 
     render() {
-        let { t } = this.props;
         return (
-            <Col xs="12" sm="6" md="6" lg="8">
+            <Container>
                 <InputGroup>
-                    <Input id="loadHandString" placeholder="123m456p789s12345z" />
+                    <Input id="convertHandString" placeholder="123m456p789s12345z" />
                     <InputGroupAddon addonType="append">
-                        <Button color="warning" onClick={() => this.onClick()}>{t("trainer.loadButtonLabel")}</Button>
+                        <Button color="primary" onClick={() => this.onClick()}>Convert Hand</Button>
                     </InputGroupAddon>
                 </InputGroup>
-            </Col>
+                <ListGroup>
+                    <ListGroupItem>ASCII: {convertHandToAsciiSymbols(this.state.hand)}</ListGroupItem>
+                    <ListGroupItem>Emoji: {convertHandToDiscordEmoji(this.state.hand)}</ListGroupItem>
+                </ListGroup>
+            </Container>
         )
     }
 }
 
-export default withTranslation()(LoadButton);
+export default ConvertHand;

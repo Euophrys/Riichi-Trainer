@@ -1,12 +1,13 @@
 import React from 'react';
 import { ListGroupItem, Collapse } from 'reactstrap';
 import { getTileAsText } from '../../scripts/TileConversions';
+import { withTranslation } from 'react-i18next';
 
 class HistoryMessage extends React.Component {    
     /* PROPS
         data {
             chosenTile,
-            chosenUkeire,
+            chosenUkeire.value,
             bestTile,
             bestUkeire,
             shanten,
@@ -15,7 +16,6 @@ class HistoryMessage extends React.Component {
             drawnTile,
             message
         },
-        key,
         verbose,
         concise,
         spoilers
@@ -43,102 +43,71 @@ class HistoryMessage extends React.Component {
             }
 
             return (
-                <ListGroupItem key={this.props.key} className={className}>{this.props.data.message}</ListGroupItem>
+                <ListGroupItem className={className}>{this.props.data.message}</ListGroupItem>
             )
         }
 
-        let message = "";
-        if(this.props.concise) {
-            message = this.getConciseMessage();
-        } else {
-            message = this.getVerboseMessage();
-        }
+        let { t } = this.props;
+        let message = this.getMessage(t, this.props.concise);
         message += this.props.data.message || "";
 
         let tenhouLink = "http://tenhou.net/2/?q=" + this.props.data.hand;
 
         return (
-            <ListGroupItem key={this.props.key} className={this.getClassName()}>
+            <ListGroupItem className={this.getClassName()}>
                 <Collapse isOpen={!this.state.collapsed}>
                     {message}
                     <a className="tenhouLink" href={tenhouLink} target="_blank" rel="noopener noreferrer">
-                        [Accepted Tiles]
+                        {t("history.tenhouLinkText")}
                     </a>
                 </Collapse>
             </ListGroupItem>
         );
     }
 
-    getConciseMessage() {
-        let result = `Discard: ${getTileAsText(this.props.data.chosenTile, this.props.verbose)} (`;
+    getMessage(t, concise) {
+        let mode = "verbose";
+        if(concise) mode = "concise";
 
-        if (this.props.data.chosenUkeire > 0 || this.props.data.shanten === 0) {
-            result += `${this.props.data.chosenUkeire} tiles). `;
+        let result = t(`history.${mode}.discard`, {tile: getTileAsText(t, this.props.data.chosenTile, this.props.verbose)});
+
+        if (this.props.data.chosenUkeire.value > 0 || this.props.data.shanten === 0) {
+            result += t(`history.${mode}.acceptance`, {count: this.props.data.chosenUkeire.value});
         }
         else {
-            result += `lowered shanten). `
+            result += t(`history.${mode}.loweredShanten`)
         }
 
-        if (this.props.data.chosenUkeire < this.props.data.bestUkeire) {
-            result += "Best: ";
+        if (this.props.data.chosenUkeire.value < this.props.data.bestUkeire) {
+            result += t(`history.${mode}.optimal`);
 
             if (this.props.spoilers) {
-                result += `${getTileAsText(this.props.data.bestTile, this.props.verbose)}, with `;
+                result += t(`history.${mode}.optimalSpoiler`, {tile: getTileAsText(t, this.props.data.bestTile, this.props.verbose)});
             }
 
-            result += `${this.props.data.bestUkeire} tiles.`;
+            result += t(`history.${mode}.acceptance`, {count: this.props.data.bestUkeire});
         }
         else {
-            result += "That was the best choice!";
+            result += t(`history.${mode}.best`);
         }
         
-        if (this.props.data.shanten <= 0 && this.props.data.handUkeire === 0) {
-            result += " Keishiki tenpai."
+        if (this.props.data.shanten <= 0 && this.props.data.handUkeire.value === 0) {
+            result += t(`history.${mode}.exceptionalNoten`);
+        }
+
+        if (this.isFuriten()) {
+            if (this.props.data.shanten <= 0) {
+                result += t(`history.${mode}.furiten`);
+            } else {
+                result += t(`history.${mode}.furitenWarning`);
+            }
         }
         
         if(this.props.data.shanten > 0) {
             if(this.props.data.drawnTile === -1) {
-                result += " There are no tiles left in the wall. Better luck next time! ";
+                result += t(`history.${mode}.exhausted`);
             } else {
-                result += ` Draw: ${getTileAsText(this.props.data.drawnTile, this.props.verbose)}. `
-            }
-        }
-
-        return result;
-    }
-
-    getVerboseMessage() {
-        let result = `You chose to discard the ${getTileAsText(this.props.data.chosenTile, this.props.verbose)}, which `;
-
-        if (this.props.data.chosenUkeire > 0 || this.props.data.shanten === 0) {
-            result += `results in ${this.props.data.chosenUkeire} tiles that can improve the hand. `;
-        }
-        else {
-            result += `lowers your shanten - you are now further from ready. `
-        }
-
-        if (this.props.data.chosenUkeire < this.props.data.bestUkeire) {
-            result += "The most efficient tile to discard";
-
-            if (this.props.spoilers) {
-                result += `, the ${getTileAsText(this.props.data.bestTile, this.props.verbose)},`;
-            }
-
-            result += ` would have resulted in ${this.props.data.bestUkeire} tiles being able to improve your hand.`;
-        }
-        else {
-            result += "That was the best choice. Good work!";
-        }
-
-        if (this.props.data.shanten <= 0 && this.props.data.handUkeire === 0) {
-            result += " You are now in keishiki tenpai. Your hand is ready, but all the winning tiles are in your hand. This doesn't count as ready in almost all rulesets. You may need to break your tenpai in order to progress.";
-        }
-        
-        if(this.props.data.shanten > 0) {
-            if(this.props.data.drawnTile === -1) {
-                result += " There are no tiles left in the wall. Better luck next time! ";
-            } else {
-                result += ` You drew the ${getTileAsText(this.props.data.drawnTile, this.props.verbose)}. `;
+                result += t(`history.${mode}.draw`, {tile: getTileAsText(t, this.props.data.drawnTile, this.props.verbose)})
             }
         }
 
@@ -148,10 +117,10 @@ class HistoryMessage extends React.Component {
     getClassName() {
         let className = "";
 
-        if (this.props.data.chosenUkeire <= 0 && this.props.data.shanten > 0) {
+        if (this.props.data.chosenUkeire.value <= 0 && this.props.data.shanten > 0) {
             className = "bg-danger text-white";
         }
-        else if (this.props.data.bestUkeire === this.props.data.chosenUkeire) {
+        else if (this.props.data.bestUkeire === this.props.data.chosenUkeire.value) {
             className = "bg-success text-white";
         }
         else {
@@ -160,6 +129,10 @@ class HistoryMessage extends React.Component {
 
         return className;
     }
+
+    isFuriten() {
+        return this.props.data.chosenUkeire.tiles.some(tile => this.props.data.discards.includes(tile));
+    }
 }
 
-export default HistoryMessage;
+export default withTranslation()(HistoryMessage);

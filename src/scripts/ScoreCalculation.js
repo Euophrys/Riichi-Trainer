@@ -29,15 +29,36 @@ function calculateBasicPoints(han, fu, yakuman) {
     return basicPoints;
 }
 
-export default function getPointsString(han = 1, fu = 20, dealer = false, tsumo = true, yakuman = 0) {
+export function getPointsString(han = 1, fu = 20, dealer = false, tsumo = true, yakuman = 0) {
     let basicPoints = calculateBasicPoints(han, fu, yakuman);
-    console.log("Han: " + han + " Fu: " + fu);
+
     if (tsumo) {
         if (dealer) {
             return roundPoints(basicPoints * 2);
         }
         else {
             return roundPoints(basicPoints) + "/" + roundPoints(basicPoints * 2);
+        }
+    }
+    else {
+        if (dealer) {
+            return roundPoints(basicPoints * 6);
+        }
+        else {
+            return roundPoints(basicPoints * 4);
+        }
+    }
+}
+
+export function getPoints(han = 1, fu = 20, dealer = false, tsumo = true, yakuman = 0) {
+    let basicPoints = calculateBasicPoints(han, fu, yakuman);
+
+    if (tsumo) {
+        if (dealer) {
+            return roundPoints(basicPoints * 2);
+        }
+        else {
+            return [roundPoints(basicPoints), roundPoints(basicPoints * 2)];
         }
     }
     else {

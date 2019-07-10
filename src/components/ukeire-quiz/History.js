@@ -1,6 +1,7 @@
 import React from 'react';
 import { ListGroup, Col, Collapse, Button } from 'reactstrap';
 import HistoryMessage from './HistoryMessage';
+import { withTranslation } from 'react-i18next';
 
 class History extends React.Component {
     constructor(props) {
@@ -26,9 +27,11 @@ class History extends React.Component {
             );
         });
 
+        let { t } = this.props;
+
         return (
             <Col xs="12" sm={this.state.collapsed ? "12" : ""}>
-                <Button className="btn-block bg-light" color="basic" onClick={this.toggle}>Hand History</Button>
+                <Button className="btn-block bg-light" color="basic" onClick={this.toggle}>{t("history.label")}</Button>
                 <Collapse isOpen={!this.state.collapsed}>
                     <ListGroup>
                         {history}
@@ -39,4 +42,4 @@ class History extends React.Component {
     }
 }
 
-export default History;
+export default withTranslation()(History);
