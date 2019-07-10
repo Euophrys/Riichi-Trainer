@@ -2,7 +2,7 @@ import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
 import { en } from "./translations/en";
-import { jp } from "./translations/jp";
+import { ja } from "./translations/ja";
 
 i18n
   .use(LanguageDetector)
@@ -10,7 +10,7 @@ i18n
   .init({
     resources: {
       en: en,
-      jp: jp
+      ja: ja
     },
     fallbackLng: "en",
 
