@@ -1,4 +1,4 @@
-export const jp = {
+export const ja = {
     translations: {
         values: {
             one: "一",
