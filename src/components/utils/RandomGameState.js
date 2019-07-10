@@ -3,6 +3,7 @@ import { Container, Button, ListGroup, ListGroupItem, Row } from 'reactstrap';
 import Player from '../../models/Player';
 import { convertTilesToAsciiSymbols, convertIndexesToTenhouTiles, getTileAsText } from '../../scripts/TileConversions';
 import { ROUND_NAMES, SEAT_NAMES } from '../../Constants';
+import { withTranslation } from 'react-i18next';
 
 class RandomGameState extends React.Component {
     constructor(props) {
@@ -118,23 +119,34 @@ class RandomGameState extends React.Component {
             return <Row>Please wait...</Row>;
         }
 
+        let { t } = this.props;
+
         let playerItems = this.state.players.map((player, index) => {
             return (
                 <ListGroupItem key={index + 1}>
-                    <Row>{SEAT_NAMES[player.seat]} Player {player.seat === this.state.userSeat ? "(YOU)" : ""}</Row>
-                    <Row>Points: {player.points}</Row>
-                    <Row>Discards: {convertTilesToAsciiSymbols(player.discards)} ({convertIndexesToTenhouTiles(player.discards)})</Row>
+                    <Row>{t("utils.playerLabel", {
+                        seat: t(`seats.${SEAT_NAMES[player.seat]}`), 
+                        you: player.seat === this.state.userSeat 
+                            ? `(${t("allLast.you")})` 
+                            : ""
+                    })}</Row>
+                    <Row>{t("utils.points")} {player.points}</Row>
+                    <Row>{t("utils.discards")} {convertTilesToAsciiSymbols(player.discards)} ({convertIndexesToTenhouTiles(player.discards)})</Row>
                 </ListGroupItem>
             );
         });
 
         return (
             <Container>
-                <Button xs="12" color="primary" className="btn-block" onClick={()=>this.generateState()}>Generate New State</Button>
+                <Button xs="12" color="primary" className="btn-block" onClick={()=>this.generateState()}>{t("utils.stateButtonLabel")}</Button>
                 <ListGroup>
                     <ListGroupItem key={0}>
-                        <Row>It's turn {this.state.turn} in {ROUND_NAMES[this.state.round]}. You are the {SEAT_NAMES[this.state.userSeat]} player.</Row>
-                        <Row>The dora indicator is the {getTileAsText(this.state.doraIndicator, true)}.</Row>
+                        <Row>{t("utils.info", {
+                            turn: this.state.turn,
+                            round: ROUND_NAMES[this.state.round],
+                            seat: t(`seats.${SEAT_NAMES[this.state.userSeat]}`)
+                        })}</Row>
+                        <Row>{t("utils.dora", {tile: getTileAsText(t, this.state.doraIndicator, true)})}</Row>
                     </ListGroupItem>
                     {playerItems}
                 </ListGroup>
@@ -143,4 +155,4 @@ class RandomGameState extends React.Component {
     }
 }
 
-export default RandomGameState;
+export default withTranslation()(RandomGameState);

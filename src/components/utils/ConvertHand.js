@@ -1,6 +1,7 @@
 import React from 'react';
 import { Container, Button, Input, InputGroup, InputGroupAddon, ListGroupItem, ListGroup } from 'reactstrap';
 import { convertHandToAsciiSymbols, convertHandToDiscordEmoji } from '../../scripts/HandConversions';
+import { withTranslation } from 'react-i18next';
 
 class ConvertHand extends React.Component {
     constructor(props) {
@@ -75,21 +76,22 @@ class ConvertHand extends React.Component {
     }
 
     render() {
+        let { t } = this.props;
         return (
             <Container>
                 <InputGroup>
                     <Input id="convertHandString" placeholder="123m456p789s12345z" />
                     <InputGroupAddon addonType="append">
-                        <Button color="primary" onClick={() => this.onClick()}>Convert Hand</Button>
+                        <Button color="primary" onClick={() => this.onClick()}>{t("utils.convertButtonLabel")}</Button>
                     </InputGroupAddon>
                 </InputGroup>
                 <ListGroup>
-                    <ListGroupItem>ASCII: {convertHandToAsciiSymbols(this.state.hand)}</ListGroupItem>
-                    <ListGroupItem>Emoji: {convertHandToDiscordEmoji(this.state.hand)}</ListGroupItem>
+                    <ListGroupItem>{t("utils.ascii")} {convertHandToAsciiSymbols(this.state.hand)}</ListGroupItem>
+                    <ListGroupItem>{t("utils.emoji")} {convertHandToDiscordEmoji(this.state.hand)}</ListGroupItem>
                 </ListGroup>
             </Container>
         )
     }
 }
 
-export default ConvertHand;
+export default withTranslation()(ConvertHand);

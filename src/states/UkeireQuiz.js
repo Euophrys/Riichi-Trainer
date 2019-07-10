@@ -188,6 +188,7 @@ class UkeireQuiz extends React.Component {
 
             if (!hand) {
                 history.push({ message: t("trainer.error.wallEmptyShuffle") });
+                // Continues into the normal flow, rebuilding the wall.
             }
             else {
                 this.setState(this.getNewHandState(hand, availableTiles, tilePool, history, dora));
@@ -253,7 +254,8 @@ class UkeireQuiz extends React.Component {
         }
 
         if (this.state.settings.redFives > 0) {
-            let suit = 20;
+            // Start with pinzu, since 4 red fives usually involves two 0p
+            let suit = 10;
 
             for (let i = 0; i < this.state.settings.redFives; i++) {
                 if (remainingTiles[suit + 5] > 0) {
@@ -274,16 +276,16 @@ class UkeireQuiz extends React.Component {
 
         let chosenTile = parseInt(event.target.name);
         let hand = this.state.hand.slice();
-
         let remainingTiles = this.state.remainingTiles.slice();
 
         let shantenFunction = this.state.settings.exceptions ? CalculateMinimumShanten : CalculateStandardShanten;
         let ukeire = CalculateDiscardUkeire(hand, remainingTiles, shantenFunction);
         let ukeireValues = ukeire.map(o => o.value);
         let bestUkeire = Math.max(...ukeireValues);
+        let chosenUkeire = ukeire[convertRedFives(chosenTile)];
+
         let handString = convertHandToTenhouString(hand);
         hand[chosenTile]--;
-        let chosenUkeire = ukeire[convertRedFives(chosenTile)];
 
         let shanten = shantenFunction(hand);
         let handUkeire = CalculateUkeireFromOnlyHand(hand, this.resetRemainingTiles(), shantenFunction);
@@ -294,7 +296,7 @@ class UkeireQuiz extends React.Component {
 
         let achievedTotal = this.state.achievedTotal + chosenUkeire.value;
         let possibleTotal = this.state.possibleTotal + bestUkeire;
-        let tilePool = this.state.tilePool;
+        let tilePool = this.state.tilePool.slice();
         let drawnTile = -1;
 
         let historyObject = {
@@ -311,6 +313,7 @@ class UkeireQuiz extends React.Component {
         };
 
         if (shanten <= 0 && handUkeire.value > 0) {
+            // If the hand is tenpai, and has winning tiles outside of the hand, training is complete
             let { t } = this.props;
             historyObject.message = " " + t("trainer.complete", {achieved: achievedTotal, total: possibleTotal, percent: Math.floor(achievedTotal / possibleTotal * 100)});
             isComplete = true;
@@ -335,6 +338,7 @@ class UkeireQuiz extends React.Component {
                 historyObject.drawnTile = drawnTile;
             }
             else {
+                // No tiles left in the wall
                 isComplete = true;
             }
         }
@@ -346,7 +350,7 @@ class UkeireQuiz extends React.Component {
 
         if(chosenTile !== this.state.lastDraw) {
             for(let i = 0; i < shuffle.length; i++) {
-                // this needs to be ==... for some reason
+                // This needs to be ==... for some reason
                 if(shuffle[i] == chosenTile) {
                     shuffle[i] = this.state.lastDraw;
                     break;
@@ -417,6 +421,7 @@ class UkeireQuiz extends React.Component {
 
         let remainingTiles = this.resetRemainingTiles();
 
+        // Remove the tiles in the hand from the wall
         for (let i = 0; i < remainingTiles.length; i++) {
             remainingTiles[i] = Math.max(0, remainingTiles[i] - loadData.hand[i]);
         }
@@ -453,6 +458,7 @@ class UkeireQuiz extends React.Component {
         }
         if(draw !== false) {
             draw = Math.min(Math.max(0, draw), 37);
+            // Ensure the drawn tile is in the hand
             if(hand[draw] <= 0) draw = false;
         }
 

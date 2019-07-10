@@ -14,6 +14,7 @@ export function CalculateDiscardUkeire(hand, remainingTiles, shantenFunction, ba
         baseShanten = shantenFunction(convertedHand) - shantenOffset;
     }
 
+    // Check the ukeire of each hand that results from each discard
     for (let handIndex = 0; handIndex < convertedHand.length; handIndex++) {
         if (convertedHand[handIndex] === 0) {
             results[handIndex] = {value: 0, tiles: []};
@@ -24,7 +25,6 @@ export function CalculateDiscardUkeire(hand, remainingTiles, shantenFunction, ba
         let ukeire = CalculateUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten, shantenOffset);
         convertedHand[handIndex]++;
 
-        // Write the results into the array
         results[handIndex] = ukeire;
     }
 
@@ -54,6 +54,7 @@ export function CalculateUkeire(hand, remainingTiles, shantenFunction, baseShant
         convertedHand[addedTile]++;
 
         if (shantenFunction(convertedHand) - shantenOffset < baseShanten) {
+            // Improves shanten. Add the number of remaining tiles to the ukeire count
             value += convertedTiles[addedTile];
             tiles.push(addedTile);
         }
@@ -81,7 +82,6 @@ export function CalculateDiscardUkeireUpgrades(hand, remainingTiles, shantenFunc
         let ukeire = CalculateUkeireUpgrades(convertedHand, remainingTiles, shantenFunction, baseShanten, baseUkeire, shantenOffset);
         hand[handIndex]++;
 
-        // Write the results into the array
         for (let i = 0; i < hand[handIndex]; i++) {
             results[handIndex] = ukeire;
         }
