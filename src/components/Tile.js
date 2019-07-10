@@ -1,18 +1,21 @@
 import React from 'react';
 import { getTileImage, getTileAsText } from '../scripts/TileConversions';
+import { useTranslation } from 'react-i18next';
 
-class Tile extends React.Component {
-    render() {
-        return (
-            <img className={this.props.className}
-                name={this.props.tile}
-                src={getTileImage(this.props.tile)}
-                title={getTileAsText(this.props.tile)}
-                alt={getTileAsText(this.props.tile)}
-                onClick={this.props.onClick}
-            />
-        );
-    }
+function Tile(props) {
+    let { t } = useTranslation();
+
+    let displayTile = props.displayTile || props.tile;
+
+    return (
+        <img className={props.className}
+            name={props.tile}
+            src={getTileImage(displayTile)}
+            title={getTileAsText(t, displayTile)}
+            alt={getTileAsText(t, displayTile)}
+            onClick={props.onClick}
+        />
+    );
 }
 
 export default Tile;

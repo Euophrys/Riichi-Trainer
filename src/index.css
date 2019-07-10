@@ -8,7 +8,9 @@
 .discardTile {
     width: 100%;
     height: 100%;
-    padding-bottom: 5px;
+    padding-bottom: 4px;
+    padding-left: 2px;
+    padding-right: 2px;
 }
 
 .tenhouLink {
@@ -38,4 +40,12 @@ a {
 
 a:hover {
     color: orange
+}
+
+.collapse.width {
+    height: auto;
+    -webkit-transition: width 0.35s ease;
+    -moz-transition: width 0.35s ease;
+    -o-transition: width 0.35s ease;
+    transition: width 0.35s ease;
 }

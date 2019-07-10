@@ -35,34 +35,43 @@ import north from '../tileImages/north.png';
 import haku from '../tileImages/haku.png';
 import hatsu from '../tileImages/hatsu.png';
 import chun from '../tileImages/chun.png';
+import back from '../tileImages/back.png';
+import { convertHandToTenhouString } from './HandConversions';
 
 const images = [
     redFiveMan, oneMan, twoMan, threeMan, fourMan, fiveMan, sixMan, sevenMan, eightMan, nineMan,
-    redFiveSou, oneSou, twoSou, threeSou, fourSou, fiveSou, sixSou, sevenSou, eightSou, nineSou,
     redFivePin, onePin, twoPin, threePin, fourPin, fivePin, sixPin, sevenPin, eightPin, ninePin,
-    "", east, south, west, north, haku, hatsu, chun
+    redFiveSou, oneSou, twoSou, threeSou, fourSou, fiveSou, sixSou, sevenSou, eightSou, nineSou,
+    back, east, south, west, north, haku, hatsu, chun
 ];
 
-const numberText = ["red five", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
-const numberCharacter = ["red 5", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
-const suitText = ["characters", "bamboo", "circles"]
-const suitCharacter = ["m", "s", "p"];
-const honors = ["", "east wind", "south wind", "west wind", "north wind", "white dragon", "green dragon", "red dragon"]
+export const ascii = [
+    "🀋", "🀇", "🀈", "🀉", "🀊", "🀋", "🀌", "🀍", "🀎", "🀏",
+    "🀝", "🀙", "🀚", "🀛", "🀜", "🀝", "🀞", "🀟", "🀠", "🀡",
+    "🀔", "🀐", "🀑", "🀒", "🀓", "🀔", "🀕", "🀖", "🀗", "🀘",
+    "🀪", "🀀", "🀁", "🀂", "🀃", "🀆", "🀅", "🀄"
+]
+
+const numberText = ["redFive", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+const numberCharacter = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+const suitText = ["characters", "circles", "bamboo"]
+const suitCharacter = ["m", "p", "s"];
+const honors = ["hidden", "east", "south", "west", "north", "white", "green", "red"]
 
 export function getTileImage(index) {
     return images[index];
 }
 
-export function getTileAsText(index, verbose = true) {
-    if (index > 30) {
-        return honors[index - 30];
+export function getTileAsText(t, index, verbose = true) {
+    if (index >= 30) {
+        return t(`values.${honors[index - 30]}`);
     }
 
     if (verbose) {
         const number = numberText[index % 10];
         const suit = suitText[Math.floor(index / 10)];
 
-        return `${number} of ${suit}`;
+        return t("shuupai", {value: t(`values.${number}`), suit: t(`suits.${suit}`)});
     }
     else {
         const number = numberCharacter[index % 10];
@@ -70,4 +79,81 @@ export function getTileAsText(index, verbose = true) {
 
         return `${number}${suit}`;
     }
+}
+
+export function convertRedFives(tiles) {
+    if (typeof tiles === 'number') {
+        if (tiles % 10 === 0) {
+            return tiles + 5;
+        }
+    }
+
+    if (typeof tiles === 'object' && tiles.length) {
+        let result = tiles.slice();
+
+        for (let i = 0; i < 30; i += 10) {
+            result[i + 5] += result[i];
+            result[i] = 0;
+        }
+
+        return result;
+    }
+
+    return tiles;
+}
+
+export function convertTilesToAsciiSymbols(tiles) {
+    if(typeof tiles === 'number') {
+        return ascii[tiles];
+    }
+    
+    if (typeof tiles === 'object' && tiles.length) {
+        let result = "";
+
+        for(let i = 0; i < tiles.length; i++) {
+            result += ascii[tiles[i]];
+        }
+
+        return result;
+    }
+
+    return "";
+}
+
+export function convertIndexesToTenhouTiles(indexes) {
+    let hand = Array(38).fill(0);
+
+    if(typeof indexes === 'number') {
+        hand[indexes] = 1;
+    } else if (typeof indexes === 'object' && indexes.length) {
+        for(let i = 0; i < indexes.length; i++) {
+            hand[indexes[i]] += 1;
+        }
+    } else {
+        return "Error."
+    }
+
+    return convertHandToTenhouString(hand);
+}
+
+export function convertTenhouTilesToIndex(tenhouTiles) {
+    if(typeof tenhouTiles === 'number') {
+        return convertTenhouTileToIndex(tenhouTiles);
+    }
+
+    if (typeof tenhouTiles === 'object' && tenhouTiles.map) {
+        return tenhouTiles.map((tile) => convertTenhouTileToIndex(tile));
+    }
+}
+
+const tenhouToIndexLookup = [
+     1,  2,  3,  4,  5,  6,  7,  8,  9,
+    11, 12, 13, 14, 15, 16, 17, 18, 19,
+    21, 22, 23, 24, 25, 26, 27, 28, 29,
+    31, 32, 33, 34, 35, 36, 37
+];
+
+function convertTenhouTileToIndex(tenhouTile){
+    let base = Math.floor(tenhouTile / 4);
+    return tenhouToIndexLookup[base];
 }
