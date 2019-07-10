@@ -7,6 +7,7 @@ import { parseRounds, parseRound, parseRoundNames, parsePlayers } from '../scrip
 import Hand from '../components/Hand';
 import { convertIndexesToTenhouTiles, convertTilesToAsciiSymbols } from '../scripts/TileConversions';
 import { convertHandToTenhouString } from '../scripts/HandConversions';
+import { withTranslation } from 'react-i18next';
 
 class ReplayAnalysis extends React.Component {
     constructor(props) {
@@ -33,6 +34,7 @@ class ReplayAnalysis extends React.Component {
 
     onURLChanged() {
         let URLfeedback = <div/>
+        let { t } = this.props;
         if(document.getElementById('tenhouURL')) {
             let URL = document.getElementById('tenhouURL').value;
             if(URL !== "") {
@@ -40,9 +42,9 @@ class ReplayAnalysis extends React.Component {
                 let match = gameRegex.exec(URL);
 
                 if(match) {
-                    URLfeedback = <a href={`http://e0.mjv.jp/0/log/?${match[1]}`} target="_blank" rel="noopener noreferrer">Right click this link and choose Save As!</a>;
+                    URLfeedback = <a href={`http://e0.mjv.jp/0/log/?${match[1]}`} target="_blank" rel="noopener noreferrer">{t("analyzer.downloadInstructions")}</a>;
                 } else {
-                    URLfeedback = <div>Invalid URL</div>;
+                    URLfeedback = <div>{t("analyzer.invalidURL")}</div>;
                 }
             }
         }
@@ -95,7 +97,8 @@ class ReplayAnalysis extends React.Component {
     }
 
     onRoundChoice(index) {
-        let turns = parseRound(this.state.rounds[index], this.state.player);
+        let { t } = this.props;
+        let turns = parseRound(t, this.state.rounds[index], this.state.player);
         this.setState({
             turns: turns,
             currentRound: index,
@@ -105,7 +108,8 @@ class ReplayAnalysis extends React.Component {
 
     onPlayerChoice(index) {
         let currentRound = Math.max(0, this.state.currentRound);
-        let turns = parseRound(this.state.rounds[currentRound], index);
+        let { t } = this.props;
+        let turns = parseRound(t, this.state.rounds[currentRound], index);
         this.setState({
             turns: turns,
             player: index,
@@ -115,7 +119,8 @@ class ReplayAnalysis extends React.Component {
     }
 
     parseRound() {
-        let turns = parseRound(this.state.rounds[this.state.currentRound], this.state.player);
+        let { t } = this.props;
+        let turns = parseRound(t, this.state.rounds[this.state.currentRound], this.state.player);
         this.setState({
             turns: turns
         });
@@ -168,13 +173,14 @@ class ReplayAnalysis extends React.Component {
         let currentTurn = this.state.turns[this.state.currentTurn];
 
         if(this.state.turns.length) {
-            message = <ListGroupItem className={currentTurn.className}>{currentTurn.message.split('|').map((row) => <Row>{row}</Row>)}</ListGroupItem>;
+            message = <ListGroupItem className={currentTurn.className}>{currentTurn.message.map((row) => <Row>{row}</Row>)}</ListGroupItem>;
         }
 
         let calls = "";
+        let {t} = this.props;
 
         for(let i = 0; currentTurn && i < currentTurn.calls.length; i++) {
-            if(calls) calls += ", ";
+            if(calls) calls += t("analyzer.callsSeparator");
             calls += `${convertTilesToAsciiSymbols(currentTurn.calls[i])} (${convertIndexesToTenhouTiles(currentTurn.calls[i])})`;
         }
 
@@ -182,20 +188,19 @@ class ReplayAnalysis extends React.Component {
             <Container>
                 <Row>
                     <Card><CardBody>
-                        Instructions:<br/>
-                        Paste the URL for your replay into the text box.<br/>
-                        Then, right click the link that appears and choose "Save As" or "Save Link As".<br/>
-                        Finally, click "Browse..." and upload the file you saved.<br/><br/>
-                        Alternatively, if you have a mjlog file on your computer, you can rename it to end in .zip.<br/>
-                        Then, upload the file contained within that zip.<br/>
-                        You can also just upload replay XML files directly if you have a program that fetches them for you.<br/>
-                        <br/>
-                        The disclaimer from the efficiency trainer applies here as well.<br/>
-                        For safety ratings, higher is better. 1 is the worst, and 15 is the best.
+                        {t("analyzer.instructions1")}<br/>
+                        {t("analyzer.instructions2")}<br/>
+                        {t("analyzer.instructions3")}<br/>
+                        {t("analyzer.instructions4")}<br/><br/>
+                        {t("analyzer.instructions5")}<br/>
+                        {t("analyzer.instructions6")}<br/>
+                        {t("analyzer.instructions7")}<br/><br/>
+                        {t("analyzer.instructions8")}<br/>
+                        {t("analyzer.instructions9")}
                     </CardBody></Card>
                 </Row>
                 <Row>
-                    <Input id="tenhouURL" placeholder="Tenhou Replay URL" onChange={this.onURLChanged}/> <br/>
+                    <Input id="tenhouURL" placeholder={t("analyzer.URLplaceholder")} onChange={this.onURLChanged}/> <br/>
                     {this.state.URLfeedback}
                 </Row>
                 <Row>
@@ -206,7 +211,7 @@ class ReplayAnalysis extends React.Component {
                         <Col xs="6">
                             <Dropdown isOpen={this.state.roundDropdownOpen} toggle={this.toggleRoundDropdown}>
                             <DropdownToggle caret>
-                                Select a Round
+                                {t("analyzer.roundSelect")}
                             </DropdownToggle>
                             <DropdownMenu>
                                 {roundItems}
@@ -216,7 +221,7 @@ class ReplayAnalysis extends React.Component {
                         <Col xs="6">
                             <Dropdown isOpen={this.state.playerDropdownOpen} toggle={this.togglePlayerDropdown}>
                             <DropdownToggle caret>
-                                Change Player
+                                {t("analyzer.playerSelect")}
                             </DropdownToggle>
                             <DropdownMenu>
                                 {playerItems}
@@ -232,26 +237,26 @@ class ReplayAnalysis extends React.Component {
                         <br/>
                         <Row>
                             <Col xs="4">
-                                <Button color="primary" block={true} xs="6" disabled={this.state.currentTurn <= 0} onClick={() => this.onPreviousTurn()}>Previous Turn</Button>
+                                <Button color="primary" block={true} xs="6" disabled={this.state.currentTurn <= 0} onClick={() => this.onPreviousTurn()}>{t("analyzer.previousTurn")}</Button>
                             </Col>
                             <Col xs="4">
-                                <Button color="primary" block={true} xs="6" disabled={this.state.currentTurn >= this.state.turns.length - 1} onClick={() => this.onNextTurn()}>Next Turn</Button>
+                                <Button color="primary" block={true} xs="6" disabled={this.state.currentTurn >= this.state.turns.length - 1} onClick={() => this.onNextTurn()}>{t("analyzer.nextTurn")}</Button>
                             </Col>
                             <Col xs="4">
-                                <Button color="primary" block={true} xs="6" disabled={this.state.currentTurn >= this.state.turns.length - 1} onClick={() => this.onNextIssue()}>Next Issue</Button>
+                                <Button color="primary" block={true} xs="6" disabled={this.state.currentTurn >= this.state.turns.length - 1} onClick={() => this.onNextIssue()}>{t("analyzer.nextIssue")}</Button>
                             </Col>
                         </Row>
                         <br/>
                         <ListGroup>
                             <ListGroupItem>
-                                <Row>{roundNames[this.state.currentRound]}, Turn {this.state.currentTurn + 1}</Row>
-                                <Row>{currentTurn.discards.length ? `Tiles In Your Discards: ${convertTilesToAsciiSymbols(currentTurn.discards)} (${convertIndexesToTenhouTiles(currentTurn.discards)})` : ""}</Row>
-                                <Row>{calls.length > 0 ? `Your Calls: ${calls}` : ""}</Row>
+                                <Row>{t("analyzer.turn", {round: roundNames[this.state.currentRound], turn: this.state.currentTurn + 1})}</Row>
+                                <Row>{currentTurn.discards.length ? t("analyzer.discards", {symbols: convertTilesToAsciiSymbols(currentTurn.discards), tiles: convertIndexesToTenhouTiles(currentTurn.discards)}) : ""}</Row>
+                                <Row>{calls.length > 0 ? t("analyzer.calls", {calls: calls}) : ""}</Row>
                             </ListGroupItem>
                             {message}
                             <ListGroupItem>
                                 <a className="tenhouLink" href={"http://tenhou.net/2/?q=" + convertHandToTenhouString(currentTurn.hand)} target="_blank" rel="noopener noreferrer">
-                                    [Tenhou Ukeire Analysis]
+                                    {t("analyzer.tenhouLinkText")}
                                 </a>
                             </ListGroupItem>
                         </ListGroup>
@@ -262,4 +267,4 @@ class ReplayAnalysis extends React.Component {
     }
 }
 
-export default ReplayAnalysis;
+export default withTranslation()(ReplayAnalysis);

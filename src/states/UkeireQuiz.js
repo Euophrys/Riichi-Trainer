@@ -18,8 +18,9 @@ import { shuffleArray, removeRandomItem } from '../scripts/Utils';
 import SortedHand from '../components/SortedHand';
 import Player from '../models/Player';
 import { PLAYER_NAMES } from '../Constants';
+import { withTranslation } from 'react-i18next';
 
-class Quiz extends React.Component {
+class UkeireQuiz extends React.Component {
     constructor(props) {
         super(props);
         this.onSettingsChanged = this.onSettingsChanged.bind(this);
@@ -115,7 +116,8 @@ class Quiz extends React.Component {
     }
 
     getNewHandState(hand, availableTiles, tilePool, history, dora, lastDraw = false, seatWind = false, roundWind = false) {
-        history.unshift({ message: "Started a new hand: " + convertHandToTenhouString(hand) });
+        let { t } = this.props;
+        history.unshift({ message: t("trainer.start", {hand: convertHandToTenhouString(hand)}) });
 
         let players = [];
         let numberOfPlayers = this.state.settings.threePlayer ? 3 : 4;
@@ -156,6 +158,7 @@ class Quiz extends React.Component {
         let history = [];
         let dora = 1;
         let hand, availableTiles, tilePool;
+        let { t } = this.props;
 
         let minShanten = this.state.settings.minShanten;
         minShanten = Math.max(0, minShanten);
@@ -184,7 +187,7 @@ class Quiz extends React.Component {
             } while (CalculateMinimumShanten(hand) < minShanten)
 
             if (!hand) {
-                history.push({ message: "There aren't enough tiles left in the wall to make a new hand. Shuffling." });
+                history.push({ message: t("trainer.error.wallEmptyShuffle") });
             }
             else {
                 this.setState(this.getNewHandState(hand, availableTiles, tilePool, history, dora));
@@ -200,7 +203,7 @@ class Quiz extends React.Component {
             tilePool = generationResult.tilePool;
 
             if (!hand) {
-                history.push({ message: "There are not enough tiles to create a hand." });
+                history.push({ message: t("trainer.error.wallEmpty") });
                 this.setState({
                     history: history
                 });
@@ -308,7 +311,8 @@ class Quiz extends React.Component {
         };
 
         if (shanten <= 0 && handUkeire.value > 0) {
-            historyObject.message = ` Your hand is now ready. Congratulations! Your efficiency was ${achievedTotal}/${possibleTotal}, or ${Math.floor(achievedTotal / possibleTotal * 100)}%. `;
+            let { t } = this.props;
+            historyObject.message = " " + t("trainer.complete", {achieved: achievedTotal, total: possibleTotal, percent: Math.floor(achievedTotal / possibleTotal * 100)});
             isComplete = true;
         }
 
@@ -403,8 +407,10 @@ class Quiz extends React.Component {
     }
 
     loadHand(loadData) {
+        let { t } = this.props;
+
         if (loadData.tiles === 0) {
-            this.logToHistory("Error: Couldn't understand provided hand.");
+            this.logToHistory(t("trainer.error.load"));
             return;
         }
 
@@ -423,7 +429,7 @@ class Quiz extends React.Component {
         let { hand, availableTiles, tilePool } = FillHand(remainingTiles, loadData.hand, 14 - loadData.tiles);
 
         if (!hand) {
-            this.logToHistory("Error: Not enough tiles to make a hand.");
+            this.logToHistory(t("trainer.error.wallEmpty"));
             return;
         }
 
@@ -461,6 +467,7 @@ class Quiz extends React.Component {
     }
 
     render() {
+        let { t } = this.props;
         let blind = this.state.players.length && this.state.players[0].discards.length && this.state.settings.blind && !this.state.isComplete;
 
         return (
@@ -468,11 +475,11 @@ class Quiz extends React.Component {
                 <Settings onChange={this.onSettingsChanged} />
                 <StatsDisplay values={this.state.stats} onReset={() => this.resetStats()} />
                 <Row>
-                    {this.state.disclaimerSeen ? "" : <span>Disclaimer: This trainer will train your ability to maximize your hand's efficiency in the current turn. It won't help you maximize efficiency in future turns, or to learn when it's proper to ignore efficiency, or how to build value. Playing the way this trainer suggests in every hand is not the optimal way to play mahjong, but the are hands where you want to play this way. High level players don't always play like this, but all high level players CAN play like this. Make sure to supplement this training with further reading to learn when it might not be the best line of play, and check the settings for more targeted training.</span>}
+                    {this.state.disclaimerSeen ? "" : <span>{t("trainer.disclaimer")}</span>}
                 </Row>
                 <ValueTileDisplay roundWind={this.state.roundWind} seatWind={this.state.seatWind} dora={this.state.dora} />
                 <Row className="mb-2 mt-2">
-                    <span>Click the tile you want to discard.</span>
+                    <span>{t("trainer.instructions")}</span>
                 </Row>
                 { this.state.settings.sort
                     ? <Hand tiles={this.state.hand}
@@ -486,7 +493,7 @@ class Quiz extends React.Component {
                 }
                 <Row className="mt-2">
                     <Col xs="6" sm="3" md="3" lg="2">
-                        <Button className="btn-block" color={this.state.isComplete ? "success" : "warning"} onClick={() => this.onNewHand()}>New Hand</Button>
+                        <Button className="btn-block" color={this.state.isComplete ? "success" : "warning"} onClick={() => this.onNewHand()}>{t("trainer.newHandButtonLabel")}</Button>
                     </Col>
                     <CopyButton hand={this.state.hand} />
                     <LoadButton callback={this.loadHand} />
@@ -500,4 +507,4 @@ class Quiz extends React.Component {
     }
 }
 
-export default Quiz;
+export default withTranslation()(UkeireQuiz);

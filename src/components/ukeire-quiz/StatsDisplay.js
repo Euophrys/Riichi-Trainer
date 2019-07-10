@@ -1,5 +1,6 @@
 import React from 'react';
 import { Container, Collapse, Card, CardBody, Button, Row, Col } from 'reactstrap';
+import { withTranslation } from 'react-i18next';
 
 class StatsDisplay extends React.Component {
     constructor(props) {
@@ -35,49 +36,51 @@ class StatsDisplay extends React.Component {
         if (isNaN(averageDiscards)) averageDiscards = 0;
         averageDiscards = Math.round(averageDiscards * 10) / 10;
 
+        let { t } = this.props;
+
         return (
             <Container>
-                <Button color="primary" onClick={this.toggleStats}>Statistics</Button>
+                <Button color="primary" onClick={this.toggleStats}>{t("stats.buttonLabel")}</Button>
                 <Collapse isOpen={!this.state.statsCollapsed}>
                     <Card><CardBody>
                         <Row>
-                            These stats update every time you bring a hand to ready.
+                            {t("stats.info")}
                         </Row>
                         <Row>
-                            Ready Hands: {this.props.values.totalTenpai} hands
+                            {t("stats.ready", {count: this.props.values.totalTenpai})}
                         </Row>
                         <Row>
-                            Tiles Discarded: {this.props.values.totalDiscards} tiles
+                            {t("stats.discards", {count: this.props.values.totalDiscards})}
                         </Row>
                         <Row>
-                            Average Discards Until Ready: {averageDiscards} discards
+                            {t("stats.average", {average: averageDiscards})}
                         </Row>
                         <Row>
-                            Optimal Discards: {this.props.values.totalOptimalDiscards} discards
+                            {t("stats.optimal", {count: this.props.values.totalOptimalDiscards})}
                         </Row>
                         <Row>
-                            Optimal Discard Rate: {optimalDiscardRate}% ({this.props.values.totalOptimalDiscards}/{this.props.values.totalDiscards})
+                            {t("stats.optimalRate", {percent: optimalDiscardRate, achieved: this.props.values.totalOptimalDiscards, total: this.props.values.totalDiscards})}
                         </Row>
                         <Row>
-                            Efficiency Acquired: {this.props.values.totalEfficiency} tiles
+                            {t("stats.efficiency", {count: this.props.values.totalEfficiency})}
                         </Row>
                         <Row>
-                            Potential Efficiency Acquirable: {this.props.values.totalPossibleEfficiency} tiles
+                            {t("stats.possible", {count: this.props.values.totalPossibleEfficiency})}
                         </Row>
                         <Row>
-                            Overall Efficiency: {efficiency}% ({this.props.values.totalEfficiency}/{this.props.values.totalPossibleEfficiency})
+                            {t("stats.overall", {percent: efficiency, achieved: this.props.values.totalEfficiency, total: this.props.values.totalPossibleEfficiency})}
                         </Row>
                         <Row className="mt-4">
-                            <Button color="danger" onClick={this.toggleConfirm}>Reset Stats</Button>
+                            <Button color="danger" onClick={this.toggleConfirm}>{t("stats.reset")}</Button>
                         </Row>
                         <Row>
                             <Collapse isOpen={!this.state.confirmCollapsed}>
                                 <Card><CardBody>
-                                    <Row>Are you sure you want to reset all of your stats to zero? You cannot undo this action.</Row>
+                                    <Row>{t("stats.confirmation")}</Row>
                                     <Row>
-                                        <Button color="danger" onClick={this.props.onReset}>Yes, reset!</Button>
+                                        <Button color="danger" onClick={this.props.onReset}>{t("stats.yes")}</Button>
                                         <Col xs="1" />
-                                        <Button color="success" onClick={this.toggleConfirm}>No, don't reset!</Button>
+                                        <Button color="success" onClick={this.toggleConfirm}>{t("stats.no")}</Button>
                                     </Row>
                                 </CardBody></Card>
                             </Collapse>
@@ -89,4 +92,4 @@ class StatsDisplay extends React.Component {
     }
 }
 
-export default StatsDisplay;
+export default withTranslation()(StatsDisplay);

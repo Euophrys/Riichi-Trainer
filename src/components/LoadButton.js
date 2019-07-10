@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Input, InputGroup, InputGroupAddon, Col } from 'reactstrap';
+import { withTranslation } from 'react-i18next';
 
 class LoadButton extends React.Component {
     onClick() {
@@ -91,12 +92,13 @@ class LoadButton extends React.Component {
     }
 
     render() {
+        let { t } = this.props;
         return (
             <Col xs="12" sm="6" md="6" lg="8">
                 <InputGroup>
                     <Input id="loadHandString" placeholder="123m456p789s12345z" />
                     <InputGroupAddon addonType="append">
-                        <Button color="warning" onClick={() => this.onClick()}>Load Hand</Button>
+                        <Button color="warning" onClick={() => this.onClick()}>{t("trainer.loadButtonLabel")}</Button>
                     </InputGroupAddon>
                 </InputGroup>
             </Col>
@@ -104,4 +106,4 @@ class LoadButton extends React.Component {
     }
 }
 
-export default LoadButton;
+export default withTranslation()(LoadButton);
