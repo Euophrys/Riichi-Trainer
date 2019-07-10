@@ -22,7 +22,7 @@ To test your new translation, you could either change the language code back to 
 7) Save both files.
 8) Open a command prompt or terminal window in the Riichi-Trainer folder. Run `npm install` if you haven't already, then run `npm start`. If you did things correctly, a webpage should open with the trainer, and you can change the language to yours and see how things look. If you got errors, you can try to figure out why, or ask me.
 
-When you're finished, commit the translation file and push it up, then create a pull request with me as a reviewer. I'll do a quick check and merge it in if it looks good. If you don't know how to use git, you can just send me the translation file and I'll take care of it.
+When you're finished, commit the translation file to a new branch and push it up, then create a pull request with me as a reviewer. I'll do a quick check and merge it in if it looks good. If you don't know how to use git, you can just send me the translation file and I'll take care of it.
 
 # For Programmers:
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app). Make sure to run `npm install`, everyone's favourite command. Also, I apologize in advance for the code.
