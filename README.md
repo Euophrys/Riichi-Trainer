@@ -1,6 +1,6 @@
 # Helping With Translations
 
-To edit the files, I recommend [Visual Studio Code](https://code.visualstudio.com/).
+To edit the files, I recommend [Visual Studio Code](https://code.visualstudio.com/). To download the repo, install [GitHub Desktop](https://desktop.github.com/). Then, on the right side of the repo page, click "Clone or Download", then "Open in Desktop". You could also just download the zip if you don't want to bother with git, though you'll be making more work for me.
 
 The translation files are found in the `src/translations` folder. Make a copy of the `en.js` file and rename it to the language code for your language. You can find the language codes [in this Wikipedia article.](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) The two-letter code should be used.
 
@@ -25,7 +25,7 @@ To test your new translation, you could either change the language code back to 
 When you're finished, commit the translation file and push it up, then create a pull request with me as a reviewer. I'll do a quick check and merge it in if it looks good. If you don't know how to use git, you can just send me the translation file and I'll take care of it.
 
 # For Programmers:
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app). Make sure to run `npm install`, everyone's favourite command. Also, I apologize in advance for the code.
 
 ## Available Scripts
 
