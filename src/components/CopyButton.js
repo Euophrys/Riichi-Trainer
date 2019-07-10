@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Col } from 'reactstrap';
 import { convertHandToTenhouString } from '../scripts/HandConversions';
+import { withTranslation } from 'react-i18next';
 
 class CopyButton extends React.Component {
     constructor(props) {
@@ -41,12 +42,14 @@ class CopyButton extends React.Component {
             hasCopied = this.state.lastCopy === convertHandToTenhouString(this.props.hand);
         }
 
+        let { t } = this.props;
+
         return (
             <Col xs="6" sm="3" md="3" lg="2">
-                <Button className="btn-block" color={hasCopied ? "info" : "primary"} onClick={() => this.onClick()}>{hasCopied ? "Copied!" : "Copy Hand"}</Button>
+                <Button className="btn-block" color={hasCopied ? "info" : "primary"} onClick={() => this.onClick()}>{hasCopied ? t("trainer.copied") : t("trainer.copyHand")}</Button>
             </Col>
         );
     }
 }
 
-export default CopyButton;
+export default withTranslation()(CopyButton);

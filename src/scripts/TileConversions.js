@@ -52,26 +52,26 @@ export const ascii = [
     "🀪", "🀀", "🀁", "🀂", "🀃", "🀆", "🀅", "🀄"
 ]
 
-const numberText = ["red five", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
-const numberCharacter = ["red 5", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+const numberText = ["redFive", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+const numberCharacter = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 const suitText = ["characters", "circles", "bamboo"]
 const suitCharacter = ["m", "p", "s"];
-const honors = ["hidden tile", "east wind", "south wind", "west wind", "north wind", "white dragon", "green dragon", "red dragon"]
+const honors = ["hidden", "east", "south", "west", "north", "white", "green", "red"]
 
 export function getTileImage(index) {
     return images[index];
 }
 
-export function getTileAsText(index, verbose = true) {
+export function getTileAsText(t, index, verbose = true) {
     if (index >= 30) {
-        return honors[index - 30];
+        return t(`values.${honors[index - 30]}`);
     }
 
     if (verbose) {
         const number = numberText[index % 10];
         const suit = suitText[Math.floor(index / 10)];
 
-        return `${number} of ${suit}`;
+        return t("shuupai", {value: t(`values.${number}`), suit: t(`suits.${suit}`)});
     }
     else {
         const number = numberCharacter[index % 10];

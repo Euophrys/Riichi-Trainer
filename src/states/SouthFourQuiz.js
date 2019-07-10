@@ -5,6 +5,7 @@ import Player from '../models/Player';
 import { randomInt, validateFu, shuffleArray } from '../scripts/Utils';
 import { SEAT_NAMES, NON_DEALER_RON_SCORES, NON_DEALER_TSUMO_SCORES, PLACEMENTS } from '../Constants';
 import GyakutenQuestion from '../components/south-four-quiz/GyakutenQuestion';
+import { withTranslation } from 'react-i18next';
 
 class SouthFourQuiz extends React.Component {
     constructor(props) {
@@ -42,9 +43,10 @@ class SouthFourQuiz extends React.Component {
     onLoadSituation() {
         let string = document.getElementById("loadScoresString").value;
         let scores = string.split(',');
+        let { t } = this.props;
 
         if(scores.length < 4) {
-            this.setState({loadErrorMessage: "Error: Not enough scores provided."});
+            this.setState({loadErrorMessage: t("allLast.error.few")});
             return;
         }
         
@@ -54,7 +56,7 @@ class SouthFourQuiz extends React.Component {
             let converted = parseInt(scores[i]);
 
             if(isNaN(converted)) {
-                this.setState({loadErrorMessage: `Error: Could not understand the score for ${SEAT_NAMES[i]}.`});
+                this.setState({loadErrorMessage: t("allLast.error.NaN", {seat: t(`seats.${SEAT_NAMES[i]}`)})});
                 return;
             }
 
@@ -65,7 +67,7 @@ class SouthFourQuiz extends React.Component {
         players.sort((a, b) => a.points - b.points);
         
         if(players[0].seat === 0) {
-            this.setState({loadErrorMessage: `Error: Dealer is in last place. This is not supported yet.`});
+            this.setState({loadErrorMessage: t("allLast.error.dealerLast")});
             return;
         }
 
@@ -121,8 +123,10 @@ class SouthFourQuiz extends React.Component {
             scores[0] += riichis[i] * 1000;
         }
 
+        let { t } = this.props;
+
         let required;
-        let feedback = `Wrong! That score doesn't get you to ${PLACEMENTS[placementTarget]}! Highlight for the answer: `;
+        let feedback = t("allLast.wrong", {placement: t(`allLast.placements.${PLACEMENTS[placementTarget]}`)});
         let canBeEqual = (players[0].seat + 1) % 4 < (players[placementTarget].seat + 1) % 4;
         
         if(tsumo) {
@@ -134,9 +138,9 @@ class SouthFourQuiz extends React.Component {
             scores[3] -= players[3].seat > 0 ? points[0] : points[1];
             
             if(points[0] === required.nondealer && points[1] === required.dealer) {
-                feedback = `Correct! That's the lowest score that gets you to ${PLACEMENTS[placementTarget]}!`;
+                feedback = t("allLast.correct", {placement: t(`allLast.placements.${PLACEMENTS[placementTarget]}`)});;
             } else if(points[0] > required.nondealer || points[1] > required.dealer) {
-                feedback = `That score gets you to ${PLACEMENTS[placementTarget]}, but it's not the lowest possible. Highlight for the answer: `;
+                feedback = t("allLast.tooMuch", {placement: t(`allLast.placements.${PLACEMENTS[placementTarget]}`)});;
             }
         } else {
             required = findMinimumRonValue(scores, ronTarget, placementTarget, this.state.maxFu, canBeEqual);
@@ -146,21 +150,21 @@ class SouthFourQuiz extends React.Component {
             scores[ronTarget] -= points;
 
             if(points === required.value) {
-                feedback = `Correct! That's the lowest score that gets you to ${PLACEMENTS[placementTarget]}! `
+                feedback = t("allLast.correct", {placement: t(`allLast.placements.${PLACEMENTS[placementTarget]}`)});
             } else if(points > required.value) {
-                feedback = `That score gets you to ${PLACEMENTS[placementTarget]}, but it's not the lowest possible. Highlight for the answer: `
+                feedback = t("allLast.tooMuch", {placement: t(`allLast.placements.${PLACEMENTS[placementTarget]}`)});
             }
         }
         
         let messages = this.state.messages.slice();
         messages[index] = (
             <Container>
-                <Row>{feedback}&nbsp;<span>{required.han} han {required.fu} fu</span></Row>
-                <Row>Results:</Row>
-                <Row>{SEAT_NAMES[players[0].seat] + ": " + scores[0]} (YOU)</Row>
-                <Row>{SEAT_NAMES[players[1].seat] + ": " + scores[1]} ({scores[1] - scores[0]})</Row>
-                <Row>{SEAT_NAMES[players[2].seat] + ": " + scores[2]} ({scores[2] - scores[0]})</Row>
-                <Row>{SEAT_NAMES[players[3].seat] + ": " + scores[3]} ({scores[3] - scores[0]})</Row>
+                <Row>{feedback}&nbsp;<span>{t("allLast.score", {han: required.han, fu: required.fu})}</span></Row>
+                <Row>{t("allLast.results")}</Row>
+                <Row>{t(`seats.${SEAT_NAMES[players[0].seat]}`) + ": " + scores[0]} ({t("allLast.you")})</Row>
+                <Row>{t(`seats.${SEAT_NAMES[players[1].seat]}`) + ": " + scores[1]} ({scores[1] - scores[0]})</Row>
+                <Row>{t(`seats.${SEAT_NAMES[players[2].seat]}`) + ": " + scores[2]} ({scores[2] - scores[0]})</Row>
+                <Row>{t(`seats.${SEAT_NAMES[players[3].seat]}`) + ": " + scores[3]} ({scores[3] - scores[0]})</Row>
             </Container>
         );
 
@@ -200,43 +204,45 @@ class SouthFourQuiz extends React.Component {
             return <Row key={index}>{SEAT_NAMES[player.seat] + ": " + player.points} ({index === 0 ? "YOU" : "+" + (player.points - this.state.players[0].points)})</Row>
         });
 
+        let { t } = this.props;
+
         return (
             <Container>
                 <ListGroup>
-                <ListGroupItemHeading><span>All Last Trainer</span></ListGroupItemHeading>
+                <ListGroupItemHeading><span>{t("allLast.title")}</span></ListGroupItemHeading>
                 <ListGroupItem>
                     <Col xs="12" sm="8" md="6">
                     <InputGroup>
-                        <InputGroupAddon addonType="prepend">Maximum Fu</InputGroupAddon>
+                        <InputGroupAddon addonType="prepend">{t("allLast.maxFu")}</InputGroupAddon>
                         <Input type="number" value={this.state.maxFu} placeholder="Fu" step="5" min="20" max="130" onBlur={this.onFuChanged} onChange={this.onNumberChanged} />
                     </InputGroup>
                     </Col>
                 </ListGroupItem>
                 <ListGroupItem>
-                    <Row>Enter comma-separated scores for East, South, West, and North, in that order, to load a situation.</Row>
+                    <Row>{t("allLast.loadInstructions")}</Row>
                     <InputGroup>
                         <Input id="loadScoresString" placeholder="28000,26000,24000,22000" />
                         <InputGroupAddon addonType="append">
-                            <Button color="warning" onClick={() => this.onLoadSituation()}>Load Situation</Button>
+                            <Button color="warning" onClick={() => this.onLoadSituation()}>{t("allLast.loadLabel")}</Button>
                         </InputGroupAddon>
                     </InputGroup>
                     <Row>{this.state.loadErrorMessage}</Row>
                 </ListGroupItem>
                 <ListGroupItem>
-                    <Button onClick={() => this.generateNewQuiz()}>New Random Situation</Button>
+                    <Button onClick={() => this.generateNewQuiz()}>{t("allLast.newLabel")}</Button>
                 </ListGroupItem>
-                <ListGroupItemHeading><span>Escaping Fourth</span></ListGroupItemHeading>
+                <ListGroupItemHeading><span>{t("allLast.escapeHeader")}</span></ListGroupItemHeading>
                 <ListGroupItem>
-                    <Row>It's currently All Last, the last hand in the match. You are in fourth. The scores are as follows:</Row>
+                    <Row>{t("allLast.info")}</Row>
                     {scores}
                 </ListGroupItem>
                 <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={true}  ronTarget={0} placementTarget={1} index={0} riichis={[0, 0, 0, 0]} messages={this.state.messages}/>
                 <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={1} placementTarget={1} index={1} riichis={[0, 0, 0, 0]} messages={this.state.messages}/>
                 <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={2} placementTarget={1} index={2} riichis={[0, 0, 0, 0]} messages={this.state.messages}/>
                 <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={3} placementTarget={1} index={3} riichis={[0, 0, 0, 0]} messages={this.state.messages}/>
-                <ListGroupItemHeading><span>Riichi Declarations</span></ListGroupItemHeading>
+                <ListGroupItemHeading><span>{t("allLast.riichiHeader")}</span></ListGroupItemHeading>
                 <ListGroupItem>
-                    <Row>It's currently All Last, the last hand in the match. You are in fourth. The scores are as follows:</Row>
+                <Row>{t("allLast.info")}</Row>
                     {scores}
                 </ListGroupItem>
                 <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={true}  ronTarget={0} placementTarget={1} index={4} riichis={[0, 0, 0, 1]} messages={this.state.messages}/>
@@ -245,9 +251,9 @@ class SouthFourQuiz extends React.Component {
                 <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={true}  ronTarget={0} placementTarget={1} index={7} riichis={[0, 1, 0, 0]} messages={this.state.messages}/>
                 <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={1} placementTarget={1} index={8} riichis={[0, 1, 0, 0]} messages={this.state.messages}/>
                 <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={3} placementTarget={1} index={9} riichis={[0, 1, 0, 0]} messages={this.state.messages}/>
-                <ListGroupItemHeading><span>Higher Placements</span></ListGroupItemHeading>
+                <ListGroupItemHeading><span>{t("allLast.higherHeader")}</span></ListGroupItemHeading>
                 <ListGroupItem>
-                    <Row>It's currently All Last, the last hand in the match. You are in fourth. The scores are as follows:</Row>
+                <Row>{t("allLast.info")}</Row>
                     {scores}
                 </ListGroupItem>
                 <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={true}  ronTarget={0} placementTarget={2} index={10} riichis={[0, 0, 0, 0]} messages={this.state.messages}/>
@@ -313,4 +319,4 @@ function findMinimumRonValue(scores, ronTarget, placementTarget, maxFu, canBeEqu
     return NON_DEALER_RON_SCORES[0];
 }
 
-export default SouthFourQuiz;
+export default withTranslation()(SouthFourQuiz);

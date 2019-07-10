@@ -2,6 +2,7 @@ import React from 'react';
 import { Col, Collapse, Button, Row, ListGroup, ListGroupItem } from 'reactstrap';
 import Tile from './Tile';
 import { SEAT_NAMES } from '../Constants';
+import { withTranslation } from 'react-i18next';
 
 class DiscardPool extends React.Component {
     constructor(props) {
@@ -33,14 +34,16 @@ class DiscardPool extends React.Component {
             )
         }
 
+        let { t } = this.props;
+
         return (
             <Col xs="12" sm={this.state.collapsed ? "12" : ""}>
-                <Button className="btn-block bg-light" color="basic" onClick={this.toggle}>Discard Pool</Button>
+                <Button className="btn-block bg-light" color="basic" onClick={this.toggle}>{t("discards.label")}</Button>
                 <Collapse isOpen={!this.state.collapsed}>
                     <ListGroup>
                         <ListGroupItem className="justify-content-center">
-                            <span className="blackText">You've discarded&nbsp;<strong>{this.props.discardCount}</strong>&nbsp;tiles.</span>&nbsp;
-                            <span className="blackText">There are&nbsp;<strong>{this.props.wallCount}</strong>&nbsp;tiles left in the wall.</span>
+                            <span className="blackText">{t("discards.discardCount", {count: this.props.discardCount})}</span>&nbsp;
+                            <span className="blackText">{t("discards.tilesLeft", {count: this.props.wallCount})}</span>
                         </ListGroupItem>
                         {pools}
                     </ListGroup>
@@ -50,4 +53,4 @@ class DiscardPool extends React.Component {
     }
 }
 
-export default DiscardPool;
+export default withTranslation()(DiscardPool);

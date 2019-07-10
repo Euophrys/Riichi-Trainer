@@ -1,6 +1,7 @@
 import React from 'react';
 import { Container, Collapse, Card, CardBody, Button, Row, Col, Input, Label } from 'reactstrap';
 import NumericInput from 'react-numeric-input';
+import { withTranslation } from "react-i18next";
 
 class Settings extends React.Component {
     constructor(props) {
@@ -95,46 +96,47 @@ class Settings extends React.Component {
     }
 
     render() {
+        const { t } = this.props;
         return (
             <Container>
-                <Button color="primary" onClick={this.toggle}>Settings</Button>
+                <Button color="primary" onClick={this.toggle}>{t("settings.buttonLabel")}</Button>
                 <Collapse isOpen={!this.state.collapsed}>
                     <Card><CardBody>
                         <Row>
                             <Col>
-                                Tiles Allowed:
+                                {t("settings.tilesAllowed")}
                             </Col>
                             <Col className="form-check form-check-inline">
                                 <Input className="form-check-input" type="checkbox" id="characters"
                                     checked={this.state.settings.characters} onChange={this.onSettingChanged} />
-                                <Label className="form-check-label" for="characters">Characters</Label>
+                                <Label className="form-check-label" for="characters">{t("settings.characters")}</Label>
                             </Col>
                             <Col className="form-check form-check-inline">
                                 <Input className="form-check-input" type="checkbox" id="circles"
                                     checked={this.state.settings.circles} onChange={this.onSettingChanged} />
-                                <Label className="form-check-label" for="circles">Circles</Label>
+                                <Label className="form-check-label" for="circles">{t("settings.circles")}</Label>
                             </Col>
                             <Col className="form-check form-check-inline">
                                 <Input className="form-check-input" type="checkbox" id="bamboo"
                                     checked={this.state.settings.bamboo} onChange={this.onSettingChanged} />
-                                <Label className="form-check-label" for="bamboo">Bamboo</Label>
+                                <Label className="form-check-label" for="bamboo">{t("settings.bamboo")}</Label>
                             </Col>
                             <Col className="form-check form-check-inline">
                                 <Input className="form-check-input" type="checkbox" id="honors"
                                     checked={this.state.settings.honors} onChange={this.onSettingChanged} />
-                                <Label className="form-check-label" for="honors">Honors</Label>
+                                <Label className="form-check-label" for="honors">{t("settings.honors")}</Label>
                             </Col>
                         </Row>
                         <Row>
                             <Col className="form-check form-check-inline">
                                 <Input className="form-check-input" type="checkbox" id="threePlayer"
                                     checked={this.state.settings.threePlayer} onChange={this.onSettingChanged} />
-                                <Label className="form-check-label" for="threePlayer">Three player rules</Label>
+                                <Label className="form-check-label" for="threePlayer">{t("settings.sanma")}</Label>
                             </Col>
                         </Row>
                         <Row>
                             <Col className="form-check form-check-inline">
-                                <Label className="form-check-label" for="redFives">Number of Red Fives:&nbsp;</Label>
+                                <Label className="form-check-label" for="redFives">{t("settings.redFives")}&nbsp;</Label>
                                 <NumericInput className="form-check-input" type="number" id="redFives"
                                     min={0} max={12} step={1}
                                     value={this.state.settings.redFives} onChange={this.onSettingChanged} />
@@ -144,65 +146,65 @@ class Settings extends React.Component {
                             <Col className="form-check form-check-inline">
                                 <Input className="form-check-input" type="checkbox" id="verbose"
                                     checked={this.state.settings.verbose} onChange={this.onSettingChanged} />
-                                <Label className="form-check-label" for="verbose">Verbose tile names ("one of bamboo" vs "1s")</Label>
+                                <Label className="form-check-label" for="verbose">{t("settings.verbose")}</Label>
                             </Col>
                         </Row>
                         <Row>
                             <Col className="form-check form-check-inline">
                                 <Input className="form-check-input" type="checkbox" id="extraConcise"
                                     checked={this.state.settings.extraConcise} onChange={this.onSettingChanged} />
-                                <Label className="form-check-label" for="extraConcise">Concise history</Label>
+                                <Label className="form-check-label" for="extraConcise">{t("settings.concise")}</Label>
                             </Col>
                         </Row>
                         <Row>
                             <Col className="form-check form-check-inline">
                                 <Input className="form-check-input" type="checkbox" id="spoilers"
                                     checked={this.state.settings.spoilers} onChange={this.onSettingChanged} />
-                                <Label className="form-check-label" for="spoilers">Show what the best option was</Label>
+                                <Label className="form-check-label" for="spoilers">{t("settings.spoilers")}</Label>
                             </Col>
                         </Row>
                         <Row>
                             <Col className="form-check form-check-inline">
                                 <Input className="form-check-input" type="checkbox" id="reshuffle"
                                     checked={this.state.settings.reshuffle} onChange={this.onSettingChanged} />
-                                <Label className="form-check-label" for="reshuffle">Shuffle discarded tiles back into the wall after starting a new hand</Label>
+                                <Label className="form-check-label" for="reshuffle">{t("settings.shuffle")}</Label>
                             </Col>
                         </Row>
                         <Row>
                             <Col className="form-check form-check-inline">
                                 <Input className="form-check-input" type="checkbox" id="simulate"
                                     checked={this.state.settings.simulate} onChange={this.onSettingChanged} />
-                                <Label className="form-check-label" for="simulate">Simulate other players discarding tiles</Label>
+                                <Label className="form-check-label" for="simulate">{t("settings.simulate")}</Label>
                             </Col>
                         </Row>
                         <Row>
                             <Col className="form-check form-check-inline">
                                 <Input className="form-check-input" type="checkbox" id="exceptions"
                                     checked={this.state.settings.exceptions} onChange={this.onSettingChanged} />
-                                <Label className="form-check-label" for="exceptions">Consider exception hands (Kokushi/Thirteen Orphans and Chiitoitsu/Seven Pairs)</Label>
+                                <Label className="form-check-label" for="exceptions">{t("settings.exceptions")}</Label>
                             </Col>
                         </Row>
                         <Row>
                             <Col className="form-check form-check-inline">
-                                <Label className="form-check-label" for="minShanten">Minimum starting hand shanten:&nbsp;</Label>
+                                <Label className="form-check-label" for="minShanten">{t("settings.minShanten")}&nbsp;</Label>
                                 <NumericInput className="form-check-input" type="number" id="minShanten"
                                     min={0} max={4} step={1}
                                     value={this.state.settings.minShanten} onChange={this.onSettingChanged} />
-                                <span className="blackText">&nbsp;(up to the number of allowed suits)</span>
+                                <span className="blackText">&nbsp;{t("settings.minShantenLimit")}</span>
                             </Col>
                         </Row>
                         <Row>
                             <Col className="form-check form-check-inline">
                                 <Input className="form-check-input" type="checkbox" id="sort"
                                     checked={this.state.settings.sort} onChange={this.onSettingChanged} />
-                                <Label className="form-check-label" for="sort">Sort hand</Label>
+                                <Label className="form-check-label" for="sort">{t("settings.sort")}</Label>
                             </Col>
                         </Row>
                         <Row>
                             <Col className="form-check form-check-inline">
                                 <Input className="form-check-input" type="checkbox" id="blind"
                                     checked={this.state.settings.blind} onChange={this.onSettingChanged} />
-                                <Label className="form-check-label" for="blind">Conceal hand tiles</Label>
+                                <Label className="form-check-label" for="blind">{t("settings.blind")}</Label>
                             </Col>
                         </Row>
                     </CardBody></Card>
@@ -212,4 +214,4 @@ class Settings extends React.Component {
     }
 }
 
-export default Settings;
+export default withTranslation()(Settings);
