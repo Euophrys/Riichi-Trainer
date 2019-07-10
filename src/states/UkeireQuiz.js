@@ -11,11 +11,16 @@ import StatsDisplay from "../components/ukeire-quiz/StatsDisplay";
 import { GenerateHand, FillHand } from '../scripts/GenerateHand';
 import { CalculateDiscardUkeire, CalculateUkeireFromOnlyHand } from "../scripts/UkeireCalculator";
 import { CalculateMinimumShanten, CalculateStandardShanten } from "../scripts/ShantenCalculator";
-import { getTileAsText, convertRedFives } from "../scripts/TileConversions";
-import { convertHandToTenhouString } from "../scripts/HandConversions";
+import { convertRedFives } from "../scripts/TileConversions";
+import { convertHandToTenhouString, convertHandToTileArray } from "../scripts/HandConversions";
 import { evaluateBestDiscard } from "../scripts/Evaluations";
+import { shuffleArray, removeRandomItem } from '../scripts/Utils';
+import SortedHand from '../components/SortedHand';
+import Player from '../models/Player';
+import { PLAYER_NAMES } from '../Constants';
+import { withTranslation } from 'react-i18next';
 
-class Quiz extends React.Component {
+class UkeireQuiz extends React.Component {
     constructor(props) {
         super(props);
         this.onSettingsChanged = this.onSettingsChanged.bind(this);
@@ -26,25 +31,12 @@ class Quiz extends React.Component {
             lastDraw: -1,
             remainingTiles: null,
             tilePool: null,
-            discardPool: [],
+            players: [],
             discardCount: 0,
             optimalCount: 0,
             achievedTotal: 0,
             possibleTotal: 0,
-            settings: {
-                characters: true,
-                bamboo: true,
-                circles: true,
-                honors: false,
-                threePlayer: false,
-                redFives: 3,
-                verbose: true,
-                extraConcise: false,
-                spoilers: true,
-                reshuffle: true,
-                simulate: false,
-                exceptions: true,
-            },
+            settings: { /* See ../components/ukeire-quiz/Settings.js */ },
             stats: {
                 totalDiscards: 0,
                 totalTenpai: 0,
@@ -56,34 +48,14 @@ class Quiz extends React.Component {
             isComplete: false,
             roundWind: 31,
             seatWind: 31,
-            dora: 1
+            dora: 1,
+            shuffle: [],
+            disclaimerSeen: false,
         }
     }
 
     componentDidMount() {
         if (typeof (Storage) !== "undefined") {
-            let savedSettings = window.localStorage.getItem("settings");
-            if (savedSettings) {
-                savedSettings = JSON.parse(savedSettings);
-
-                this.setState({
-                    settings: {
-                        characters: savedSettings.characters,
-                        bamboo: savedSettings.bamboo,
-                        circles: savedSettings.circles,
-                        honors: savedSettings.honors,
-                        threePlayer: savedSettings.threePlayer,
-                        redFives: savedSettings.redFives || 3,
-                        verbose: savedSettings.verbose,
-                        extraConcise: savedSettings.extraConcise,
-                        spoilers: savedSettings.spoilers,
-                        reshuffle: savedSettings.reshuffle,
-                        simulate: savedSettings.simulate,
-                        exceptions: savedSettings.exceptions,
-                    }
-                }, () => this.onNewHand());
-            }
-
             let savedStats = window.localStorage.getItem("stats");
             if (savedStats) {
                 savedStats = JSON.parse(savedStats);
@@ -97,26 +69,35 @@ class Quiz extends React.Component {
                         totalOptimalDiscards: savedStats.totalOptimalDiscards
                     }
                 }, () => this.onNewHand());
+            } else {
+                this.setState({}, () => this.onNewHand());
             }
         }
+        else {
+            this.setState({}, () => this.onNewHand());
+        }
+    }
 
-        this.onNewHand();
+    onSettingsChanged(settings) {
+        this.setState({
+            settings: settings
+        });
     }
 
     discardHand() {
         let hand = this.state.hand;
-        let discards = this.state.discardPool;
+        let players = this.state.players.slice();
 
         for (let i = 0; i < hand.length; i++) {
             if (hand[i] === 0) continue;
 
             for (let j = 0; j < hand[i]; j++) {
-                discards.push({ tile: i, player: false });
+                players[0].discards.push(i);
             }
         }
 
         this.setState({
-            discardPool: discards
+            players: players
         });
     }
 
@@ -134,23 +115,42 @@ class Quiz extends React.Component {
         return possibilities[Math.floor(Math.random() * possibilities.length)];
     }
 
-    getNewHandState(hand, availableTiles, tilePool, history, discards, dora) {
-        history.unshift({ message: "Started a new hand: " + convertHandToTenhouString(hand) });
+    getNewHandState(hand, availableTiles, tilePool, history, dora, lastDraw = false, seatWind = false, roundWind = false) {
+        let { t } = this.props;
+        history.unshift({ message: t("trainer.start", {hand: convertHandToTenhouString(hand)}) });
+
+        let players = [];
+        let numberOfPlayers = this.state.settings.threePlayer ? 3 : 4;
+        seatWind = seatWind || this.pickSeatWind();
+
+        for(let i = 0; i < numberOfPlayers; i++) {
+            let player = new Player();
+            player.name = PLAYER_NAMES[i];
+            player.seat = (seatWind - 31 + i) % numberOfPlayers;
+            players.push(player);
+        }
+
+        if(lastDraw !== false) hand[lastDraw]--;
+        let shuffle = convertHandToTileArray(hand);
+        if(lastDraw !== false) hand[lastDraw]++;
+        shuffle = shuffleArray(shuffle);
+
         return {
             hand: hand,
             remainingTiles: availableTiles,
             tilePool: tilePool,
-            discardPool: discards,
+            players: players,
             discardCount: 0,
             optimalCount: 0,
             achievedTotal: 0,
             possibleTotal: 0,
             history: history,
             isComplete: false,
-            lastDraw: -1,
-            roundWind: this.pickRoundWind(),
-            seatWind: this.pickSeatWind(),
-            dora: dora
+            lastDraw: lastDraw || shuffle.pop(),
+            roundWind: roundWind || this.pickRoundWind(),
+            seatWind: seatWind,
+            dora: dora,
+            shuffle: shuffle
         }
     }
 
@@ -158,13 +158,22 @@ class Quiz extends React.Component {
         let history = [];
         let dora = 1;
         let hand, availableTiles, tilePool;
+        let { t } = this.props;
 
-        if (!this.state.settings.reshuffle) {
+        let minShanten = this.state.settings.minShanten;
+        minShanten = Math.max(0, minShanten);
+        let allowedSuits = +this.state.settings.honors
+            + +this.state.settings.bamboo
+            + +this.state.settings.characters
+            + +this.state.settings.circles;
+        minShanten = Math.min(minShanten, allowedSuits);
+
+        if (!this.state.settings.reshuffle && this.state.hand) {
             this.discardHand();
-            let remainingTiles = this.state.remainingTiles;
+            let remainingTiles = this.state.remainingTiles.slice();
 
             if (this.state.tilePool.length > 0) {
-                dora = this.state.tilePool[Math.floor(Math.random() * this.state.tilePool.length)];
+                dora = removeRandomItem(this.state.tilePool);
                 remainingTiles[dora]--;
             }
 
@@ -175,13 +184,13 @@ class Quiz extends React.Component {
                 tilePool = generationResult.tilePool;
 
                 if (!hand) break;
-            } while (CalculateMinimumShanten(hand) === -1)
+            } while (CalculateMinimumShanten(hand) < minShanten)
 
             if (!hand) {
-                history.push({ message: "There aren't enough tiles left in the wall to make a new hand. Shuffling." });
+                history.push({ message: t("trainer.error.wallEmptyShuffle") });
             }
             else {
-                this.setState(this.getNewHandState(hand, availableTiles, tilePool, history, this.state.discardPool, dora));
+                this.setState(this.getNewHandState(hand, availableTiles, tilePool, history, dora));
                 return;
             }
         }
@@ -194,20 +203,20 @@ class Quiz extends React.Component {
             tilePool = generationResult.tilePool;
 
             if (!hand) {
-                history.push({ message: "Did you turn off all the tile types? How do you expect to make a hand with no tiles?" });
+                history.push({ message: t("trainer.error.wallEmpty") });
                 this.setState({
                     history: history
                 });
                 return;
             }
-        } while (CalculateMinimumShanten(hand) === -1)
+        } while (CalculateMinimumShanten(hand) < minShanten)
 
         if (tilePool.length > 0) {
-            dora = tilePool.splice(Math.floor(Math.random() * tilePool.length), 1);
-            remainingTiles[dora]--;
+            dora = removeRandomItem(tilePool);
+            availableTiles[dora]--;
         }
 
-        this.setState(this.getNewHandState(hand, availableTiles, tilePool, history, [], dora));
+        this.setState(this.getNewHandState(hand, availableTiles, tilePool, history, dora));
     }
 
     resetRemainingTiles() {
@@ -259,27 +268,6 @@ class Quiz extends React.Component {
         return remainingTiles;
     }
 
-    onSettingsChanged(event, numberString, numberInput) {
-        if (!event) return;
-
-        let settings = this.state.settings;
-
-        if (typeof event === "number") {
-            settings[numberInput.id] = event;
-        }
-        else {
-            settings[event.target.id] = !settings[event.target.id];
-        }
-
-        this.setState({
-            settings: settings
-        });
-
-        if (typeof (Storage) !== "undefined") {
-            window.localStorage.setItem("settings", JSON.stringify(settings));
-        }
-    }
-
     onTileClicked(event) {
         let isComplete = this.state.isComplete;
         if (isComplete) return;
@@ -287,22 +275,24 @@ class Quiz extends React.Component {
         let chosenTile = parseInt(event.target.name);
         let hand = this.state.hand.slice();
 
-        let remainingTiles = this.state.remainingTiles;
+        let remainingTiles = this.state.remainingTiles.slice();
 
         let shantenFunction = this.state.settings.exceptions ? CalculateMinimumShanten : CalculateStandardShanten;
         let ukeire = CalculateDiscardUkeire(hand, remainingTiles, shantenFunction);
-        let bestUkeire = Math.max(...ukeire);
+        let ukeireValues = ukeire.map(o => o.value);
+        let bestUkeire = Math.max(...ukeireValues);
         let handString = convertHandToTenhouString(hand);
         hand[chosenTile]--;
         let chosenUkeire = ukeire[convertRedFives(chosenTile)];
 
         let shanten = shantenFunction(hand);
-        let handUkeire = CalculateUkeireFromOnlyHand(hand, this.resetRemainingTiles(), shantenFunction).value;
-        let bestTile = evaluateBestDiscard(ukeire);
+        let handUkeire = CalculateUkeireFromOnlyHand(hand, this.resetRemainingTiles(), shantenFunction);
+        let bestTile = evaluateBestDiscard(ukeire, this.state.dora + 1);
 
-        let discardPool = this.state.discardPool.slice();
-        discardPool.push({ tile: chosenTile, player: this.state.settings.simulate });
-        let achievedTotal = this.state.achievedTotal + chosenUkeire;
+        let players = this.state.players.slice();
+        players[0].discards.push(chosenTile);
+
+        let achievedTotal = this.state.achievedTotal + chosenUkeire.value;
         let possibleTotal = this.state.possibleTotal + bestUkeire;
         let tilePool = this.state.tilePool;
         let drawnTile = -1;
@@ -316,27 +306,29 @@ class Quiz extends React.Component {
             hand: handString,
             handUkeire,
             drawnTile: -1,
-            message: ""
+            message: "",
+            discards: players[0].discards.slice()
         };
 
-        if (shanten <= 0 && handUkeire > 0) {
-            historyObject.message = ` Your hand is now ready. Congratulations! Your efficiency was ${achievedTotal}/${possibleTotal}, or ${Math.floor(achievedTotal / possibleTotal * 100)}%. `;
+        if (shanten <= 0 && handUkeire.value > 0) {
+            let { t } = this.props;
+            historyObject.message = " " + t("trainer.complete", {achieved: achievedTotal, total: possibleTotal, percent: Math.floor(achievedTotal / possibleTotal * 100)});
             isComplete = true;
         }
 
         if (!isComplete) {
             if (this.state.settings.simulate) {
-                for (let i = 0; i < 3; i++) {
+                for (let i = 1; i < players.length; i++) {
                     if (tilePool.length === 0) continue;
 
-                    let simulatedDiscard = tilePool.splice(Math.floor(Math.random() * tilePool.length), 1);
-                    discardPool.push({ tile: simulatedDiscard, player: false });
+                    let simulatedDiscard = removeRandomItem(tilePool);
+                    players[i].discards.push(simulatedDiscard);
                     remainingTiles[simulatedDiscard]--;
                 }
             }
 
             if (tilePool.length > 0) {
-                drawnTile = tilePool.splice(Math.floor(Math.random() * tilePool.length), 1);
+                drawnTile = removeRandomItem(tilePool);
                 hand[drawnTile]++;
                 remainingTiles[drawnTile]--;
 
@@ -346,23 +338,37 @@ class Quiz extends React.Component {
                 isComplete = true;
             }
         }
-
+        
         let history = this.state.history;
         history.unshift(historyObject);
+
+        let shuffle = this.state.shuffle.slice();
+
+        if(chosenTile !== this.state.lastDraw) {
+            for(let i = 0; i < shuffle.length; i++) {
+                // this needs to be ==... for some reason
+                if(shuffle[i] == chosenTile) {
+                    shuffle[i] = this.state.lastDraw;
+                    break;
+                }
+            }
+        }
 
         this.setState({
             hand: hand,
             tilePool: tilePool,
             remainingTiles: remainingTiles,
-            discardPool: discardPool,
+            players: players,
             discardCount: this.state.discardCount + 1,
-            optimalCount: this.state.optimalCount + (chosenUkeire === bestUkeire ? 1 : 0),
+            optimalCount: this.state.optimalCount + (chosenUkeire.value === bestUkeire ? 1 : 0),
             hasCopied: false,
             achievedTotal: achievedTotal,
             possibleTotal: possibleTotal,
             history: history,
             isComplete: isComplete,
-            lastDraw: drawnTile
+            lastDraw: drawnTile,
+            shuffle: shuffle,
+            disclaimerSeen: true,
         }, isComplete ? () => this.saveStats() : undefined);
     }
 
@@ -402,8 +408,10 @@ class Quiz extends React.Component {
     }
 
     loadHand(loadData) {
+        let { t } = this.props;
+
         if (loadData.tiles === 0) {
-            this.logToHistory("Error: Couldn't understand provided hand.");
+            this.logToHistory(t("trainer.error.load"));
             return;
         }
 
@@ -413,20 +421,42 @@ class Quiz extends React.Component {
             remainingTiles[i] = Math.max(0, remainingTiles[i] - loadData.hand[i]);
         }
 
-        let { hand, availableTiles, tilePool } = FillHand(remainingTiles, loadData.hand, 14 - loadData.tiles);
-
-        if (!hand) {
-            this.logToHistory("Error: Not enough tiles to make a hand.");
-            return;
-        }
-
-        let dora = 1;
-        if (tilePool.length > 0) {
-            dora = tilePool.splice(Math.floor(Math.random() * tilePool.length), 1);
+        let dora = loadData.dora;
+        if(dora !== false) {
+            dora = Math.min(Math.max(0, dora), 37);
             remainingTiles[dora]--;
         }
 
-        this.setState(this.getNewHandState(hand, availableTiles, tilePool, [], [], dora));
+        let { hand, availableTiles, tilePool } = FillHand(remainingTiles, loadData.hand, 14 - loadData.tiles);
+
+        if (!hand) {
+            this.logToHistory(t("trainer.error.wallEmpty"));
+            return;
+        }
+
+        if(dora === false) {
+            if (tilePool.length > 0) {
+                dora = removeRandomItem(tilePool);
+                availableTiles[dora]--;
+            }
+        }
+
+        let roundWind = loadData.roundWind;
+        let seatWind = loadData.seatWind;
+        let draw = loadData.draw;
+
+        if(roundWind !== false) {
+            roundWind = Math.min(Math.max(1, roundWind), 4) + 30;
+        }
+        if(seatWind !== false) {
+            seatWind = Math.min(Math.max(1, seatWind), 4) + 30;
+        }
+        if(draw !== false) {
+            draw = Math.min(Math.max(0, draw), 37);
+            if(hand[draw] <= 0) draw = false;
+        }
+
+        this.setState(this.getNewHandState(hand, availableTiles, tilePool, [], dora, draw, seatWind, roundWind));
     }
 
     logToHistory(text) {
@@ -438,34 +468,44 @@ class Quiz extends React.Component {
     }
 
     render() {
+        let { t } = this.props;
+        let blind = this.state.players.length && this.state.players[0].discards.length && this.state.settings.blind && !this.state.isComplete;
+
         return (
             <Container>
-                <Settings values={this.state.settings} onChange={this.onSettingsChanged} />
+                <Settings onChange={this.onSettingsChanged} />
                 <StatsDisplay values={this.state.stats} onReset={() => this.resetStats()} />
+                <Row>
+                    {this.state.disclaimerSeen ? "" : <span>{t("trainer.disclaimer")}</span>}
+                </Row>
                 <ValueTileDisplay roundWind={this.state.roundWind} seatWind={this.state.seatWind} dora={this.state.dora} />
                 <Row className="mb-2 mt-2">
-                    <span>Click the tile you want to discard.</span>
+                    <span>{t("trainer.instructions")}</span>
                 </Row>
-                <Hand tiles={this.state.hand} lastDraw={this.state.lastDraw} onTileClick={this.onTileClicked} />
+                { this.state.settings.sort
+                    ? <Hand tiles={this.state.hand}
+                        lastDraw={this.state.lastDraw}
+                        onTileClick={this.onTileClicked}
+                        blind={blind} />
+                    : <SortedHand tiles={this.state.shuffle}
+                        lastDraw={this.state.lastDraw} 
+                        onTileClick={this.onTileClicked} 
+                        blind={blind}/>
+                }
                 <Row className="mt-2">
                     <Col xs="6" sm="3" md="3" lg="2">
-                        <Button className="btn-block" color={this.state.isComplete ? "success" : "warning"} onClick={() => this.onNewHand()}>New Hand</Button>
+                        <Button className="btn-block" color={this.state.isComplete ? "success" : "warning"} onClick={() => this.onNewHand()}>{t("trainer.newHandButtonLabel")}</Button>
                     </Col>
                     <CopyButton hand={this.state.hand} />
                     <LoadButton callback={this.loadHand} />
                 </Row>
                 <Row className="mt-2 no-gutters">
                     <History history={this.state.history} concise={this.state.settings.extraConcise} verbose={this.state.settings.verbose} spoilers={this.state.settings.spoilers}/>
-                    <DiscardPool discardPool={this.state.discardPool} discardCount={this.state.discardCount} wallCount={this.state.tilePool && this.state.tilePool.length} />
-                </Row>
-                <Row className="mt-4">
-                    <Col xs="12"><span>Credits</span></Col>
-                    <Col xs="12"><span>Tile images combined from <a href="https://github.com/FluffyStuff/riichi-mahjong-tiles">riichi-mahjong-tiles by FluffyStuff on Github</a>, licensed under the <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License.</a></span></Col>
-                    <Col xs="12"><span>Shanten calculation algorithm adapted from <a href="http://cmj3.web.fc2.com/#syanten">this C program collection.</a></span></Col>
+                    <DiscardPool players={this.state.players} discardCount={this.state.discardCount} wallCount={this.state.tilePool && this.state.tilePool.length} />
                 </Row>
             </Container>
         );
     }
 }
 
-export default Quiz;
+export default withTranslation()(UkeireQuiz);

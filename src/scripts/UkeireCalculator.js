@@ -1,33 +1,46 @@
 import { convertRedFives } from "./TileConversions";
 import { evaluateBestDiscard } from './Evaluations';
+import { getShantenOffset } from "./Utils";
 
-export function CalculateDiscardUkeire(hand, remainingTiles, shantenFunction) {
+export function CalculateDiscardUkeire(hand, remainingTiles, shantenFunction, baseShanten = -2, shantenOffset = -2) {
     let results = Array(hand.length).fill(0);
     let convertedHand = convertRedFives(hand);
-    let baseShanten = shantenFunction(convertedHand);
+
+    if(shantenOffset === -2) {
+        shantenOffset = getShantenOffset(convertedHand);
+    }
+
+    if (baseShanten === -2) {
+        baseShanten = shantenFunction(convertedHand) - shantenOffset;
+    }
 
     for (let handIndex = 0; handIndex < convertedHand.length; handIndex++) {
-        if (convertedHand[handIndex] === 0) continue;
+        if (convertedHand[handIndex] === 0) {
+            results[handIndex] = {value: 0, tiles: []};
+            continue;
+        }
 
         convertedHand[handIndex]--;
-        let ukeire = CalculateUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten).value;
+        let ukeire = CalculateUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten, shantenOffset);
         convertedHand[handIndex]++;
 
         // Write the results into the array
-        for (let i = 0; i < convertedHand[handIndex]; i++) {
-            results[handIndex] = ukeire;
-        }
+        results[handIndex] = ukeire;
     }
 
     return results;
 }
 
-export function CalculateUkeire(hand, remainingTiles, shantenFunction, baseShanten = -2) {
+export function CalculateUkeire(hand, remainingTiles, shantenFunction, baseShanten = -2, shantenOffset = -2) {
     let convertedHand = convertRedFives(hand);
     let convertedTiles = convertRedFives(remainingTiles);
 
+    if(shantenOffset === -2) {
+        shantenOffset = getShantenOffset(convertedHand);
+    }
+
     if (baseShanten === -2) {
-        baseShanten = shantenFunction(hand);
+        baseShanten = shantenFunction(convertedHand) - shantenOffset;
     }
 
     let value = 0;
@@ -40,7 +53,7 @@ export function CalculateUkeire(hand, remainingTiles, shantenFunction, baseShant
 
         convertedHand[addedTile]++;
 
-        if (shantenFunction(convertedHand) < baseShanten) {
+        if (shantenFunction(convertedHand) - shantenOffset < baseShanten) {
             value += convertedTiles[addedTile];
             tiles.push(addedTile);
         }
@@ -56,14 +69,16 @@ export function CalculateUkeire(hand, remainingTiles, shantenFunction, baseShant
 
 export function CalculateDiscardUkeireUpgrades(hand, remainingTiles, shantenFunction) {
     let results = Array(hand.length).fill(0);
-    let baseShanten = shantenFunction(hand);
-    let baseUkeire = CalculateUkeire(hand, remainingTiles, shantenFunction).value;
+    let convertedHand = convertRedFives(hand);
+    let shantenOffset = getShantenOffset(convertedHand);
+    let baseShanten = shantenFunction(convertedHand) - shantenOffset;
+    let baseUkeire = CalculateUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten, shantenOffset).value;
 
     for (let handIndex = 0; handIndex < hand.length; handIndex++) {
         if (hand[handIndex] === 0) continue;
 
         hand[handIndex]--;
-        let ukeire = CalculateUkeireUpgrades(hand, remainingTiles, shantenFunction, baseShanten, baseUkeire).value;
+        let ukeire = CalculateUkeireUpgrades(convertedHand, remainingTiles, shantenFunction, baseShanten, baseUkeire, shantenOffset);
         hand[handIndex]++;
 
         // Write the results into the array
@@ -75,16 +90,20 @@ export function CalculateDiscardUkeireUpgrades(hand, remainingTiles, shantenFunc
     return results;
 }
 
-export function CalculateUkeireUpgrades(hand, remainingTiles, shantenFunction, baseShanten = -2, baseUkeire = -1) {
+export function CalculateUkeireUpgrades(hand, remainingTiles, shantenFunction, baseShanten = -2, baseUkeire = -1, shantenOffset = -2) {
     let convertedHand = convertRedFives(hand);
     let convertedTiles = convertRedFives(remainingTiles);
 
+    if(shantenOffset === -2) {
+        shantenOffset = getShantenOffset(convertedHand);
+    }
+
     if (baseShanten === -2) {
-        baseShanten = shantenFunction(hand);
+        baseShanten = shantenFunction(convertedHand);
     }
 
     if (baseUkeire === -1) {
-        baseUkeire = CalculateUkeire(hand, remainingTiles, shantenFunction).value;
+        baseUkeire = CalculateUkeire(hand, remainingTiles, shantenFunction, baseShanten, shantenOffset).value;
     }
 
     let value = 0;
@@ -96,16 +115,17 @@ export function CalculateUkeireUpgrades(hand, remainingTiles, shantenFunction, b
         if (addedTile % 10 === 0) continue;
 
         convertedHand[addedTile]++;
+        remainingTiles[addedTile]--;
 
-        if (shantenFunction(convertedHand) === baseShanten
-            && CalculateUkeire(convertedHand, remainingTiles, shantenFunction).value > baseUkeire) {
-            let discards = CalculateDiscardUkeire(convertedHand, remainingTiles, shantenFunction);
+        if (shantenFunction(convertedHand) - shantenOffset === baseShanten
+            && CalculateUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten, shantenOffset).value > baseUkeire) {
+            let discards = CalculateDiscardUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten, shantenOffset);
             let bestDiscard = evaluateBestDiscard(discards);
 
             convertedHand[bestDiscard]--;
 
             if(addedTile !== bestDiscard) {
-                let newUkeire = CalculateUkeire(convertedHand, remainingTiles, shantenFunction).value;
+                let newUkeire = CalculateUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten, shantenOffset).value;
 
                 if(newUkeire > baseUkeire) {
                     value += convertedTiles[addedTile];
@@ -117,6 +137,7 @@ export function CalculateUkeireUpgrades(hand, remainingTiles, shantenFunction, b
         }
 
         convertedHand[addedTile]--;
+        remainingTiles[addedTile]++;
     }
 
     return {

@@ -35,12 +35,14 @@ import north from '../tileImages/north.png';
 import haku from '../tileImages/haku.png';
 import hatsu from '../tileImages/hatsu.png';
 import chun from '../tileImages/chun.png';
+import back from '../tileImages/back.png';
+import { convertHandToTenhouString } from './HandConversions';
 
 const images = [
     redFiveMan, oneMan, twoMan, threeMan, fourMan, fiveMan, sixMan, sevenMan, eightMan, nineMan,
     redFivePin, onePin, twoPin, threePin, fourPin, fivePin, sixPin, sevenPin, eightPin, ninePin,
     redFiveSou, oneSou, twoSou, threeSou, fourSou, fiveSou, sixSou, sevenSou, eightSou, nineSou,
-    "", east, south, west, north, haku, hatsu, chun
+    back, east, south, west, north, haku, hatsu, chun
 ];
 
 export const ascii = [
@@ -50,26 +52,26 @@ export const ascii = [
     "🀪", "🀀", "🀁", "🀂", "🀃", "🀆", "🀅", "🀄"
 ]
 
-const numberText = ["red five", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
-const numberCharacter = ["red 5", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+const numberText = ["redFive", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+const numberCharacter = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 const suitText = ["characters", "circles", "bamboo"]
 const suitCharacter = ["m", "p", "s"];
-const honors = ["", "east wind", "south wind", "west wind", "north wind", "white dragon", "green dragon", "red dragon"]
+const honors = ["hidden", "east", "south", "west", "north", "white", "green", "red"]
 
 export function getTileImage(index) {
     return images[index];
 }
 
-export function getTileAsText(index, verbose = true) {
-    if (index > 30) {
-        return honors[index - 30];
+export function getTileAsText(t, index, verbose = true) {
+    if (index >= 30) {
+        return t(`values.${honors[index - 30]}`);
     }
 
     if (verbose) {
         const number = numberText[index % 10];
         const suit = suitText[Math.floor(index / 10)];
 
-        return `${number} of ${suit}`;
+        return t("shuupai", {value: t(`values.${number}`), suit: t(`suits.${suit}`)});
     }
     else {
         const number = numberCharacter[index % 10];
@@ -116,6 +118,22 @@ export function convertTilesToAsciiSymbols(tiles) {
     }
 
     return "";
+}
+
+export function convertIndexesToTenhouTiles(indexes) {
+    let hand = Array(38).fill(0);
+
+    if(typeof indexes === 'number') {
+        hand[indexes] = 1;
+    } else if (typeof indexes === 'object' && indexes.length) {
+        for(let i = 0; i < indexes.length; i++) {
+            hand[indexes[i]] += 1;
+        }
+    } else {
+        return "Error."
+    }
+
+    return convertHandToTenhouString(hand);
 }
 
 export function convertTenhouTilesToIndex(tenhouTiles) {

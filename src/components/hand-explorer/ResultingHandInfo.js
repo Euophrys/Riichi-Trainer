@@ -1,11 +1,10 @@
 import React from 'react';
 import { Row, Col, Button, Collapse, Card, CardBody } from 'reactstrap';
-import Hand from '../Tile';
-import { convertHandToTenhouString, convertHandToAsciiSymbols } from '../../scripts/HandConversions';
+import { convertHandToAsciiSymbols } from '../../scripts/HandConversions';
 import { getTileAsText, convertTilesToAsciiSymbols } from '../../scripts/TileConversions';
 import { CalculateDiscardUkeire } from '../../scripts/UkeireCalculator';
-import CalculateMinimumShanten from '../../scripts/ShantenCalculator';
-import { allTilesRemaining } from '../../Constants';
+import CalculateStandardShanten from '../../scripts/ShantenCalculator';
+import { ALL_TILES_REMAINING } from '../../Constants';
 import { evaluateBestDiscard } from '../../scripts/Evaluations';
 
 class ResultingHandInfo extends React.Component {
@@ -45,17 +44,26 @@ class ResultingHandInfo extends React.Component {
 
         let shantenResults = <Row/>;
         let totalShantenUkeire = 0;
+        let remainingTiles = ALL_TILES_REMAINING.slice();
+
+        for (let i = 0; i < remainingTiles.length; i++) {
+            remainingTiles[i] = Math.max(0, remainingTiles[i] - this.props.hand[i]);
+        }
+
         if(!this.state.shantenCollapsed && this.props.shanten > 0) {
             shantenResults = this.props.ukeire.tiles.map((tile) => {
                 let resultHand = this.props.hand.slice();
                 resultHand[tile]++;
-                let discards = CalculateDiscardUkeire(resultHand, allTilesRemaining, CalculateMinimumShanten);
+                remainingTiles[tile]--;
+
+                let discards = CalculateDiscardUkeire(resultHand, remainingTiles, CalculateStandardShanten);
                 let bestDiscard = evaluateBestDiscard(discards);
                 resultHand[bestDiscard]--;
-                totalShantenUkeire += discards[bestDiscard];
+                remainingTiles[tile]++;
+                totalShantenUkeire += discards[bestDiscard].value;
                 return (
                     <Row>
-                        Draw {getTileAsText(tile, false)}, discard {getTileAsText(bestDiscard, false)}: {discards[bestDiscard]} ukeire
+                        Draw {getTileAsText(tile, false)}, discard {getTileAsText(bestDiscard, false)}: {discards[bestDiscard].value} ukeire
                     </Row>
                 );
             });
