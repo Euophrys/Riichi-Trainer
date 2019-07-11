@@ -1,6 +1,6 @@
 # Helping With Translations
 
-To edit the files, I recommend [Visual Studio Code](https://code.visualstudio.com/). To download the repo, install [GitHub Desktop](https://desktop.github.com/). Then, on the right side of the repo page, click "Clone or Download", then "Open in Desktop". You could also just download the zip if you don't want to bother with git, though you'll be making more work for me.
+To edit the files, I recommend [Visual Studio Code](https://code.visualstudio.com/). To download the repo, install [GitHub Desktop](https://desktop.github.com/). At the top right of this page, click "Fork" to make your own version to work in. Then, on the right side of your repo page, click "Clone or Download", then "Open in Desktop". You could also just download the zip if you don't want to bother with git, though you'll be making more work for me.
 
 The translation files are found in the `src/translations` folder. Make a copy of the `en.js` file and rename it to the language code for your language. You can find the language codes [in this Wikipedia article.](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) The two-letter code should be used.
 
@@ -18,7 +18,7 @@ To test your new translation, you could either change the language code back to 
 3) Add a line like `en: en,`, replacing `en` with your language code, within the object labelled "resources". If you added it at the end, ensure the penultimate line ends in a comma.
 4) Open the `src/states/MainMenu.js` file.
 5) Ctrl+F "English" to find where the language names are.
-6) Add a line like `<DropdownItem onClick={() => this.changeLanguage("en")}>English</DropdownItem>` among the other DropdownItems. Change `en` to your language code, and change `English` to the name of your language in its native language.
+6) Add a line like `<DropdownItem onClick={() => this.changeLanguage("en")}>English</DropdownItem>` among the other DropdownItems. Change `en` to your language code, and change `English` to the name of your language in that language. For example, if you were translating Japanese, you'd put it as `日本語`.
 7) Save both files.
 8) Open a command prompt or terminal window in the Riichi-Trainer folder. Run `npm install` if you haven't already, then run `npm start`. If you did things correctly, a webpage should open with the trainer, and you can change the language to yours and see how things look. If you got errors, you can try to figure out why, or ask me.
 
