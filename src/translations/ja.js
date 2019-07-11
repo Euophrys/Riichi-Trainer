@@ -26,40 +26,47 @@ export const ja = {
             bamboo: "索"
         },
         shuupai: "{{value}}{{suit}}",
-        seats: {
-            East: "東",
-            South: "南",
-            West: "西",
-            North: "北"
+        winds: {
+            east: "東",
+            south: "南",
+            west: "西",
+            north: "北"
         },
+        roundName: "{{wind}}{{number}}局{{repeats}}本場",
         trainer: {
             disclaimer: "Disclaimer: This trainer will train your ability to maximize your hand's efficiency in the current turn. It won't help you maximize efficiency in future turns, or to learn when it's proper to ignore efficiency, or how to build value. Playing the way this trainer suggests in every hand is not the optimal way to play mahjong, but the are hands where you want to play this way. High level players don't always play like this, but all high level players CAN play like this. Make sure to supplement this training with further reading to learn when it might not be the best line of play, and check the settings for more targeted training.",
             instructions: "打ちたいの牌をクリックしてください。",
-            start: "Started a new hand: {{hand}}",
+            start: "新し手牌を始まりました： {{hand}}",
 			complete: "手が聴牌になりました。おめでとう！あなたの効率は{{achieved}}}/{{total}}か{{percent}}%。",
+            newHandButtonLabel: "新し手牌",
+            loadButtonLabel: "手牌をロード",
+            roundWind: "場風:",
+            seatWind: "自風:",
+            doraIndicator: "ドラ表示:",
+            copyHand: "手牌をコピー",
+            copied: "コピーしました！Copied!",
             error: {
                 load: "Error: Couldn't understand provided hand",
                 wallEmpty: "Error: Not enough tiles to make a hand.",
                 wallEmptyShuffle: "There aren't enough tiles left in the wall to make a new hand. Shuffling."
             },
-            newHandButtonLabel: "New Hand",
-            loadButtonLabel: "Load Hand",
-            roundWind: "場風:",
-            seatWind: "自風:",
-            doraIndicator: "ドラ表示:",
-            copyHand: "Copy Hand",
-            copied: "Copied!"
+            playerNames: {
+                you: "私",
+                right: "下家",
+                across: "対面",
+                left: "上家"
+            }
         },
         history: {
             label: "Hand History",
             tenhouLinkText: "[Accepted Tiles]",
             concise: {
-                discard: "Discard: {{tile}}",
+                discard: "　捨て牌: {{tile}}",
                 acceptance: " ({{count}} tile).",
                 loweredShanten: " (lowered shanten).",
-                optimal: " Best:",
+                optimal: " 最高捨て牌:",
                 optimalSpoiler: " {{tile}}",
-                best: " That was the best choice!",
+                best: "　それは一番いい選択でした！",
                 exceptionalNoten: " All of your winning tiles are in your hand, so you aren't tenpai yet.",
                 furiten: " フリテン.",
                 furitenWarning: "フリテンをきを付けてください。",
@@ -83,7 +90,7 @@ export const ja = {
         discards: {
             label: "河",
             discardCount: "You've discarded {{count}} tile.",
-            tilesLeft: "There is {{count}} tile left in the wall.",
+            tilesLeft: "山に{{count}}枚残ります。",
         },
         settings: {
             buttonLabel: "設定",
@@ -102,7 +109,7 @@ export const ja = {
             exceptions: "Consider exception hands (Kokushi/Thirteen Orphans and Chiitoitsu/Seven Pairs)",
             minShanten: "Minimum starting hand shanten:",
             minShantenLimit: "(up to the number of allowed suits)",
-            sort: "Sort hand",
+            sort: "自動理牌",
             blind: "Conceal hand tiles"
         },
         stats: {
@@ -118,8 +125,8 @@ export const ja = {
             overall: "Overall Efficiency: {{percent}}% ({{achieved}}/{{total}})",
             reset: "Reset Stats",
             confirmation: "Are you sure you want to reset all of your stats to zero? You cannot undo this action.",
-            yes: "Yes, reset!",
-            no: "No, don't reset!"
+            yes: "はい、リセットをして下さい！",
+            no: "いいえ、リセットをしてないで下さい！"
         },
         credits: {
             label: "Credits",
@@ -236,6 +243,16 @@ export const ja = {
             ukeire: "Ukeire: The number of tiles that reduce your shanten.",
             notableDiscards: "Show Only Notable Discards",
             allDiscards: "Show All Possible Discards",
+            discardInfo: {
+                discard: "Discarding the {{tile}}:",
+                shanten: "{{count}}向聴",
+                ukeire: "Ukeire: {{count}} ({{tiles}})",
+                expand: "Show Next Shanten's Ukeire",
+                draw: "Draw {{draw}}, discard {{discard}}: {{count}} ukeire",
+                average: "Average: {{average}}",
+                upgrades: "Tiles that increase ukeire: {{count}} ({{tiles}})",
+                expandUpgrades: "Show Upgrade Results"
+            }
         },
         utils: {
             convertHeader: "Hand Conversion",

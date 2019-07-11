@@ -126,7 +126,7 @@ class SouthFourQuiz extends React.Component {
         let { t } = this.props;
 
         let required;
-        let feedback = t("allLast.wrong", {placement: t(`allLast.placements.${PLACEMENTS[placementTarget]}`)});
+        let feedback = t("allLast.wrong", {placement: t(PLACEMENTS[placementTarget])});
         let canBeEqual = (players[0].seat + 1) % 4 < (players[placementTarget].seat + 1) % 4;
         
         if(tsumo) {
@@ -138,9 +138,9 @@ class SouthFourQuiz extends React.Component {
             scores[3] -= players[3].seat > 0 ? points[0] : points[1];
             
             if(points[0] === required.nondealer && points[1] === required.dealer) {
-                feedback = t("allLast.correct", {placement: t(`allLast.placements.${PLACEMENTS[placementTarget]}`)});;
+                feedback = t("allLast.correct", {placement: t(PLACEMENTS[placementTarget])});
             } else if(points[0] > required.nondealer || points[1] > required.dealer) {
-                feedback = t("allLast.tooMuch", {placement: t(`allLast.placements.${PLACEMENTS[placementTarget]}`)});;
+                feedback = t("allLast.tooMuch", {placement: t(PLACEMENTS[placementTarget])});;
             }
         } else {
             required = findMinimumRonValue(scores, ronTarget, placementTarget, this.state.maxFu, canBeEqual);
@@ -150,9 +150,9 @@ class SouthFourQuiz extends React.Component {
             scores[ronTarget] -= points;
 
             if(points === required.value) {
-                feedback = t("allLast.correct", {placement: t(`allLast.placements.${PLACEMENTS[placementTarget]}`)});
+                feedback = t("allLast.correct", {placement: t(PLACEMENTS[placementTarget])});
             } else if(points > required.value) {
-                feedback = t("allLast.tooMuch", {placement: t(`allLast.placements.${PLACEMENTS[placementTarget]}`)});
+                feedback = t("allLast.tooMuch", {placement: t(PLACEMENTS[placementTarget])});
             }
         }
         
@@ -161,10 +161,10 @@ class SouthFourQuiz extends React.Component {
             <Container>
                 <Row>{feedback}&nbsp;<span>{t("allLast.score", {han: required.han, fu: required.fu})}</span></Row>
                 <Row>{t("allLast.results")}</Row>
-                <Row>{t(`seats.${SEAT_NAMES[players[0].seat]}`) + ": " + scores[0]} ({t("allLast.you")})</Row>
-                <Row>{t(`seats.${SEAT_NAMES[players[1].seat]}`) + ": " + scores[1]} ({scores[1] - scores[0]})</Row>
-                <Row>{t(`seats.${SEAT_NAMES[players[2].seat]}`) + ": " + scores[2]} ({scores[2] - scores[0]})</Row>
-                <Row>{t(`seats.${SEAT_NAMES[players[3].seat]}`) + ": " + scores[3]} ({scores[3] - scores[0]})</Row>
+                <Row>{t(SEAT_NAMES[players[0].seat]) + ": " + scores[0]} ({t("allLast.you")})</Row>
+                <Row>{t(SEAT_NAMES[players[1].seat]) + ": " + scores[1]} ({scores[1] - scores[0]})</Row>
+                <Row>{t(SEAT_NAMES[players[2].seat]) + ": " + scores[2]} ({scores[2] - scores[0]})</Row>
+                <Row>{t(SEAT_NAMES[players[3].seat]) + ": " + scores[3]} ({scores[3] - scores[0]})</Row>
             </Container>
         );
 
@@ -199,12 +199,11 @@ class SouthFourQuiz extends React.Component {
                 <div>One moment...</div>
             );
         }
-
-        let scores = this.state.players.map((player, index) => {
-            return <Row key={index}>{SEAT_NAMES[player.seat] + ": " + player.points} ({index === 0 ? "YOU" : "+" + (player.points - this.state.players[0].points)})</Row>
-        });
-
+        
         let { t } = this.props;
+        let scores = this.state.players.map((player, index) => {
+            return <Row key={index}>{t(SEAT_NAMES[player.seat]) + ": " + player.points} ({index === 0 ? "YOU" : "+" + (player.points - this.state.players[0].points)})</Row>
+        });
 
         return (
             <Container>

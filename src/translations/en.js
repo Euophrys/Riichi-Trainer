@@ -26,29 +26,36 @@ export const en = {
             bamboo: "bamboo"
         },
         shuupai: "{{value}} of {{suit}}",
-        seats: {
-            East: "East",
-            South: "South",
-            West: "West",
-            North: "North"
+        winds: {
+            east: "East",
+            south: "South",
+            west: "West",
+            north: "North"
         },
+        roundName: "{{wind}} {{number}}-{{repeats}}",
         trainer: {
             disclaimer: "Disclaimer: This trainer will train your ability to maximize your hand's efficiency in the current turn. It won't help you maximize efficiency in future turns, or to learn when it's proper to ignore efficiency, or how to build value. Playing the way this trainer suggests in every hand is not the optimal way to play mahjong, but the are hands where you want to play this way. High level players don't always play like this, but all high level players CAN play like this. Make sure to supplement this training with further reading to learn when it might not be the best line of play, and check the settings for more targeted training.",
             instructions: "Click the tile you want to discard.",
             start: "Started a new hand: {{hand}}",
             complete: "Your hand is now ready. Congratulations! Your efficiency was {{achieved}}/{{total}}, or {{percent}}%.",
-            error: {
-                load: "Error: Couldn't understand provided hand",
-                wallEmpty: "Error: Not enough tiles to make a hand.",
-                wallEmptyShuffle: "There aren't enough tiles left in the wall to make a new hand. Shuffling."
-            },
             newHandButtonLabel: "New Hand",
             loadButtonLabel: "Load Hand",
             roundWind: "Round Wind:",
             seatWind: "Seat Wind:",
             doraIndicator: "Dora Indicator:",
             copyHand: "Copy Hand",
-            copied: "Copied!"
+            copied: "Copied!",
+            error: {
+                load: "Error: Couldn't understand provided hand",
+                wallEmpty: "Error: Not enough tiles to make a hand.",
+                wallEmptyShuffle: "There aren't enough tiles left in the wall to make a new hand. Shuffling."
+            },
+            playerNames: {
+                you: "You",
+                right: "Shimocha",
+                across: "Toimen",
+                left: "Kamicha"
+            }
         },
         history: {
             label: "Hand History",
@@ -246,6 +253,16 @@ export const en = {
             ukeire: "Ukeire: The number of tiles that reduce your shanten.",
             notableDiscards: "Show Only Notable Discards",
             allDiscards: "Show All Possible Discards",
+            discardInfo: {
+                discard: "Discarding the {{tile}}:",
+                shanten: "Shanten: {{count}}",
+                ukeire: "Ukeire: {{count}} ({{tiles}})",
+                expand: "Show Next Shanten's Ukeire",
+                draw: "Draw {{draw}}, discard {{discard}}: {{count}} ukeire",
+                average: "Average: {{average}}",
+                upgrades: "Tiles that increase ukeire: {{count}} ({{tiles}})",
+                expandUpgrades: "Show Upgrade Results"
+            }
         },
         utils: {
             convertHeader: "Hand Conversion",

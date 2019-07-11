@@ -156,7 +156,8 @@ class ReplayAnalysis extends React.Component {
     render() {
         let roundItems;
         let playerItems;
-        let roundNames = parseRoundNames(this.state.rounds);
+        let { t } = this.props;
+        let roundNames = parseRoundNames(t, this.state.rounds);
 
         if(this.state.rounds.length) {
             roundItems = roundNames.map((roundName, index) => {
@@ -177,7 +178,6 @@ class ReplayAnalysis extends React.Component {
         }
 
         let calls = "";
-        let {t} = this.props;
 
         for(let i = 0; currentTurn && i < currentTurn.calls.length; i++) {
             if(calls) calls += t("analyzer.callsSeparator");
