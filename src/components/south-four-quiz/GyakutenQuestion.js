@@ -8,16 +8,16 @@ function GyakutenQuestion(props) {
     let { t } = useTranslation();
     
     let question = t("allLast.question", {
-        action: props.tsumo ? t("allLast.tsumo") : t("allLast.ron", {target: t(`allLast.placements.${PLACEMENTS[props.ronTarget]}`)}),
-        placement: t(`allLast.placements.${PLACEMENTS[props.placementTarget]}`)
+        action: props.tsumo ? t("allLast.tsumo") : t("allLast.ron", {target: t(PLACEMENTS[props.ronTarget])}),
+        placement: t(PLACEMENTS[props.placementTarget])
     });
 
     for(let i = 1; i < props.riichis.length; i++) {
         if(props.riichis[i] > 0) {
             question = t("allLast.riichiQuestion", {
-                player: t(`allLast.placements.${PLACEMENTS[i]}`),
-                action: props.tsumo ? t("allLast.tsumo") : t("allLast.ron", {target: t(`allLast.placements.${PLACEMENTS[props.ronTarget]}`)}),
-                placement: t(`allLast.placements.${PLACEMENTS[props.placementTarget]}`)
+                player: t(PLACEMENTS[i]),
+                action: props.tsumo ? t("allLast.tsumo") : t("allLast.ron", {target: t(PLACEMENTS[props.ronTarget])}),
+                placement: t(PLACEMENTS[props.placementTarget])
             });
             break;
         }

@@ -13,15 +13,18 @@ export const ALL_SIMPLES_REMAINING = [
 ];
 
 export const PLAYER_NAMES = [
-    "You", "Shimocha", "Toimen", "Kamicha"
+    "trainer.playerNames.you", "trainer.playerNames.right", "trainer.playerNames.across", "trainer.playerNames.left"
 ];
 
 export const SEAT_NAMES = [
-    "East", "South", "West", "North"
+    "winds.east", "winds.south", "winds.west", "winds.north"
 ];
 
 export const ROUND_NAMES = [
-    "East 1", "East 2", "East 3", "East 4", "South 1", "South 2", "South 3", "South 4", "West 1", "West 2", "West 3", "West 4"
+    {wind:'$t(winds.east)', number: 1},  {wind:'$t(winds.east)', number: 2},  {wind:'$t(winds.east)', number: 3},  {wind:'$t(winds.east)', number: 4},
+    {wind:'$t(winds.south)', number: 1}, {wind:'$t(winds.south)', number: 2}, {wind:'$t(winds.south)', number: 3}, {wind:'$t(winds.south)', number: 4},
+    {wind:'$t(winds.west)', number: 1},  {wind:'$t(winds.west)', number: 2},  {wind:'$t(winds.west)', number: 3},  {wind:'$t(winds.west)', number: 4},
+    {wind:'$t(winds.north)', number: 1}, {wind:'$t(winds.north)', number: 2}, {wind:'$t(winds.north)', number: 3}, {wind:'$t(winds.north)', number: 4}
 ];
 
 export const NON_DEALER_RON_SCORES = [
@@ -43,5 +46,5 @@ export const NON_DEALER_TSUMO_SCORES = [
 ];
 
 export const PLACEMENTS = [
-    "fourth", "third", "second", "first"
+    "allLast.placements.fourth", "allLast.placements.third", "allLast.placements.second", "allLast.placements.first"
 ];
