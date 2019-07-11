@@ -34,9 +34,9 @@ export const ja = {
         },
         trainer: {
             disclaimer: "Disclaimer: This trainer will train your ability to maximize your hand's efficiency in the current turn. It won't help you maximize efficiency in future turns, or to learn when it's proper to ignore efficiency, or how to build value. Playing the way this trainer suggests in every hand is not the optimal way to play mahjong, but the are hands where you want to play this way. High level players don't always play like this, but all high level players CAN play like this. Make sure to supplement this training with further reading to learn when it might not be the best line of play, and check the settings for more targeted training.",
-            instructions: "Click the tile you want to discard.",
+            instructions: "打ちたいの牌をクリックしてください。",
             start: "Started a new hand: {{hand}}",
-            complete: "Your hand is now ready. Congratulations! Your efficiency was {{achieved}}/{{total}}, or {{percent}}%.",
+			complete: "手が聴牌になりました。おめでとう！あなたの効率は{{achieved}}}/{{total}}か{{percent}}%。",
             error: {
                 load: "Error: Couldn't understand provided hand",
                 wallEmpty: "Error: Not enough tiles to make a hand.",
@@ -62,7 +62,7 @@ export const ja = {
                 best: " That was the best choice!",
                 exceptionalNoten: " All of your winning tiles are in your hand, so you aren't tenpai yet.",
                 furiten: " フリテン.",
-                furitenWarning: " Be careful of future furiten.",
+                furitenWarning: "フリテンをきを付けてください。",
                 exhausted: " There are no tiles left in the wall. Better luck next time! ",
                 draw: " ツモ: {{tile}}. "
             },
@@ -81,7 +81,7 @@ export const ja = {
             }
         },
         discards: {
-            label: "Discard Pool",
+            label: "河",
             discardCount: "You've discarded {{count}} tile.",
             tilesLeft: "There is {{count}} tile left in the wall.",
         },
@@ -92,7 +92,7 @@ export const ja = {
             circles: "筒子",
             bamboo: "索子",
             honors: "字牌",
-            sanma: "Three player rules",
+            sanma: "三麻",
             redFives: "Number of Red Fives:",
             verbose: "Verbose tile names (\"one of bamboo\" vs \"1s\")",
             concise: "Concise history",
@@ -232,7 +232,7 @@ export const ja = {
         },
         explorer: {
             warning: "Warning: Loading a hand may cause the page to hang for 5-10 seconds, or more if you have an older computer, depending on the complexity of the hand. Loading a hand will show all of the ukeire and upgrade possibilities for each discard, even ones that go back in shanten. By default, options that are strictly worse than another option won't be displayed, but you can press the button below to change that. If you only need ukeire information, tenhou.net/2/ will suffice.",
-            shanten: "Shanten: The number of tiles away from ready your hand is.",
+            shanten: "向聴：　聴牌までの近さを数える単位。",
             ukeire: "Ukeire: The number of tiles that reduce your shanten.",
             notableDiscards: "Show Only Notable Discards",
             allDiscards: "Show All Possible Discards",
