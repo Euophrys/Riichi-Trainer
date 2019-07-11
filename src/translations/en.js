@@ -253,6 +253,16 @@ export const en = {
             ukeire: "Ukeire: The number of tiles that reduce your shanten.",
             notableDiscards: "Show Only Notable Discards",
             allDiscards: "Show All Possible Discards",
+            discardInfo: {
+                discard: "Discarding the {{tile}}:",
+                shanten: "Shanten: {{count}}",
+                ukeire: "Ukeire: {{count}} ({{tiles}})",
+                expand: "Show Next Shanten's Ukeire",
+                draw: "Draw {{draw}}, discard {{discard}}: {{count}} ukeire",
+                average: "Average: {{average}}",
+                upgrades: "Tiles that increase ukeire: {{count}} ({{tiles}})",
+                expandUpgrades: "Show Upgrade Results"
+            }
         },
         utils: {
             convertHeader: "Hand Conversion",
