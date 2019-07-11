@@ -10,6 +10,7 @@ Open the file, and on the first line (`export const en = {`), change "en" to the
 * Don't translate anything inside of double-curly brackets. Eg, in `shuupai: "{{value}} of {{suit}}"`, "value" and "suit" must not be translated. These are variables that will be replaced with something.
 * To have a literal " within quotes, you'll need to escape it with a backslash, such as in `verbose: "Verbose tile names (\"one of bamboo\" vs \"1s\")"`. You could use single quotes to wrap the sentence, such as `verbose: 'Verbose tile names ("one of bamboo" vs "1s")'`, and this would require any single quotes in the sentence to be escaped instead.
 * For languages without plural forms, you can simply delete lines that have keys ending in `_plural`. For languages which have multiple plural forms, add keys with `_0`, `_1`, etc for each form. Refer to [this documentation page](https://www.i18next.com/translation-function/plurals) for more details.
+* There are two forms of the history, "verbose" and "concise". The verbose lines should include a bit of explanation, aimed at people who are just getting familiar with mahjong, while the concise lines can assume knowledge and be snappy.
 
 To test your new translation, you could either change the language code back to en and simply overwrite the English translation (put it back after), or you can do it the harder, proper way:
 
