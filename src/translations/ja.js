@@ -26,29 +26,36 @@ export const ja = {
             bamboo: "索"
         },
         shuupai: "{{value}}{{suit}}",
-        seats: {
-            East: "東",
-            South: "南",
-            West: "西",
-            North: "北"
+        winds: {
+            east: "東",
+            south: "南",
+            west: "西",
+            north: "北"
         },
+        roundName: "{{wind}}{{number}}局{{repeats}}本場",
         trainer: {
             disclaimer: "Disclaimer: This trainer will train your ability to maximize your hand's efficiency in the current turn. It won't help you maximize efficiency in future turns, or to learn when it's proper to ignore efficiency, or how to build value. Playing the way this trainer suggests in every hand is not the optimal way to play mahjong, but the are hands where you want to play this way. High level players don't always play like this, but all high level players CAN play like this. Make sure to supplement this training with further reading to learn when it might not be the best line of play, and check the settings for more targeted training.",
             instructions: "Click the tile you want to discard.",
             start: "Started a new hand: {{hand}}",
             complete: "Your hand is now ready. Congratulations! Your efficiency was {{achieved}}/{{total}}, or {{percent}}%.",
-            error: {
-                load: "Error: Couldn't understand provided hand",
-                wallEmpty: "Error: Not enough tiles to make a hand.",
-                wallEmptyShuffle: "There aren't enough tiles left in the wall to make a new hand. Shuffling."
-            },
             newHandButtonLabel: "New Hand",
             loadButtonLabel: "Load Hand",
             roundWind: "場風:",
             seatWind: "自風:",
             doraIndicator: "ドラ表示:",
             copyHand: "Copy Hand",
-            copied: "Copied!"
+            copied: "Copied!",
+            error: {
+                load: "Error: Couldn't understand provided hand",
+                wallEmpty: "Error: Not enough tiles to make a hand.",
+                wallEmptyShuffle: "There aren't enough tiles left in the wall to make a new hand. Shuffling."
+            },
+            playerNames: {
+                you: "私",
+                right: "下家",
+                across: "対面",
+                left: "上家"
+            }
         },
         history: {
             label: "Hand History",

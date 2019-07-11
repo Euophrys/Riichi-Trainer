@@ -35,7 +35,7 @@ function parseName(replayText, player) {
     return "Unknown";
 }
 
-export function parseRoundNames(roundTexts) {
+export function parseRoundNames(t, roundTexts) {
     let regex = /seed="(\d+?),(\d+?),/;
 
     return roundTexts.map((roundText) => {
@@ -48,11 +48,7 @@ export function parseRoundNames(roundTexts) {
         let roundName = ROUND_NAMES[parseInt(match[1])];
         let repeats = parseInt(match[2]);
         
-        if(repeats > 0) {
-            return `${roundName}-${repeats}`;
-        }
-
-        return roundName;
+        return t("roundName", {wind: roundName.wind, number: roundName.number, repeats: repeats});
     });
 }
 

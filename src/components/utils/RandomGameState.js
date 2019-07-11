@@ -125,7 +125,7 @@ class RandomGameState extends React.Component {
             return (
                 <ListGroupItem key={index + 1}>
                     <Row>{t("utils.playerLabel", {
-                        seat: t(`seats.${SEAT_NAMES[player.seat]}`), 
+                        seat: t(SEAT_NAMES[player.seat]), 
                         you: player.seat === this.state.userSeat 
                             ? `(${t("allLast.you")})` 
                             : ""
@@ -143,8 +143,8 @@ class RandomGameState extends React.Component {
                     <ListGroupItem key={0}>
                         <Row>{t("utils.info", {
                             turn: this.state.turn,
-                            round: ROUND_NAMES[this.state.round],
-                            seat: t(`seats.${SEAT_NAMES[this.state.userSeat]}`)
+                            round: t("roundName", ROUND_NAMES[this.state.round]),
+                            seat: t(SEAT_NAMES[this.state.userSeat])
                         })}</Row>
                         <Row>{t("utils.dora", {tile: getTileAsText(t, this.state.doraIndicator, true)})}</Row>
                     </ListGroupItem>

@@ -16,7 +16,10 @@ i18n
 
     ns: ["translations"],
     defaultNS: "translations",
-    keySeparator: '.'
+    keySeparator: '.',
+    interpolation: {
+      defaultVariables: { repeats: "0" }
+    }
   });
 
 export default i18n;
