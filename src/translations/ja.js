@@ -44,7 +44,7 @@ export const ja = {
             seatWind: "自風:",
             doraIndicator: "ドラ表示:",
             copyHand: "手牌をコピー",
-            copied: "コピーしました！Copied!",
+            copied: "コピーしました！",
             error: {
                 load: "Error: Couldn't understand provided hand",
                 wallEmpty: "Error: Not enough tiles to make a hand.",
