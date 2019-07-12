@@ -368,9 +368,7 @@ function analyzeDiscard(t, hand, chosenTile, remainingTiles, currentTurn) {
 
 function parseHand(roundText, player) {
     let regex = new RegExp(`hai${player}="(.+?)"`, 'g');
-    console.log(roundText);
     let match = regex.exec(roundText);
-    console.log(match);
     let handTiles = match[1];
     return convertTenhouHandToHand(handTiles);
 }
