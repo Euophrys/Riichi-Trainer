@@ -37,7 +37,7 @@ export const ja = {
             disclaimer: "Disclaimer: This trainer will train your ability to maximize your hand's efficiency in the current turn. It won't help you maximize efficiency in future turns, or to learn when it's proper to ignore efficiency, or how to build value. Playing the way this trainer suggests in every hand is not the optimal way to play mahjong, but the are hands where you want to play this way. High level players don't always play like this, but all high level players CAN play like this. Make sure to supplement this training with further reading to learn when it might not be the best line of play, and check the settings for more targeted training.",
             instructions: "打ちたいの牌をクリックしてください。",
             start: "新し手牌を始まりました： {{hand}}",
-			complete: "手が聴牌になりました。おめでとう！あなたの効率は{{achieved}}/{{total}}か{{percent}}%。",
+            complete: "手が聴牌になりました。おめでとう！あなたの効率は{{achieved}}/{{total}}か{{percent}}%。",
             newHandButtonLabel: "新し手牌",
             loadButtonLabel: "手牌をロード",
             roundWind: "場風:",
