@@ -35,16 +35,16 @@ export const ja = {
         roundName: "{{wind}}{{number}}局{{repeats}}本場",
         trainer: {
             disclaimer: "Disclaimer: This trainer will train your ability to maximize your hand's efficiency in the current turn. It won't help you maximize efficiency in future turns, or to learn when it's proper to ignore efficiency, or how to build value. Playing the way this trainer suggests in every hand is not the optimal way to play mahjong, but the are hands where you want to play this way. High level players don't always play like this, but all high level players CAN play like this. Make sure to supplement this training with further reading to learn when it might not be the best line of play, and check the settings for more targeted training.",
-            instructions: "Click the tile you want to discard.",
-            start: "Started a new hand: {{hand}}",
-            complete: "Your hand is now ready. Congratulations! Your efficiency was {{achieved}}/{{total}}, or {{percent}}%.",
-            newHandButtonLabel: "New Hand",
-            loadButtonLabel: "Load Hand",
+            instructions: "打ちたいの牌をクリックしてください。",
+            start: "新し手牌を始まりました： {{hand}}",
+			complete: "手が聴牌になりました。おめでとう！あなたの効率は{{achieved}}/{{total}}か{{percent}}%。",
+            newHandButtonLabel: "新し手牌",
+            loadButtonLabel: "手牌をロード",
             roundWind: "場風:",
             seatWind: "自風:",
             doraIndicator: "ドラ表示:",
-            copyHand: "Copy Hand",
-            copied: "Copied!",
+            copyHand: "手牌をコピー",
+            copied: "コピーしました！",
             error: {
                 load: "Error: Couldn't understand provided hand",
                 wallEmpty: "Error: Not enough tiles to make a hand.",
@@ -61,15 +61,15 @@ export const ja = {
             label: "Hand History",
             tenhouLinkText: "[Accepted Tiles]",
             concise: {
-                discard: "Discard: {{tile}}",
+                discard: "　捨て牌: {{tile}}",
                 acceptance: " ({{count}} tile).",
                 loweredShanten: " (lowered shanten).",
-                optimal: " Best:",
+                optimal: " 最高捨て牌:",
                 optimalSpoiler: " {{tile}}",
-                best: " That was the best choice!",
+                best: "　それは一番いい選択でした！",
                 exceptionalNoten: " All of your winning tiles are in your hand, so you aren't tenpai yet.",
                 furiten: " フリテン.",
-                furitenWarning: " Be careful of future furiten.",
+                furitenWarning: "フリテンをきを付けてください。",
                 exhausted: " There are no tiles left in the wall. Better luck next time! ",
                 draw: " ツモ: {{tile}}. "
             },
@@ -88,9 +88,9 @@ export const ja = {
             }
         },
         discards: {
-            label: "Discard Pool",
+            label: "河",
             discardCount: "You've discarded {{count}} tile.",
-            tilesLeft: "There is {{count}} tile left in the wall.",
+            tilesLeft: "山に{{count}}枚残ります。",
         },
         settings: {
             buttonLabel: "設定",
@@ -99,7 +99,7 @@ export const ja = {
             circles: "筒子",
             bamboo: "索子",
             honors: "字牌",
-            sanma: "Three player rules",
+            sanma: "三麻",
             redFives: "Number of Red Fives:",
             verbose: "Verbose tile names (\"one of bamboo\" vs \"1s\")",
             concise: "Concise history",
@@ -109,7 +109,7 @@ export const ja = {
             exceptions: "Consider exception hands (Kokushi/Thirteen Orphans and Chiitoitsu/Seven Pairs)",
             minShanten: "Minimum starting hand shanten:",
             minShantenLimit: "(up to the number of allowed suits)",
-            sort: "Sort hand",
+            sort: "自動理牌",
             blind: "Conceal hand tiles"
         },
         stats: {
@@ -125,8 +125,8 @@ export const ja = {
             overall: "Overall Efficiency: {{percent}}% ({{achieved}}/{{total}})",
             reset: "Reset Stats",
             confirmation: "Are you sure you want to reset all of your stats to zero? You cannot undo this action.",
-            yes: "Yes, reset!",
-            no: "No, don't reset!"
+            yes: "はい、リセットをして下さい！",
+            no: "いいえ、リセットをしてないで下さい！"
         },
         credits: {
             label: "Credits",
@@ -239,7 +239,7 @@ export const ja = {
         },
         explorer: {
             warning: "Warning: Loading a hand may cause the page to hang for 5-10 seconds, or more if you have an older computer, depending on the complexity of the hand. Loading a hand will show all of the ukeire and upgrade possibilities for each discard, even ones that go back in shanten. By default, options that are strictly worse than another option won't be displayed, but you can press the button below to change that. If you only need ukeire information, tenhou.net/2/ will suffice.",
-            shanten: "Shanten: The number of tiles away from ready your hand is.",
+            shanten: "向聴：　聴牌までの近さを数える単位。",
             ukeire: "Ukeire: The number of tiles that reduce your shanten.",
             notableDiscards: "Show Only Notable Discards",
             allDiscards: "Show All Possible Discards",
