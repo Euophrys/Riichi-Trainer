@@ -164,7 +164,7 @@ class ReplayAnalysis extends React.Component {
                 return <DropdownItem disabled={index === this.state.currentRound} onClick={()=>this.onRoundChoice(index)}>{roundName}</DropdownItem>;
             });
 
-            let PLAYER_NAMES = parsePlayers(this.state.text);
+            let PLAYER_NAMES = parsePlayers(t, this.state.text);
             playerItems = PLAYER_NAMES.map((player, index) => {
                 return <DropdownItem disabled={index === this.state.player} onClick={()=>this.onPlayerChoice(index)}>{index}: {player.name}</DropdownItem>
             });

@@ -13,26 +13,26 @@ export function parseRounds(replayText) {
     return games;
 }
 
-export function parsePlayers(replayText) {
+export function parsePlayers(t, replayText) {
     let players = [];
 
     for(let i = 0; i < 4; i++) {
         players.push({
-            name: parseName(replayText, i)
+            name: parseName(t, replayText, i)
         });
     }
 
     return players;
 }
 
-function parseName(replayText, player) {
+function parseName(t, replayText, player) {
     let regex = new RegExp(`n${player}="(.+?)"`);
     let match = regex.exec(replayText);
     if(match) {
         return decodeURIComponent(match[1]);
     }
 
-    return "Unknown";
+    return t("analyzer.noName");
 }
 
 export function parseRoundNames(t, roundTexts) {
@@ -42,7 +42,7 @@ export function parseRoundNames(t, roundTexts) {
         let match = regex.exec(roundText);
 
         if(!match) {
-            return "Send me this replay, something broke."
+            return t("analyzer.replayError")
         }
 
         let roundName = ROUND_NAMES[parseInt(match[1])];
@@ -134,7 +134,7 @@ export function parseRound(t, roundText, player) {
                     currentTurn.message.push(t("analyzer.call", {tile: getTileAsText(t, calledTiles[0]), meld: convertIndexesToTenhouTiles(calledTiles), hand: convertHandToTenhouString(players[who].hand)}));
                     let newShanten = CalculateStandardShanten(padHand(players[player].hand));
                     if(newShanten >= baseShanten) {
-                        currentTurn.message.push(t("callSameShanten"));
+                        currentTurn.message.push(t("analyzer.callSameShanten"));
                     }
                 }
 
