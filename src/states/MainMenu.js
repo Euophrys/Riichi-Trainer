@@ -10,7 +10,7 @@ import { withTranslation } from "react-i18next";
 class MainMenu extends React.Component {
     constructor(props) {
         super(props);
-        
+
         this.state = {
             active: 0,
             dropdownOpen: false
@@ -22,7 +22,7 @@ class MainMenu extends React.Component {
             active: 0
         });
     }
-    
+
     onAnalyzerClicked() {
         this.setState({
             active: 1
@@ -94,6 +94,7 @@ class MainMenu extends React.Component {
                             <DropdownMenu>
                                 <DropdownItem onClick={() => this.changeLanguage("en")}>English</DropdownItem>
                                 <DropdownItem onClick={() => this.changeLanguage("ja")}>日本語</DropdownItem>
+                                <DropdownItem onClick={() => this.changeLanguage("fr")}>Français</DropdownItem>
                             </DropdownMenu>
                         </Dropdown>
                     </Row>
