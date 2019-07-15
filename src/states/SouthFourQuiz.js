@@ -241,7 +241,7 @@ class SouthFourQuiz extends React.Component {
                 <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={3} placementTarget={1} index={3} riichis={[0, 0, 0, 0]} messages={this.state.messages}/>
                 <ListGroupItemHeading><span>{t("allLast.riichiHeader")}</span></ListGroupItemHeading>
                 <ListGroupItem>
-                <Row>{t("allLast.info")}</Row>
+                    <Row>{t("allLast.info")}</Row>
                     {scores}
                 </ListGroupItem>
                 <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={true}  ronTarget={0} placementTarget={1} index={4} riichis={[0, 0, 0, 1]} messages={this.state.messages}/>
@@ -252,7 +252,7 @@ class SouthFourQuiz extends React.Component {
                 <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={3} placementTarget={1} index={9} riichis={[0, 1, 0, 0]} messages={this.state.messages}/>
                 <ListGroupItemHeading><span>{t("allLast.higherHeader")}</span></ListGroupItemHeading>
                 <ListGroupItem>
-                <Row>{t("allLast.info")}</Row>
+                    <Row>{t("allLast.info")}</Row>
                     {scores}
                 </ListGroupItem>
                 <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={true}  ronTarget={0} placementTarget={2} index={10} riichis={[0, 0, 0, 0]} messages={this.state.messages}/>

@@ -63,7 +63,7 @@ export const ja = {
             concise: {
                 discard: "　捨て牌: {{tile}}",
                 acceptance: " ({{count}} tile).",
-                loweredShanten: " (lowered shanten).",
+                loweredShanten: " (went back in shanten).",
                 optimal: " 最高捨て牌:",
                 optimalSpoiler: " {{tile}}",
                 best: "　それは一番いい選択でした！",
@@ -76,7 +76,7 @@ export const ja = {
             verbose: {
                 discard: "You chose to discard the {{tile}}, which",
                 acceptance: " results in {{count}} tile that can improve the hand.",
-                loweredShanten: " lowers your shanten - you are now further from ready.",
+                loweredShanten: " increases your shanten - you are now further from ready.",
                 optimal: " The most efficient tile to discard",
                 optimalSpoiler: ", the {{tile}}, ",
                 best: " That was the best choice!",
