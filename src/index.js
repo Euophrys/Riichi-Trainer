@@ -6,7 +6,6 @@ import * as serviceWorker from './serviceWorker';
 import "./i18n";
 
 //import UkeireQuiz from './states/UkeireQuiz';
-//import ScoreToPointsQuiz from './states/ScoreToPointsQuiz';
 //import HandExplorer from './states/HandExplorer';
 //import ReplayAnalysis from './states/ReplayAnalysis';
 import MainMenu from './states/MainMenu';

@@ -315,7 +315,7 @@ class UkeireQuiz extends React.Component {
         if (shanten <= 0 && handUkeire.value > 0) {
             // If the hand is tenpai, and has winning tiles outside of the hand, training is complete
             let { t } = this.props;
-            historyObject.message = " " + t("trainer.complete", {achieved: achievedTotal, total: possibleTotal, percent: Math.floor(achievedTotal / possibleTotal * 100)});
+            historyObject.message = " " + t("trainer.complete", {achieved: achievedTotal, total: possibleTotal, percent: Math.floor(achievedTotal / possibleTotal * 1000) / 10});
             isComplete = true;
         }
 
