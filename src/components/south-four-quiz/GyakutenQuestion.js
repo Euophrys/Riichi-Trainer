@@ -34,7 +34,7 @@ function GyakutenQuestion(props) {
                 index={props.index}
                 riichis={props.riichis}
             />
-            {props.messages[props.index]}
+            {props.messages[props.index] ? props.messages[props.index].generateJSX(t, props.showDifferences) : ""}
         </ListGroupItem>
     );
 }

@@ -164,6 +164,7 @@ export const fr = {
             },
             title: "Entraînement Oorasu",
             maxFu: "Fu maximal",
+            showDifferences: "Montrer les différences de points",
             loadInstructions: "Entrez les scores de Est, Sud, Ouest et Nord, dans cet ordre, séparés par des virgules pour initialiser une situation.",
             loadLabel: "Charger une situation",
             newLabel: "Nouvelle situation aléatoire",

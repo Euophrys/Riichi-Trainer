@@ -164,6 +164,7 @@ export const en = {
             },
             title: "All Last Trainer",
             maxFu: "Maximum Fu",
+            showDifferences: "Show Point Differences",
             loadInstructions: "Enter comma-separated scores for East, South, West, and North, in that order, to load a situation.",
             loadLabel: "Load Situation",
             newLabel: "New Random Situation",
