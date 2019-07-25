@@ -411,8 +411,6 @@ class UkeireQuiz extends React.Component {
     }
 
     loadHand(loadData) {
-        let { t } = this.props;
-
         if (loadData.tiles === 0) {
             this.logToHistory("trainer.error.load");
             return;

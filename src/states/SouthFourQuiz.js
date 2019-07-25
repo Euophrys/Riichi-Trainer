@@ -3,7 +3,7 @@ import { Container, Row, Input, InputGroup, InputGroupAddon, Col, ListGroup, Lis
 import { getPoints } from '../scripts/ScoreCalculation';
 import Player from '../models/Player';
 import { randomInt, validateFu, shuffleArray } from '../scripts/Utils';
-import { SEAT_NAMES, NON_DEALER_RON_SCORES, NON_DEALER_TSUMO_SCORES, PLACEMENTS } from '../Constants';
+import { SEAT_NAMES, NON_DEALER_RON_SCORES, NON_DEALER_TSUMO_SCORES } from '../Constants';
 import GyakutenQuestion from '../components/south-four-quiz/GyakutenQuestion';
 import SouthFourResultMessage from "../models/SouthFourResultMessage";
 import { withTranslation } from 'react-i18next';
