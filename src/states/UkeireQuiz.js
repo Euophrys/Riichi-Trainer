@@ -19,6 +19,7 @@ import SortedHand from '../components/SortedHand';
 import Player from '../models/Player';
 import { PLAYER_NAMES } from '../Constants';
 import { withTranslation } from 'react-i18next';
+import LocalizedMessage from '../models/LocalizedMessage';
 
 class UkeireQuiz extends React.Component {
     constructor(props) {
@@ -116,8 +117,7 @@ class UkeireQuiz extends React.Component {
     }
 
     getNewHandState(hand, availableTiles, tilePool, history, dora, lastDraw = false, seatWind = false, roundWind = false) {
-        let { t } = this.props;
-        history.unshift({ message: t("trainer.start", {hand: convertHandToTenhouString(hand)}) });
+        history.unshift({ message: new LocalizedMessage("trainer.start", {hand: convertHandToTenhouString(hand)}) });
 
         let players = [];
         let numberOfPlayers = this.state.settings.threePlayer ? 3 : 4;
@@ -158,7 +158,6 @@ class UkeireQuiz extends React.Component {
         let history = [];
         let dora = 1;
         let hand, availableTiles, tilePool;
-        let { t } = this.props;
 
         let minShanten = this.state.settings.minShanten;
         minShanten = Math.max(0, minShanten);
@@ -187,7 +186,7 @@ class UkeireQuiz extends React.Component {
             } while (CalculateMinimumShanten(hand) < minShanten)
 
             if (!hand) {
-                history.push({ message: t("trainer.error.wallEmptyShuffle") });
+                history.push({ message: new LocalizedMessage("trainer.error.wallEmptyShuffle") });
                 // Continues into the normal flow, rebuilding the wall.
             }
             else {
@@ -204,7 +203,7 @@ class UkeireQuiz extends React.Component {
             tilePool = generationResult.tilePool;
 
             if (!hand) {
-                history.push({ message: t("trainer.error.wallEmpty") });
+                history.push({ message: new LocalizedMessage("trainer.error.wallEmpty") });
                 this.setState({
                     history: history
                 });
@@ -314,8 +313,8 @@ class UkeireQuiz extends React.Component {
 
         if (shanten <= 0 && handUkeire.value > 0) {
             // If the hand is tenpai, and has winning tiles outside of the hand, training is complete
-            let { t } = this.props;
-            historyObject.message = " " + t("trainer.complete", {achieved: achievedTotal, total: possibleTotal, percent: Math.floor(achievedTotal / possibleTotal * 1000) / 10});
+            let message = new LocalizedMessage("trainer.complete", {achieved: achievedTotal, total: possibleTotal, percent: Math.floor(achievedTotal / possibleTotal * 1000) / 10})
+            historyObject.message = message;
             isComplete = true;
         }
 
@@ -415,7 +414,7 @@ class UkeireQuiz extends React.Component {
         let { t } = this.props;
 
         if (loadData.tiles === 0) {
-            this.logToHistory(t("trainer.error.load"));
+            this.logToHistory("trainer.error.load");
             return;
         }
 
@@ -435,7 +434,7 @@ class UkeireQuiz extends React.Component {
         let { hand, availableTiles, tilePool } = FillHand(remainingTiles, loadData.hand, 14 - loadData.tiles);
 
         if (!hand) {
-            this.logToHistory(t("trainer.error.wallEmpty"));
+            this.logToHistory("trainer.error.wallEmpty");
             return;
         }
 
@@ -467,7 +466,7 @@ class UkeireQuiz extends React.Component {
 
     logToHistory(text) {
         let history = this.state.history;
-        history.unshift({ message: text });
+        history.unshift({ message: new LocalizedMessage(text) });
         this.setState({
             history: history,
         });
