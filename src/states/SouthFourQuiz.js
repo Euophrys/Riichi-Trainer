@@ -128,7 +128,8 @@ class SouthFourQuiz extends React.Component {
         let required;
         let message = new SouthFourResultMessage();
         message.feedback = "allLast.wrong";
-        let canBeEqual = (players[0].seat + 1) % 4 < (players[placementTarget].seat + 1) % 4;
+        // South (1 -> 0) > West (2 -> 1) > North (3 -> 2) > East (0 -> 3)
+        let canBeEqual = (players[0].seat + 3) % 4 < (players[placementTarget].seat + 3) % 4;
         
         if(tsumo) {
             required = findMinimumTsumoValue(players, scores, placementTarget, this.state.maxFu, canBeEqual);
