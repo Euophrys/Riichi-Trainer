@@ -7,6 +7,7 @@ import { SEAT_NAMES, NON_DEALER_RON_SCORES, NON_DEALER_TSUMO_SCORES } from '../C
 import GyakutenQuestion from '../components/south-four-quiz/GyakutenQuestion';
 import SouthFourResultMessage from "../models/SouthFourResultMessage";
 import { withTranslation } from 'react-i18next';
+import LocalizedMessage from '../models/LocalizedMessage';
 
 class SouthFourQuiz extends React.Component {
     constructor(props) {
@@ -45,10 +46,9 @@ class SouthFourQuiz extends React.Component {
     onLoadSituation() {
         let string = document.getElementById("loadScoresString").value;
         let scores = string.split(',');
-        let { t } = this.props;
 
         if(scores.length < 4) {
-            this.setState({loadErrorMessage: t("allLast.error.few")});
+            this.setState({loadErrorMessage: new LocalizedMessage("allLast.error.few")});
             return;
         }
         
@@ -58,7 +58,7 @@ class SouthFourQuiz extends React.Component {
             let converted = parseInt(scores[i]);
 
             if(isNaN(converted)) {
-                this.setState({loadErrorMessage: t("allLast.error.NaN", {seat: t(`seats.${SEAT_NAMES[i]}`)})});
+                this.setState({loadErrorMessage: new LocalizedMessage("allLast.error.NaN", {seat: `$t(${SEAT_NAMES[i]})`})});
                 return;
             }
 
@@ -69,7 +69,7 @@ class SouthFourQuiz extends React.Component {
         players.sort((a, b) => a.points - b.points);
         
         if(players[0].seat === 0) {
-            this.setState({loadErrorMessage: t("allLast.error.dealerLast")});
+            this.setState({loadErrorMessage: new LocalizedMessage("allLast.error.dealerLast")});
             return;
         }
 
@@ -242,7 +242,7 @@ class SouthFourQuiz extends React.Component {
                             <Button color="warning" onClick={() => this.onLoadSituation()}>{t("allLast.loadLabel")}</Button>
                         </InputGroupAddon>
                     </InputGroup>
-                    <Row>{this.state.loadErrorMessage}</Row>
+                    <Row>{this.state.loadErrorMessage ? this.state.loadErrorMessage.generateString(t) : ""}</Row>
                 </ListGroupItem>
                 <ListGroupItem>
                     <Button onClick={() => this.generateNewQuiz()}>{t("allLast.newLabel")}</Button>
