@@ -6,6 +6,7 @@ import CalculateMinimumShanten, { CalculateStandardShanten } from './ShantenCalc
 import { evaluateBestDiscard, evaluateSafestDiscards } from './Evaluations';
 import { getShantenOffset } from './Utils';
 import ReplayTurn from '../models/ReplayTurn';
+import LocalizedMessage from '../models/LocalizedMessage';
 
 export function parseRounds(replayText) {
     let games = replayText.split("<INIT ");
@@ -35,20 +36,20 @@ function parseName(t, replayText, player) {
     return t("analyzer.noName");
 }
 
-export function parseRoundNames(t, roundTexts) {
+export function parseRoundNames(roundTexts) {
     let regex = /seed="(\d+?),(\d+?),/;
 
     return roundTexts.map((roundText) => {
         let match = regex.exec(roundText);
 
         if(!match) {
-            return t("analyzer.replayError")
+            return new LocalizedMessage("analyzer.replayError");
         }
 
         let roundName = ROUND_NAMES[parseInt(match[1])];
         let repeats = parseInt(match[2]);
         
-        return t("roundName", {wind: roundName.wind, number: roundName.number, repeats: repeats});
+        return new LocalizedMessage("roundName", {wind: roundName.wind, number: roundName.number, repeats: repeats});
     });
 }
 
@@ -84,9 +85,18 @@ export function parseRound(t, roundText, player) {
     let match;
 
     let currentTurn = new ReplayTurn(
-        players[player].hand.slice(),
-        t("analyzer.startingHand", {hand: convertHandToTenhouString(players[player].hand), count: CalculateMinimumShanten(players[player].hand), dora: convertIndexesToTenhouTiles(dora)})
+        players[player].hand.slice()
     );
+
+    currentTurn.message.appendLocalizedMessage("analyzer.startingHand", 
+        {
+            hand: convertHandToTenhouString(players[player].hand),
+            count: CalculateMinimumShanten(players[player].hand),
+            dora: convertIndexesToTenhouTiles(dora)
+        }
+    );
+
+    currentTurn.message.appendMessage("<br/>");
     
     do {
         match = regex.exec(roundText);
@@ -95,7 +105,7 @@ export function parseRound(t, roundText, player) {
             let actionInfo = parseActionType(match[1]);
 
             if(!actionInfo) {
-                currentTurn.message.push(t("analyzer.unknownAction", {debugInfo: `${roundText} | ${match}`}));
+                currentTurn.message.appendLocalizedMessage("analyzer.unknownAction", {debugInfo: `${roundText} | ${match}`});
                 currentTurn.hand = turns[turns.length - 1].hand.slice();
                 turns.push(currentTurn);
                 currentTurn = new ReplayTurn();
@@ -131,10 +141,10 @@ export function parseRound(t, roundText, player) {
 
                 if(who === player) {
                     currentTurn.hand = players[player].hand.slice();
-                    currentTurn.message.push(t("analyzer.call", {tile: getTileAsText(t, calledTiles[0]), meld: convertIndexesToTenhouTiles(calledTiles), hand: convertHandToTenhouString(players[who].hand)}));
+                    currentTurn.message.appendLocalizedMessage("analyzer.call", {tile: getTileAsText(t, calledTiles[0]), meld: convertIndexesToTenhouTiles(calledTiles), hand: convertHandToTenhouString(players[who].hand)});
                     let newShanten = CalculateStandardShanten(padHand(players[player].hand));
                     if(newShanten >= baseShanten) {
-                        currentTurn.message.push(t("analyzer.callSameShanten"));
+                        currentTurn.message.appendLocalizedMessage("analyzer.callSameShanten");
                     }
                 }
 
@@ -146,7 +156,7 @@ export function parseRound(t, roundText, player) {
 
                 if(!who) {
                     currentTurn.hand = turns[turns.length - 1].hand.slice();
-                    currentTurn.message.push(t("analyzer.ryuukyoku"));
+                    currentTurn.message.appendLocalizedMessage("analyzer.ryuukyoku");
                     turns.push(currentTurn);
                     break;
                 }
@@ -156,7 +166,7 @@ export function parseRound(t, roundText, player) {
                 if(who === player) {
                     if(players[player].riichiTile > -1) {
                         currentTurn.hand = turns[turns.length - 1].hand.slice();
-                        currentTurn.message.push("analyzer.playerRiichi");
+                        currentTurn.message.appendLocalizedMessage("analyzer.playerRiichi");
                         turns.push(currentTurn);
                         break;
                     }
@@ -168,15 +178,16 @@ export function parseRound(t, roundText, player) {
                 let paddedHand = padHand(players[player].hand.slice());
                 let shanten = CalculateMinimumShanten(paddedHand);
 
-                let message = t("analyzer.otherRiichi", {number: who});
+                currentTurn.message.appendLocalizedMessage("analyzer.otherRiichi", {number: who});
 
                 if(shanten > 1) {
-                    message += t("analyzer.fold", {shanten: shanten});
+                    currentTurn.message.appendLocalizedMessage("analyzer.fold", {shanten: shanten});
                 } else if (shanten === 1) {
-                    message += t("analyzer.probablyFold");
+                    currentTurn.message.appendLocalizedMessage("analyzer.probablyFold");
                 }
 
-                currentTurn.message.push(message);
+                currentTurn.message.appendMessage("<br/>");
+
                 players[who].riichiTile = -2;
                 continue;
             }
@@ -184,7 +195,7 @@ export function parseRound(t, roundText, player) {
             if(actionInfo.end) {
                 let who = whoRegex.exec(match[2]);
                 if(currentTurn.hand.length === 0) currentTurn.hand = turns[turns.length - 1].hand.slice();
-                currentTurn.message.push(t("analyzer.win", {number: who[1]}));
+                currentTurn.message.appendLocalizedMessage("analyzer.win", {number: who[1]});
                 turns.push(currentTurn);
                 break;
             }
@@ -202,7 +213,7 @@ export function parseRound(t, roundText, player) {
                     if(doraMatch) {
                         let newDoraIndicator = convertTenhouTilesToIndex(parseInt(doraMatch[1]));
                         remainingTiles[newDoraIndicator]--;
-                        currentTurn.message.push(t("analyzer.kandora", {tile: getTileAsText(t, newDoraIndicator)}));
+                        currentTurn.message.appendLocalizedMessage("analyzer.kandora", {tile: getTileAsText(t, newDoraIndicator)});
                         continue;
                     }
                 }
@@ -248,7 +259,8 @@ export function parseRound(t, roundText, player) {
                 if(actionInfo.player === player) {
                     currentTurn.hand = players[player].hand;
                     currentTurn.draw = index;
-                    currentTurn.message.push(t("analyzer.draw", {tile: getTileAsText(t, index), hand: convertHandToTenhouString(players[player].hand)}));
+                    currentTurn.message.appendLocalizedMessage("analyzer.draw", {tile: getTileAsText(t, index), hand: convertHandToTenhouString(players[player].hand)});
+                    currentTurn.message.appendMessage("<br/>");
                     remainingTiles[index]--;
                 }
 
@@ -293,23 +305,27 @@ function analyzeSafestDiscard(t, playerHand, chosenTile, players, remainingTiles
     if(riichis === 0) return "";
     
     let chosenSafety = totalSafety[chosenTile];
-    currentTurn.message.push(t("analyzer.chosenSafety", {
+    currentTurn.message.appendLocalizedMessage("analyzer.chosenSafety", {
         tile: getTileAsText(t, chosenTile, true),
         rating: totalSafety[chosenTile],
         explanation: safetyRatingExplanations[Math.floor(chosenSafety / riichis)]
-    }));
+    });
+    currentTurn.message.appendMessage("<br/>");
+
     let bestSafety = Math.max(...totalSafety);
     let bestChoice = totalSafety.indexOf(bestSafety);
 
     if(bestSafety === chosenSafety) {
-        currentTurn.message.push(t("analyzer.correctSafety"));
+        currentTurn.message.appendLocalizedMessage("analyzer.correctSafety");
     } else {
-        currentTurn.message.push(t("analyzer.bestSafety", {
+        currentTurn.message.appendLocalizedMessage("analyzer.bestSafety", {
             tile: getTileAsText(t, bestChoice, true),
             rating: bestSafety,
             explanation: safetyRatingExplanations[Math.floor(bestSafety / riichis)]
-        }));
+        });
     }
+
+    currentTurn.message.appendMessage("<br/>");
 }
 
 function padHand(hand) {
@@ -333,37 +349,39 @@ function analyzeDiscard(t, hand, chosenTile, remainingTiles, currentTurn) {
     let shanten = CalculateMinimumShanten(paddedHand);
     let handUkeire = CalculateUkeireFromOnlyHand(paddedHand, ALL_TILES_REMAINING.slice(), CalculateMinimumShanten).value;
     let bestTile = evaluateBestDiscard(ukeire);
-    let result = t("history.verbose.discard", {tile: getTileAsText(t, chosenTile, true)});
+    currentTurn.message.appendLocalizedMessage("history.verbose.discard", {tile: getTileAsText(t, chosenTile, true)});
 
     if (chosenUkeire.value > 0 || shanten === 0) {
-        result += t("history.verbose.acceptance", {count: chosenUkeire.value});
-        result += ` ${convertTilesToAsciiSymbols(chosenUkeire.tiles)} (${convertIndexesToTenhouTiles(chosenUkeire.tiles)})`;
+        currentTurn.message.appendLocalizedMessage("history.verbose.acceptance", {count: chosenUkeire.value});
+        currentTurn.message.appendMessage(` ${convertTilesToAsciiSymbols(chosenUkeire.tiles)} (${convertIndexesToTenhouTiles(chosenUkeire.tiles)})`);
     }
     else {
-        result += t("history.verbose.loweredShanten");
+        currentTurn.message.appendLocalizedMessage("history.verbose.loweredShanten");
         currentTurn.className = "bg-danger text-white";
     }
 
-    currentTurn.message.push(result);
-    result = "";
+    currentTurn.message.appendMessage("<br/>");
 
     if (chosenUkeire.value < bestUkeire) {
-        result += t("history.verbose.optimal") + t("history.verbose.optimalSpoiler", {tile: getTileAsText(t, bestTile, true)});
-        result += t("history.verbose.acceptance", {count: bestUkeire});
-        result += ` ${convertTilesToAsciiSymbols(ukeire[bestTile].tiles)} (${convertIndexesToTenhouTiles(ukeire[bestTile].tiles)})`;
-        currentTurn.message.push(result);
+        currentTurn.message.appendLocalizedMessage("history.verbose.optimal");
+        currentTurn.message.appendLocalizedMessage("history.verbose.optimalSpoiler", {tile: getTileAsText(t, bestTile, true)});
+        currentTurn.message.appendLocalizedMessage("history.verbose.acceptance", {count: bestUkeire});
+        currentTurn.message.appendMessage(` ${convertTilesToAsciiSymbols(ukeire[bestTile].tiles)} (${convertIndexesToTenhouTiles(ukeire[bestTile].tiles)})`);
+
         if(!currentTurn.className) {
             currentTurn.className = "bg-warning";
         }
     }
     else {
-        currentTurn.message.push(t("history.verbose.best"))
+        currentTurn.message.appendLocalizedMessage("history.verbose.best");
         currentTurn.className = "bg-success text-white";
     }
 
     if (shanten <= 0 && handUkeire === 0) {
-        currentTurn.message.push(t("history.verbose.exceptionalNoten"));
+        currentTurn.message.appendLocalizedMessage("history.verbose.exceptionalNoten");
     }
+
+    currentTurn.message.appendMessage("<br/>");
 }
 
 function parseHand(roundText, player) {
