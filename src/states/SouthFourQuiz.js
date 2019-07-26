@@ -3,7 +3,7 @@ import { Container, Row, Input, InputGroup, InputGroupAddon, Col, ListGroup, Lis
 import { getPoints } from '../scripts/ScoreCalculation';
 import Player from '../models/Player';
 import { randomInt, validateFu, shuffleArray } from '../scripts/Utils';
-import { SEAT_NAMES, NON_DEALER_RON_SCORES, NON_DEALER_TSUMO_SCORES } from '../Constants';
+import { SEAT_NAMES, RON_SCORES, TSUMO_SCORES } from '../Constants';
 import GyakutenQuestion from '../components/south-four-quiz/GyakutenQuestion';
 import SouthFourResultMessage from "../models/SouthFourResultMessage";
 import { withTranslation } from 'react-i18next';
@@ -67,11 +67,6 @@ class SouthFourQuiz extends React.Component {
         }
 
         players.sort((a, b) => a.points - b.points);
-        
-        if(players[0].seat === 0) {
-            this.setState({loadErrorMessage: new LocalizedMessage("allLast.error.dealerLast")});
-            return;
-        }
 
         this.setState({
             players: players,
@@ -101,9 +96,8 @@ class SouthFourQuiz extends React.Component {
             players.sort((a, b) => a.points - b.points);
         } while (players[1].points - players[0].points < 1500 || players[1].points - players[0].points > 16000);
 
-        // Give the lowest score a random non-dealer wind, then give the rest of the winds to the others
-        let seats = shuffleArray([1, 2, 3]);
-        seats.splice(randomInt(4,1), 0, 0);
+        // Assign random seats
+        let seats = shuffleArray([0, 1, 2, 3]);
 
         for( let i = 0; i < players.length; i++)
         {
@@ -130,30 +124,36 @@ class SouthFourQuiz extends React.Component {
         message.feedback = "allLast.wrong";
         // South (1 -> 0) > West (2 -> 1) > North (3 -> 2) > East (0 -> 3)
         let canBeEqual = (players[0].seat + 3) % 4 < (players[placementTarget].seat + 3) % 4;
+        let dealer = players[0].seat === 0;
         
         if(tsumo) {
             required = findMinimumTsumoValue(players, scores, placementTarget, this.state.maxFu, canBeEqual);
-            let points = getPoints(han, fu);
+
+            let points = getPoints(han, fu, dealer);
             scores[0] += points[0] * 2 + points[1];
             scores[1] -= players[1].seat > 0 ? points[0] : points[1];
             scores[2] -= players[2].seat > 0 ? points[0] : points[1];
             scores[3] -= players[3].seat > 0 ? points[0] : points[1];
             
-            if(points[0] === required.nondealer && points[1] === required.dealer) {
+            if((!dealer && points[0] === required.nondealer && points[1] === required.dealer)
+                || (dealer && points[0] === required.dealer)) {
                 message.feedback = "allLast.correct";
-            } else if(points[0] > required.nondealer || points[1] > required.dealer) {
+            } else if((!dealer && (points[0] > required.nondealer || points[1] > required.dealer))
+                || (dealer && points[0] > required.dealer)) {
                 message.feedback = "allLast.tooMuch";
             }
         } else {
-            required = findMinimumRonValue(scores, ronTarget, placementTarget, this.state.maxFu, canBeEqual);
+            required = findMinimumRonValue(players, scores, ronTarget, placementTarget, this.state.maxFu, canBeEqual);
 
-            let points = getPoints(han, fu, false, false);
+            let points = getPoints(han, fu, dealer, false);
             scores[0] += points;
             scores[ronTarget] -= points;
 
-            if(points === required.value) {
+            if((!dealer && points === required.nondealer)
+                || (dealer && points === required.dealer)) {
                 message.feedback = "allLast.correct";
-            } else if(points > required.value) {
+            } else if((!dealer && points > required.nondealer)
+                || (dealer && points > required.dealer)) {
                 message.feedback = "allLast.tooMuch";
             }
         }
@@ -284,55 +284,63 @@ class SouthFourQuiz extends React.Component {
 }
 
 function findMinimumTsumoValue(players, scores, placementTarget, maxFu, canBeEqual) {
-    for(let i = 0; i < NON_DEALER_TSUMO_SCORES.length; i++) {
-        if(NON_DEALER_TSUMO_SCORES[i].fu > maxFu) continue;
+    for(let i = 0; i < TSUMO_SCORES.length; i++) {
+        if(TSUMO_SCORES[i].fu > maxFu) continue;
 
         let newScores = scores.slice();
 
-        newScores[0] += NON_DEALER_TSUMO_SCORES[i].nondealer * 2 + NON_DEALER_TSUMO_SCORES[i].dealer;
-        newScores[1] -= players[1].seat === 0 ? NON_DEALER_TSUMO_SCORES[i].dealer : NON_DEALER_TSUMO_SCORES[i].nondealer;
-        newScores[2] -= players[2].seat === 0 ? NON_DEALER_TSUMO_SCORES[i].dealer : NON_DEALER_TSUMO_SCORES[i].nondealer;
-        newScores[3] -= players[3].seat === 0 ? NON_DEALER_TSUMO_SCORES[i].dealer : NON_DEALER_TSUMO_SCORES[i].nondealer;
+        if(players[0].seat === 0) {
+            newScores[0] += TSUMO_SCORES[i].dealer * 3;
+            newScores[1] -= TSUMO_SCORES[i].dealer;
+            newScores[2] -= TSUMO_SCORES[i].dealer;
+            newScores[3] -= TSUMO_SCORES[i].dealer;
+        } else {
+            newScores[0] += TSUMO_SCORES[i].nondealer * 2 + TSUMO_SCORES[i].dealer;
+            newScores[1] -= players[1].seat === 0 ? TSUMO_SCORES[i].dealer : TSUMO_SCORES[i].nondealer;
+            newScores[2] -= players[2].seat === 0 ? TSUMO_SCORES[i].dealer : TSUMO_SCORES[i].nondealer;
+            newScores[3] -= players[3].seat === 0 ? TSUMO_SCORES[i].dealer : TSUMO_SCORES[i].nondealer;
+        }
 
         let sortedScores = newScores.slice().sort((a, b) => a - b);
 
         if(canBeEqual) {
             if(sortedScores.lastIndexOf(newScores[0]) >= placementTarget) {
-                return NON_DEALER_TSUMO_SCORES[i];
+                return TSUMO_SCORES[i];
             }
         } else {
             if(sortedScores.indexOf(newScores[0]) >= placementTarget) {
-                return NON_DEALER_TSUMO_SCORES[i];
+                return TSUMO_SCORES[i];
             }
         }
     }
 
-    return NON_DEALER_TSUMO_SCORES[0];
+    return TSUMO_SCORES[0];
 }
 
-function findMinimumRonValue(scores, ronTarget, placementTarget, maxFu, canBeEqual) {
-    for(let i = 0; i < NON_DEALER_RON_SCORES.length; i++) {
-        if(NON_DEALER_RON_SCORES[i].fu > maxFu) continue;
+function findMinimumRonValue(players, scores, ronTarget, placementTarget, maxFu, canBeEqual) {
+    for(let i = 0; i < RON_SCORES.length; i++) {
+        if(RON_SCORES[i].fu > maxFu) continue;
 
         let newScores = scores.slice();
 
-        newScores[0] += NON_DEALER_RON_SCORES[i].value;
-        newScores[ronTarget] -= NON_DEALER_RON_SCORES[i].value;
+        let points = players[0].seat === 0 ? RON_SCORES[i].dealer : RON_SCORES[i].nondealer;
+        newScores[0] += points;
+        newScores[ronTarget] -= points;
 
         let sortedScores = newScores.slice().sort((a, b) => a - b);
 
         if(canBeEqual) {
             if(sortedScores.lastIndexOf(newScores[0]) >= placementTarget) {
-                return NON_DEALER_RON_SCORES[i];
+                return RON_SCORES[i];
             }
         } else {
             if(sortedScores.indexOf(newScores[0]) >= placementTarget) {
-                return NON_DEALER_RON_SCORES[i];
+                return RON_SCORES[i];
             }
         }
     }
 
-    return NON_DEALER_RON_SCORES[0];
+    return RON_SCORES[0];
 }
 
 export default withTranslation()(SouthFourQuiz);

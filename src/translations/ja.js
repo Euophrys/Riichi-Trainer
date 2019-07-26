@@ -178,8 +178,7 @@ export const ja = {
             you: "YOU",
             error: {
                 few: "Error: Not enough scores provided.",
-                NaN: "Error: Could not understand the score for {{seat}}.",
-                dealerLast: "Error: Dealer is in last place. This is not supported yet."
+                NaN: "Error: Could not understand the score for {{seat}}."
             }
         },
         analyzer: {

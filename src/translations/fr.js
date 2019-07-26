@@ -187,8 +187,7 @@ export const fr = {
             you: "VOUS",
             error: {
                 few: "Erreur : Il n'y a pas assez de scores.",
-                NaN: "Erreur : Impossible de comprendre le score de {{seat}}.",
-                dealerLast: "Erreur : Le donneur est en dernière position. Ceci n'est pas encore supporté."
+                NaN: "Erreur : Impossible de comprendre le score de {{seat}}."
             }
         },
         analyzer: {
