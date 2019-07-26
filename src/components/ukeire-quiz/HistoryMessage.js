@@ -32,24 +32,27 @@ class HistoryMessage extends React.Component {
     }
 
     render() {
+        let { t } = this.props;
+        
         if(!this.props.data.hand) {
             if(!this.props.data.message) {
                 return <ListGroupItem></ListGroupItem>
             }
 
             let className = "";
-            if(this.props.data.message.indexOf("Error") > -1) {
+            if(this.props.data.message.key.indexOf("error") > -1) {
                 className = "bg-danger text-white";
             }
 
             return (
-                <ListGroupItem className={className}>{this.props.data.message}</ListGroupItem>
+                <ListGroupItem className={className}>{this.props.data.message.generateString(t)}</ListGroupItem>
             )
         }
 
-        let { t } = this.props;
         let message = this.getMessage(t, this.props.concise);
-        message += this.props.data.message || "";
+        if(typeof this.props.data.message === "object") {
+            message += this.props.data.message.generateString(t);
+        }
 
         let tenhouLink = "http://tenhou.net/2/?q=" + this.props.data.hand;
 

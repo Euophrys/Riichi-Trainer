@@ -157,11 +157,11 @@ class ReplayAnalysis extends React.Component {
         let roundItems;
         let playerItems;
         let { t } = this.props;
-        let roundNames = parseRoundNames(t, this.state.rounds);
+        let roundNames = parseRoundNames(this.state.rounds);
 
         if(this.state.rounds.length) {
             roundItems = roundNames.map((roundName, index) => {
-                return <DropdownItem disabled={index === this.state.currentRound} onClick={()=>this.onRoundChoice(index)}>{roundName}</DropdownItem>;
+                return <DropdownItem disabled={index === this.state.currentRound} onClick={()=>this.onRoundChoice(index)}>{roundName.generateString(t)}</DropdownItem>;
             });
 
             let PLAYER_NAMES = parsePlayers(t, this.state.text);
@@ -172,9 +172,10 @@ class ReplayAnalysis extends React.Component {
 
         let message = <ListGroupItem/>;
         let currentTurn = this.state.turns[this.state.currentTurn];
-
+        
         if(this.state.turns.length) {
-            message = <ListGroupItem className={currentTurn.className}>{currentTurn.message.map((row) => <Row>{row}</Row>)}</ListGroupItem>;
+            let messageArray = currentTurn.message.generateString(t).split("<br/>");
+            message = <ListGroupItem className={currentTurn.className}>{messageArray.map((row) => <Row>{row}</Row>)}</ListGroupItem>;
         }
 
         let calls = "";
@@ -249,7 +250,7 @@ class ReplayAnalysis extends React.Component {
                         <br/>
                         <ListGroup>
                             <ListGroupItem>
-                                <Row>{t("analyzer.turn", {round: roundNames[this.state.currentRound], turn: this.state.currentTurn + 1})}</Row>
+                                <Row>{t("analyzer.turn", {round: roundNames[this.state.currentRound].generateString(t), turn: this.state.currentTurn + 1})}</Row>
                                 <Row>{currentTurn.discards.length ? t("analyzer.discards", {symbols: convertTilesToAsciiSymbols(currentTurn.discards), tiles: convertIndexesToTenhouTiles(currentTurn.discards)}) : ""}</Row>
                                 <Row>{calls.length > 0 ? t("analyzer.calls", {calls: calls}) : ""}</Row>
                             </ListGroupItem>

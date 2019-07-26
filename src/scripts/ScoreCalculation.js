@@ -55,7 +55,8 @@ export function getPoints(han = 1, fu = 20, dealer = false, tsumo = true, yakuma
 
     if (tsumo) {
         if (dealer) {
-            return roundPoints(basicPoints * 2);
+            let points = roundPoints(basicPoints * 2);
+            return [points, points];
         }
         else {
             return [roundPoints(basicPoints), roundPoints(basicPoints * 2)];

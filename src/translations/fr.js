@@ -164,6 +164,7 @@ export const fr = {
             },
             title: "Entraînement Oorasu",
             maxFu: "Fu maximal",
+            showDifferences: "Montrer les différences de points",
             loadInstructions: "Entrez les scores de Est, Sud, Ouest et Nord, dans cet ordre, séparés par des virgules pour initialiser une situation.",
             loadLabel: "Charger une situation",
             newLabel: "Nouvelle situation aléatoire",
@@ -175,6 +176,9 @@ export const fr = {
             riichiQuestion: "Si {{player}} déclare riichi, quel est le score minimum que vous devez marquer par {{action}} afin de vous placer en {{placement}} position ?",
             ron: "ron {{target}} avec ",
             tsumo: "tsumo",
+            han: "Han",
+            fu: "Fu",
+            submit: "Vérifier",
             wrong: "Faux ! Ce score ne vous amène pas en {{placement}} position ! Surlignez pour avoir la réponse : ",
             tooMuch: "Ce score vous amène en {{placement}} position, mais ce n'est pas le plus bas possible. Surlignez pour avoir la réponse : ",
             correct: "Correct ! Il s'agit du score le plus bas qui vous amène en {{placement}} position !",
@@ -183,8 +187,7 @@ export const fr = {
             you: "VOUS",
             error: {
                 few: "Erreur : Il n'y a pas assez de scores.",
-                NaN: "Erreur : Impossible de comprendre le score de {{seat}}.",
-                dealerLast: "Erreur : Le donneur est en dernière position. Ceci n'est pas encore supporté."
+                NaN: "Erreur : Impossible de comprendre le score de {{seat}}."
             }
         },
         analyzer: {

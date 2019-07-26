@@ -164,6 +164,7 @@ export const en = {
             },
             title: "All Last Trainer",
             maxFu: "Maximum Fu",
+            showDifferences: "Show Point Differences",
             loadInstructions: "Enter comma-separated scores for East, South, West, and North, in that order, to load a situation.",
             loadLabel: "Load Situation",
             newLabel: "New Random Situation",
@@ -175,6 +176,9 @@ export const en = {
             riichiQuestion: "If {{player}} declares riichi, what is the minimum score you can {{action}} to get {{placement}}?",
             ron: "ron {{target}} with ",
             tsumo: "tsumo",
+            han: "Han",
+            fu: "Fu",
+            submit: "Submit",
             wrong: "Wrong! That score doesn't get you to {{placement}}! Highlight for the answer: ",
             tooMuch: "That score gets you to {{placement}}, but it's not the lowest possible. Highlight for the answer: ",
             correct: "Correct! That's the lowest score that gets you to {{placement}}!",
@@ -183,8 +187,7 @@ export const en = {
             you: "YOU",
             error: {
                 few: "Error: Not enough scores provided.",
-                NaN: "Error: Could not understand the score for {{seat}}.",
-                dealerLast: "Error: Dealer is in last place. This is not supported yet."
+                NaN: "Error: Could not understand the score for {{seat}}."
             }
         },
         analyzer: {

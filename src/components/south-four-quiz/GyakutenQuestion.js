@@ -33,8 +33,9 @@ function GyakutenQuestion(props) {
                 placementTarget={props.placementTarget}
                 index={props.index}
                 riichis={props.riichis}
+                maxFu={props.maxFu}
             />
-            {props.messages[props.index]}
+            {props.messages[props.index] ? props.messages[props.index].generateJSX(t, props.showDifferences) : ""}
         </ListGroupItem>
     );
 }
