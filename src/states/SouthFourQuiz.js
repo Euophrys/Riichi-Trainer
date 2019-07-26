@@ -252,31 +252,31 @@ class SouthFourQuiz extends React.Component {
                     <Row>{t("allLast.info")}</Row>
                     {scores}
                 </ListGroupItem>
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={true}  ronTarget={0} placementTarget={1} index={0} riichis={[0, 0, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} />
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={1} placementTarget={1} index={1} riichis={[0, 0, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} />
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={2} placementTarget={1} index={2} riichis={[0, 0, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} />
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={3} placementTarget={1} index={3} riichis={[0, 0, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} />
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={true}  ronTarget={0} placementTarget={1} index={0} riichis={[0, 0, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={1} placementTarget={1} index={1} riichis={[0, 0, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={2} placementTarget={1} index={2} riichis={[0, 0, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={3} placementTarget={1} index={3} riichis={[0, 0, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
                 <ListGroupItemHeading><span>{t("allLast.riichiHeader")}</span></ListGroupItemHeading>
                 <ListGroupItem>
                     <Row>{t("allLast.info")}</Row>
                     {scores}
                 </ListGroupItem>
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={true}  ronTarget={0} placementTarget={1} index={4} riichis={[0, 0, 0, 1]} messages={this.state.messages} showDifferences={this.state.showDifferences} />
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={1} placementTarget={1} index={5} riichis={[0, 0, 0, 1]} messages={this.state.messages} showDifferences={this.state.showDifferences} />
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={3} placementTarget={1} index={6} riichis={[0, 0, 0, 1]} messages={this.state.messages} showDifferences={this.state.showDifferences} />
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={true}  ronTarget={0} placementTarget={1} index={7} riichis={[0, 1, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} />
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={1} placementTarget={1} index={8} riichis={[0, 1, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} />
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={3} placementTarget={1} index={9} riichis={[0, 1, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} />
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={true}  ronTarget={0} placementTarget={1} index={4} riichis={[0, 0, 0, 1]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={1} placementTarget={1} index={5} riichis={[0, 0, 0, 1]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={3} placementTarget={1} index={6} riichis={[0, 0, 0, 1]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={true}  ronTarget={0} placementTarget={1} index={7} riichis={[0, 1, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={1} placementTarget={1} index={8} riichis={[0, 1, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={3} placementTarget={1} index={9} riichis={[0, 1, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
                 <ListGroupItemHeading><span>{t("allLast.higherHeader")}</span></ListGroupItemHeading>
                 <ListGroupItem>
                     <Row>{t("allLast.info")}</Row>
                     {scores}
                 </ListGroupItem>
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={true}  ronTarget={0} placementTarget={2} index={10} riichis={[0, 0, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} />
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={1} placementTarget={2} index={11} riichis={[0, 0, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} />
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={2} placementTarget={2} index={12} riichis={[0, 0, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} />
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={true}  ronTarget={0} placementTarget={3} index={13} riichis={[0, 0, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} />
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={3} placementTarget={3} index={14} riichis={[0, 0, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} />
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={true}  ronTarget={0} placementTarget={2} index={10} riichis={[0, 0, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={1} placementTarget={2} index={11} riichis={[0, 0, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={2} placementTarget={2} index={12} riichis={[0, 0, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={true}  ronTarget={0} placementTarget={3} index={13} riichis={[0, 0, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={3} placementTarget={3} index={14} riichis={[0, 0, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
                 </ListGroup>
             </Container>
         );

@@ -25,7 +25,7 @@ class ScoreInput extends React.Component {
 
     validateHan(han) {
         han = Math.max(han, this.state.fu > 110 ? 2 : 1);
-        han = Math.min(han, 13);
+        han = Math.min(han, this.props.maxHan || 13);
         return han;
     }
 
@@ -48,7 +48,7 @@ class ScoreInput extends React.Component {
             }
         }
 
-        fu = Math.min(fu, 130);
+        fu = Math.min(fu, this.props.maxFu || 130);
 
         return fu;
     }
@@ -74,13 +74,13 @@ class ScoreInput extends React.Component {
                 <Col xs="4" sm="3">
                     <InputGroup>
                         <InputGroupAddon addonType="prepend">{t("allLast.han")}</InputGroupAddon>
-                        <Input type="number" placeholder={t("allLast.han")} step="1" min="1" max="13" onBlur={this.onHanChanged} onChange={(this.onNumberChanged)} />
+                        <Input type="number" placeholder={t("allLast.han")} step="1" min="1" max={this.props.maxHan || 13} onBlur={this.onHanChanged} onChange={this.onNumberChanged} />
                     </InputGroup>
                 </Col>
                 <Col xs="4" sm="3">
                     <InputGroup>
                         <InputGroupAddon addonType="prepend">{t("allLast.fu")}</InputGroupAddon>
-                        <Input type="number" placeholder={t("allLast.fu")} step="5" min="20" max="130" onBlur={this.onFuChanged} onChange={this.onNumberChanged} />
+                        <Input type="number" placeholder={t("allLast.fu")} step="5" min="20" max={this.props.maxFu || 130} onBlur={this.onFuChanged} onChange={this.onNumberChanged} />
                     </InputGroup>
                 </Col>
                 <Col xs="2">
