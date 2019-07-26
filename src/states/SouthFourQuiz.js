@@ -222,7 +222,7 @@ class SouthFourQuiz extends React.Component {
                         <Col xs="12" sm="8" md="6">
                             <InputGroup>
                                 <InputGroupAddon addonType="prepend">{t("allLast.maxFu")}</InputGroupAddon>
-                                <Input type="number" value={this.state.maxFu} placeholder="Fu" step="5" min="20" max="130" onBlur={this.onFuChanged} onChange={this.onNumberChanged} />
+                                <Input type="number" value={this.state.maxFu} placeholder={t("allLast.fu")} step="5" min="20" max="130" onBlur={this.onFuChanged} onChange={this.onNumberChanged} />
                             </InputGroup>
                         </Col>
                     </Row>
