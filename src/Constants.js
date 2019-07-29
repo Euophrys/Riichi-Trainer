@@ -20,6 +20,14 @@ export const SEAT_NAMES = [
     "winds.east", "winds.south", "winds.west", "winds.north"
 ];
 
+export const SAFETY_RATING_EXPLANATIONS = [
+    "analyzer.safetyExplanations.zero", "analyzer.safetyExplanations.one", "analyzer.safetyExplanations.two", "analyzer.safetyExplanations.three",
+    "analyzer.safetyExplanations.four", "analyzer.safetyExplanations.five", "analyzer.safetyExplanations.six",
+    "analyzer.safetyExplanations.seven", "analyzer.safetyExplanations.eight", "analyzer.safetyExplanations.nine",
+    "analyzer.safetyExplanations.ten", "analyzer.safetyExplanations.eleven", "analyzer.safetyExplanations.twelve",
+    "analyzer.safetyExplanations.thirteen", "analyzer.safetyExplanations.fourteen", "analyzer.safetyExplanations.fifteen"
+];
+
 export const ROUND_NAMES = [
     {wind:'$t(winds.east)', number: 1},  {wind:'$t(winds.east)', number: 2},  {wind:'$t(winds.east)', number: 3},  {wind:'$t(winds.east)', number: 4},
     {wind:'$t(winds.south)', number: 1}, {wind:'$t(winds.south)', number: 2}, {wind:'$t(winds.south)', number: 3}, {wind:'$t(winds.south)', number: 4},

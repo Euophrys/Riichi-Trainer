@@ -1,4 +1,4 @@
-import { ALL_TILES_REMAINING, ROUND_NAMES } from '../Constants';
+import { ALL_TILES_REMAINING, ROUND_NAMES, SAFETY_RATING_EXPLANATIONS } from '../Constants';
 import { convertTenhouHandToHand, convertHandToTenhouString } from './HandConversions';
 import { convertTenhouTilesToIndex, getTileAsText, convertTilesToAsciiSymbols, convertIndexesToTenhouTiles } from './TileConversions';
 import { CalculateDiscardUkeire, CalculateUkeireFromOnlyHand } from './UkeireCalculator';
@@ -7,25 +7,41 @@ import { evaluateBestDiscard, evaluateSafestDiscards } from './Evaluations';
 import { getShantenOffset } from './Utils';
 import ReplayTurn from '../models/ReplayTurn';
 import LocalizedMessage from '../models/LocalizedMessage';
+import ReplayPlayer from '../models/ReplayPlayer';
 
+/**
+ * Separates the individual rounds from a replay.
+ * @param {string} replayText The replay XML
+ * @returns {string[]} The rounds in the replay.
+ */
 export function parseRounds(replayText) {
     let games = replayText.split("<INIT ");
     games.shift();
     return games;
 }
 
+/**
+ * Parses the player names from a replay XML.
+ * @param {function} t The i18next translation function.
+ * @param {string} replayText The replay XML.
+ * @returns {string[]} The player names.
+ */
 export function parsePlayers(t, replayText) {
     let players = [];
 
     for(let i = 0; i < 4; i++) {
-        players.push({
-            name: parseName(t, replayText, i)
-        });
+        players.push(parseName(t, replayText, i));
     }
 
     return players;
 }
 
+/**
+ * Parse the player with the given index's name from a replay XML.
+ * @param {function} t The i18next translation function.
+ * @param {string} replayText The replay XML.
+ * @param {number} player The player index.
+ */
 function parseName(t, replayText, player) {
     let regex = new RegExp(`n${player}="(.+?)"`);
     let match = regex.exec(replayText);
@@ -36,6 +52,11 @@ function parseName(t, replayText, player) {
     return t("analyzer.noName");
 }
 
+/**
+ * Parse the round names from a replay XML.
+ * @param {string[]} roundTexts The round XMLs.
+ * @returns {LocalizedMessage[]} The round names.
+ */
 export function parseRoundNames(roundTexts) {
     let regex = /seed="(\d+?),(\d+?),/;
 
@@ -53,18 +74,19 @@ export function parseRoundNames(roundTexts) {
     });
 }
 
+/**
+ * Analyzes the given round.
+ * @param {Function} t The i18next translation function.
+ * @param {string} roundText The round XML
+ * @param {number} player The index of the player, between 0 and 3.
+ * @returns {ReplayTurn[]} An array of turns.
+ */
 export function parseRound(t, roundText, player) {
     let remainingTiles = ALL_TILES_REMAINING.slice();
     let players = [];
 
     for(let i = 0; i < 4; i++) {
-        players.push({
-            hand: parseHand(roundText, i),
-            discards: [],
-            discardsAfterRiichi: [],
-            riichiTile: -1,
-            calledTiles: []
-        });
+        players.push(new ReplayPlayer(parseHand(roundText, i)));
     }
 
     for(let j = 0; j < players[player].hand.length; j++) {
@@ -96,7 +118,7 @@ export function parseRound(t, roundText, player) {
         }
     );
 
-    currentTurn.message.appendMessage("<br/>");
+    currentTurn.message.appendLineBreak();
     
     do {
         match = regex.exec(roundText);
@@ -115,7 +137,7 @@ export function parseRound(t, roundText, player) {
             if(actionInfo.call) {
                 let who = parseInt(whoRegex.exec(match[2])[1]);
                 let calledTiles = getTilesFromCall(match[2]);
-                players[who].calledTiles.push(calledTiles);
+                players[who].callTiles(calledTiles);
                 let baseShanten = 0;
                 
                 if(who !== player) {
@@ -126,22 +148,9 @@ export function parseRound(t, roundText, player) {
                     baseShanten = CalculateStandardShanten(players[player].hand);
                 }
 
-                if(calledTiles.length === 1) {
-                    // kita
-                    players[who].hand[calledTiles[0]]--;
-                } else if(calledTiles.length === 4) {
-                    // kan
-                    players[who].hand[calledTiles[0]] = 0;
-                } else {
-                    // pon / chi
-                    for(let i = 1; i < calledTiles.length; i++) {
-                        players[who].hand[calledTiles[i]]--;
-                    }
-                }
-
                 if(who === player) {
                     currentTurn.hand = players[player].hand.slice();
-                    currentTurn.message.appendLocalizedMessage("analyzer.call", {tile: getTileAsText(t, calledTiles[0]), meld: convertIndexesToTenhouTiles(calledTiles), hand: convertHandToTenhouString(players[who].hand)});
+                    currentTurn.message.appendLocalizedMessage("analyzer.call", {tile: getTileAsText(t, calledTiles[0]), meld: convertIndexesToTenhouTiles(calledTiles), hand: convertHandToTenhouString(players[player].hand)});
                     let newShanten = CalculateStandardShanten(padHand(players[player].hand));
                     if(newShanten >= baseShanten) {
                         currentTurn.message.appendLocalizedMessage("analyzer.callSameShanten");
@@ -177,16 +186,7 @@ export function parseRound(t, roundText, player) {
 
                 let paddedHand = padHand(players[player].hand.slice());
                 let shanten = CalculateMinimumShanten(paddedHand);
-
-                currentTurn.message.appendLocalizedMessage("analyzer.otherRiichi", {number: who});
-
-                if(shanten > 1) {
-                    currentTurn.message.appendLocalizedMessage("analyzer.fold", {shanten: shanten});
-                } else if (shanten === 1) {
-                    currentTurn.message.appendLocalizedMessage("analyzer.probablyFold");
-                }
-
-                currentTurn.message.appendMessage("<br/>");
+                currentTurn.riichiDeclared(who, shanten);
 
                 players[who].riichiTile = -2;
                 continue;
@@ -201,7 +201,7 @@ export function parseRound(t, roundText, player) {
             }
 
             if(actionInfo.disconnect) {
-
+                // TODO: Don't analyze safety from disconnected players.
             }
 
             if(actionInfo.discard) {
@@ -221,29 +221,20 @@ export function parseRound(t, roundText, player) {
                 let discardIndex = convertTenhouTilesToIndex(parseInt(match[2]));
 
                 if(actionInfo.player === player) {
-                    currentTurn.hand = players[player].hand.slice();
-                    analyzeDiscard(t, players[player].hand, discardIndex, remainingTiles, currentTurn);
-                    analyzeSafestDiscard(t, players[player].hand, discardIndex, players, remainingTiles, currentTurn);
-                    currentTurn.discards = players[player].discards.slice();
-                    currentTurn.calls = players[player].calledTiles.slice();
+                    analyzeDiscardEfficiency(t, players[player].hand, discardIndex, remainingTiles, currentTurn);
+                    analyzeDiscardSafety(t, players[player].hand, discardIndex, players, remainingTiles, currentTurn);
+                    currentTurn.copyFrom(players[player]);
                     turns.push(currentTurn);
                     currentTurn = new ReplayTurn();
                 }
                 
+                players[actionInfo.player].discardTile(discardIndex);
+
                 for(let i = 0; i < players.length; i++) {
-                    if(players[i].riichiTile > -1) {
+                    if(players[i].isInRiichi()) {
                         players[i].discardsAfterRiichi.push(discardIndex);
                     }
-                    else if(i === actionInfo.player) {
-                        players[actionInfo.player].discards.push(discardIndex);
-                    }
-
-                    if(players[i].riichiTile === -2) {
-                        players[i].riichiTile = discardIndex;
-                    }
                 }
-
-                players[actionInfo.player].hand[discardIndex]--;
 
                 if(actionInfo.player !== player) {
                     remainingTiles[discardIndex]--;
@@ -257,10 +248,7 @@ export function parseRound(t, roundText, player) {
                 players[actionInfo.player].hand[index]++;
 
                 if(actionInfo.player === player) {
-                    currentTurn.hand = players[player].hand;
-                    currentTurn.draw = index;
-                    currentTurn.message.appendLocalizedMessage("analyzer.draw", {tile: getTileAsText(t, index), hand: convertHandToTenhouString(players[player].hand)});
-                    currentTurn.message.appendMessage("<br/>");
+                    currentTurn.tileDrawn(t, players[player], index);
                     remainingTiles[index]--;
                 }
 
@@ -272,20 +260,21 @@ export function parseRound(t, roundText, player) {
     return turns;
 }
 
-const safetyRatingExplanations = [
-    "analyzer.safetyExplanations.zero", "analyzer.safetyExplanations.one", "analyzer.safetyExplanations.two", "analyzer.safetyExplanations.three",
-    "analyzer.safetyExplanations.four", "analyzer.safetyExplanations.five", "analyzer.safetyExplanations.six",
-    "analyzer.safetyExplanations.seven", "analyzer.safetyExplanations.eight", "analyzer.safetyExplanations.nine",
-    "analyzer.safetyExplanations.ten", "analyzer.safetyExplanations.eleven", "analyzer.safetyExplanations.twelve",
-    "analyzer.safetyExplanations.thirteen", "analyzer.safetyExplanations.fourteen", "analyzer.safetyExplanations.fifteen"
-];
-
-function analyzeSafestDiscard(t, playerHand, chosenTile, players, remainingTiles, currentTurn) {
+/**
+ * Adds a message to the current turn regarding the safety of the player's discard.
+ * @param {Function} t The i18next translation function.
+ * @param {number[]} playerHand The player's current hand.
+ * @param {number} chosenTile The tile the player chose to discard.
+ * @param {ReplayPlayer[]} players The player objects.
+ * @param {number[]} remainingTiles The number of each tile remaining in concealed tiles.
+ * @param {ReplayTurn} currentTurn The current turn object.
+ */
+function analyzeDiscardSafety(t, playerHand, chosenTile, players, remainingTiles, currentTurn) {
     let riichis = 0;
     let totalSafety = Array(38).fill(0);
 
     for(let i = 0; i < players.length; i++) {
-        if(players[i].riichiTile >= 0) {
+        if(players[i].isInRiichi()) {
             riichis++;
 
             let safety = evaluateSafestDiscards(
@@ -308,9 +297,9 @@ function analyzeSafestDiscard(t, playerHand, chosenTile, players, remainingTiles
     currentTurn.message.appendLocalizedMessage("analyzer.chosenSafety", {
         tile: getTileAsText(t, chosenTile, true),
         rating: totalSafety[chosenTile],
-        explanation: safetyRatingExplanations[Math.floor(chosenSafety / riichis)]
+        explanation: SAFETY_RATING_EXPLANATIONS[Math.floor(chosenSafety / riichis)]
     });
-    currentTurn.message.appendMessage("<br/>");
+    currentTurn.message.appendLineBreak();
 
     let bestSafety = Math.max(...totalSafety);
     let bestChoice = totalSafety.indexOf(bestSafety);
@@ -321,23 +310,22 @@ function analyzeSafestDiscard(t, playerHand, chosenTile, players, remainingTiles
         currentTurn.message.appendLocalizedMessage("analyzer.bestSafety", {
             tile: getTileAsText(t, bestChoice, true),
             rating: bestSafety,
-            explanation: safetyRatingExplanations[Math.floor(bestSafety / riichis)]
+            explanation: SAFETY_RATING_EXPLANATIONS[Math.floor(bestSafety / riichis)]
         });
     }
 
-    currentTurn.message.appendMessage("<br/>");
+    currentTurn.message.appendLineBreak();
 }
 
-function padHand(hand) {
-    let paddedHand = hand.slice();
-    for(let i = 0; i < getShantenOffset(hand); i += 2) {
-        paddedHand[31] += 3;
-    }
-
-    return paddedHand;
-}
-
-function analyzeDiscard(t, hand, chosenTile, remainingTiles, currentTurn) {
+/**
+ * Adds a message to the current turn regarding the efficiency of the chosen discard.
+ * @param {Function} t The i18next translation function.
+ * @param {number[]} hand The player's current hand.
+ * @param {number} chosenTile The tile the player chose to discard.
+ * @param {number[]} remainingTiles The number of each tile remaining in concealed tiles.
+ * @param {ReplayTurn} currentTurn The current turn object.
+ */
+function analyzeDiscardEfficiency(t, hand, chosenTile, remainingTiles, currentTurn) {
     let paddedHand = padHand(hand);
 
     let ukeire = CalculateDiscardUkeire(paddedHand, remainingTiles, CalculateMinimumShanten);
@@ -360,7 +348,7 @@ function analyzeDiscard(t, hand, chosenTile, remainingTiles, currentTurn) {
         currentTurn.className = "bg-danger text-white";
     }
 
-    currentTurn.message.appendMessage("<br/>");
+    currentTurn.message.appendLineBreak();
 
     if (chosenUkeire.value < bestUkeire) {
         currentTurn.message.appendLocalizedMessage("history.verbose.optimal");
@@ -381,7 +369,20 @@ function analyzeDiscard(t, hand, chosenTile, remainingTiles, currentTurn) {
         currentTurn.message.appendLocalizedMessage("history.verbose.exceptionalNoten");
     }
 
-    currentTurn.message.appendMessage("<br/>");
+    currentTurn.message.appendLineBreak();
+}
+
+/**
+ * Adds triplets of East wind tiles to an open hand as a hack to make ukeire calculations accurate.
+ * @param {number[]} hand The hand to pad.
+ */
+function padHand(hand) {
+    let paddedHand = hand.slice();
+    for(let i = 0; i < getShantenOffset(hand); i += 2) {
+        paddedHand[31] += 3;
+    }
+
+    return paddedHand;
 }
 
 function parseHand(roundText, player) {
