@@ -295,27 +295,10 @@ function analyzeDiscardSafety(t, playerHand, chosenTile, players, remainingTiles
     if(riichis === 0) return "";
     
     let chosenSafety = totalSafety[chosenTile];
-    currentTurn.message.appendLocalizedMessage("analyzer.chosenSafety", {
-        tile: getTileAsText(t, chosenTile, true),
-        rating: totalSafety[chosenTile],
-        explanation: SAFETY_RATING_EXPLANATIONS[Math.floor(chosenSafety / riichis)]
-    });
-    currentTurn.message.appendLineBreak();
-
     let bestSafety = Math.max(...totalSafety);
     let bestChoice = totalSafety.indexOf(bestSafety);
 
-    if(bestSafety === chosenSafety) {
-        currentTurn.message.appendLocalizedMessage("analyzer.correctSafety");
-    } else {
-        currentTurn.message.appendLocalizedMessage("analyzer.bestSafety", {
-            tile: getTileAsText(t, bestChoice, true),
-            rating: bestSafety,
-            explanation: SAFETY_RATING_EXPLANATIONS[Math.floor(bestSafety / riichis)]
-        });
-    }
-
-    currentTurn.message.appendLineBreak();
+    currentTurn.addSafetyMessage(t, chosenTile, chosenSafety, bestChoice, bestSafety, riichis);
 }
 
 /**
@@ -330,7 +313,6 @@ function analyzeDiscardEfficiency(t, hand, chosenTile, remainingTiles, currentTu
     let paddedHand = padHand(hand);
 
     let ukeire = CalculateDiscardUkeire(paddedHand, remainingTiles, CalculateMinimumShanten);
-    let bestUkeire = Math.max(...ukeire.map(o => o.value));
     paddedHand[chosenTile]--;
 
     let chosenUkeire = ukeire[chosenTile];
@@ -338,39 +320,8 @@ function analyzeDiscardEfficiency(t, hand, chosenTile, remainingTiles, currentTu
     let shanten = CalculateMinimumShanten(paddedHand);
     let handUkeire = CalculateUkeireFromOnlyHand(paddedHand, ALL_TILES_REMAINING.slice(), CalculateMinimumShanten).value;
     let bestTile = evaluateBestDiscard(ukeire);
-    currentTurn.message.appendLocalizedMessage("history.verbose.discard", {tile: getTileAsText(t, chosenTile, true)});
 
-    if (chosenUkeire.value > 0 || shanten === 0) {
-        currentTurn.message.appendLocalizedMessage("history.verbose.acceptance", {count: chosenUkeire.value});
-        currentTurn.message.appendMessage(` ${convertTilesToAsciiSymbols(chosenUkeire.tiles)} (${convertIndexesToTenhouTiles(chosenUkeire.tiles)})`);
-    }
-    else {
-        currentTurn.message.appendLocalizedMessage("history.verbose.loweredShanten");
-        currentTurn.className = "bg-danger text-white";
-    }
-
-    currentTurn.message.appendLineBreak();
-
-    if (chosenUkeire.value < bestUkeire) {
-        currentTurn.message.appendLocalizedMessage("history.verbose.optimal");
-        currentTurn.message.appendLocalizedMessage("history.verbose.optimalSpoiler", {tile: getTileAsText(t, bestTile, true)});
-        currentTurn.message.appendLocalizedMessage("history.verbose.acceptance", {count: bestUkeire});
-        currentTurn.message.appendMessage(` ${convertTilesToAsciiSymbols(ukeire[bestTile].tiles)} (${convertIndexesToTenhouTiles(ukeire[bestTile].tiles)})`);
-
-        if(!currentTurn.className) {
-            currentTurn.className = "bg-warning";
-        }
-    }
-    else {
-        currentTurn.message.appendLocalizedMessage("history.verbose.best");
-        currentTurn.className = "bg-success text-white";
-    }
-
-    if (shanten <= 0 && handUkeire === 0) {
-        currentTurn.message.appendLocalizedMessage("history.verbose.exceptionalNoten");
-    }
-
-    currentTurn.message.appendLineBreak();
+    currentTurn.addEfficiencyMessage(t, chosenTile, chosenUkeire, bestTile, ukeire[bestTile], shanten, handUkeire);
 }
 
 /**
