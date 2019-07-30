@@ -86,7 +86,7 @@ export function parseRound(t, roundText, player) {
     let players = [];
 
     for(let i = 0; i < 4; i++) {
-        players.push(new ReplayPlayer(parseHand(roundText, i)));
+        players.push(new ReplayPlayer(parseStartingHand(roundText, i)));
     }
 
     for(let j = 0; j < players[player].hand.length; j++) {
@@ -137,7 +137,6 @@ export function parseRound(t, roundText, player) {
             if(actionInfo.call) {
                 let who = parseInt(whoRegex.exec(match[2])[1]);
                 let calledTiles = getTilesFromCall(match[2]);
-                players[who].callTiles(calledTiles);
                 let baseShanten = 0;
                 
                 if(who !== player) {
@@ -147,6 +146,8 @@ export function parseRound(t, roundText, player) {
                 } else {
                     baseShanten = CalculateStandardShanten(players[player].hand);
                 }
+                
+                players[who].callTiles(calledTiles);
 
                 if(who === player) {
                     currentTurn.hand = players[player].hand.slice();
@@ -385,13 +386,23 @@ function padHand(hand) {
     return paddedHand;
 }
 
-function parseHand(roundText, player) {
+/**
+ * Parses the starting hand of the given player from the round XML.
+ * @param {string} roundText The round XML.
+ * @param {number} player The index of the player to parse the hand of.
+ * @returns {number[]} The player's starting hand.
+ */
+function parseStartingHand(roundText, player) {
     let regex = new RegExp(`hai${player}="(.+?)"`, 'g');
     let match = regex.exec(roundText);
     let handTiles = match[1];
     return convertTenhouHandToHand(handTiles);
 }
 
+/**
+ * Converts the given letter into the corresponding action.
+ * @param {string} letter The character representing the action.
+ */
 function parseActionType(letter) {
     if(letter === 'T') {
         return {draw: true, player: 0};
@@ -431,6 +442,11 @@ function parseActionType(letter) {
     }
 }
 
+/**
+ * Parses the called tiles from a tenhou replay node.
+ * @param {string} call The string containing the encoded call.
+ * @returns {number[]} The called tiles. Index 0 is the tile called.
+ */
 function getTilesFromCall(call) {
     let meldRegex = /m="(\d+?)"/;
     let match = meldRegex.exec(call);

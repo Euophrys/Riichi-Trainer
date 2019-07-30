@@ -12,7 +12,7 @@ import { GenerateHand, FillHand } from '../scripts/GenerateHand';
 import { CalculateDiscardUkeire, CalculateUkeireFromOnlyHand } from "../scripts/UkeireCalculator";
 import { CalculateMinimumShanten, CalculateStandardShanten } from "../scripts/ShantenCalculator";
 import { convertRedFives } from "../scripts/TileConversions";
-import { convertHandToTenhouString, convertHandToTileArray } from "../scripts/HandConversions";
+import { convertHandToTenhouString, convertHandToTileIndexArray } from "../scripts/HandConversions";
 import { evaluateBestDiscard } from "../scripts/Evaluations";
 import { shuffleArray, removeRandomItem } from '../scripts/Utils';
 import SortedHand from '../components/SortedHand';
@@ -131,7 +131,7 @@ class UkeireQuiz extends React.Component {
         }
 
         if(lastDraw !== false) hand[lastDraw]--;
-        let shuffle = convertHandToTileArray(hand);
+        let shuffle = convertHandToTileIndexArray(hand);
         if(lastDraw !== false) hand[lastDraw]++;
         shuffle = shuffleArray(shuffle);
 

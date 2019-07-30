@@ -1,4 +1,4 @@
-import { convertHandToTileArray } from "./HandConversions";
+import { convertHandToTileIndexArray } from "./HandConversions";
 
 export function randomInt(max, min = 0) {
     return Math.floor(Math.random() * (max - min) + min);
@@ -44,7 +44,7 @@ export function validateFu(fu, currentFu) {
 }
 
 export function getShantenOffset(hand) {
-    let tiles = convertHandToTileArray(hand);
+    let tiles = convertHandToTileIndexArray(hand);
     let offset = Math.floor((14 - tiles.length) / 3) * 2;
     return offset;
 }

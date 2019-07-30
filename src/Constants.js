@@ -12,6 +12,17 @@ export const ALL_SIMPLES_REMAINING = [
     0, 0, 0, 0, 0, 0, 0, 0
 ];
 
+/** Array of characters representing each suit. */
+export const SUIT_CHARACTERS = ["m", "p", "s", "z"];
+
+/** Array of ascii characters for each tile. */
+export const ASCII_TILES = [
+    "🀋", "🀇", "🀈", "🀉", "🀊", "🀋", "🀌", "🀍", "🀎", "🀏",
+    "🀝", "🀙", "🀚", "🀛", "🀜", "🀝", "🀞", "🀟", "🀠", "🀡",
+    "🀔", "🀐", "🀑", "🀒", "🀓", "🀔", "🀕", "🀖", "🀗", "🀘",
+    "🀪", "🀀", "🀁", "🀂", "🀃", "🀆", "🀅", "🀄"
+];
+
 export const PLAYER_NAMES = [
     "trainer.playerNames.you", "trainer.playerNames.right", "trainer.playerNames.across", "trainer.playerNames.left"
 ];
