@@ -71,7 +71,7 @@ export function validateFu(fu, previousFu) {
 }
 
 /**
- * Calculates how much further ahead in shanten the hand is compared to what the CalculateStandardShanten function would return.
+ * Calculates how much further ahead in shanten the hand is compared to what the calculateStandardShanten function would return.
  * @param {number[]} hand An array containing the number of each tile present in the hand.
  * @returns {number} How many shanten the hand is offset by.
  */

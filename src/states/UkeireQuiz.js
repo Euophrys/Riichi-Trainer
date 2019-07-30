@@ -9,8 +9,8 @@ import DiscardPool from "../components/DiscardPool";
 import ValueTileDisplay from "../components/ValueTileDisplay";
 import StatsDisplay from "../components/ukeire-quiz/StatsDisplay";
 import { GenerateHand, FillHand } from '../scripts/GenerateHand';
-import { CalculateDiscardUkeire, CalculateUkeireFromOnlyHand } from "../scripts/UkeireCalculator";
-import { CalculateMinimumShanten, CalculateStandardShanten } from "../scripts/ShantenCalculator";
+import { calculateDiscardUkeire, calculateUkeireFromOnlyHand } from "../scripts/UkeireCalculator";
+import { calculateMinimumShanten, calculateStandardShanten } from "../scripts/ShantenCalculator";
 import { convertRedFives } from "../scripts/TileConversions";
 import { convertHandToTenhouString, convertHandToTileIndexArray } from "../scripts/HandConversions";
 import { evaluateBestDiscard } from "../scripts/Evaluations";
@@ -183,7 +183,7 @@ class UkeireQuiz extends React.Component {
                 tilePool = generationResult.tilePool;
 
                 if (!hand) break;
-            } while (CalculateMinimumShanten(hand) < minShanten)
+            } while (calculateMinimumShanten(hand) < minShanten)
 
             if (!hand) {
                 history.push({ message: new LocalizedMessage("trainer.error.wallEmptyShuffle") });
@@ -209,7 +209,7 @@ class UkeireQuiz extends React.Component {
                 });
                 return;
             }
-        } while (CalculateMinimumShanten(hand) < minShanten)
+        } while (calculateMinimumShanten(hand) < minShanten)
 
         if (tilePool.length > 0) {
             dora = removeRandomItem(tilePool);
@@ -277,8 +277,8 @@ class UkeireQuiz extends React.Component {
         let hand = this.state.hand.slice();
         let remainingTiles = this.state.remainingTiles.slice();
 
-        let shantenFunction = this.state.settings.exceptions ? CalculateMinimumShanten : CalculateStandardShanten;
-        let ukeire = CalculateDiscardUkeire(hand, remainingTiles, shantenFunction);
+        let shantenFunction = this.state.settings.exceptions ? calculateMinimumShanten : calculateStandardShanten;
+        let ukeire = calculateDiscardUkeire(hand, remainingTiles, shantenFunction);
         let ukeireValues = ukeire.map(o => o.value);
         let bestUkeire = Math.max(...ukeireValues);
         let chosenUkeire = ukeire[convertRedFives(chosenTile)];
@@ -287,7 +287,7 @@ class UkeireQuiz extends React.Component {
         hand[chosenTile]--;
 
         let shanten = shantenFunction(hand);
-        let handUkeire = CalculateUkeireFromOnlyHand(hand, this.resetRemainingTiles(), shantenFunction);
+        let handUkeire = calculateUkeireFromOnlyHand(hand, this.resetRemainingTiles(), shantenFunction);
         let bestTile = evaluateBestDiscard(ukeire, this.state.dora + 1);
 
         let players = this.state.players.slice();

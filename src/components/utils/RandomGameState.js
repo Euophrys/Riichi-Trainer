@@ -2,7 +2,7 @@ import React from 'react';
 import { Container, Button, ListGroup, ListGroupItem, Row } from 'reactstrap';
 import Player from '../../models/Player';
 import { convertTilesToAsciiSymbols, convertIndexesToTenhouTiles, getTileAsText } from '../../scripts/TileConversions';
-import { ROUND_NAMES, SEAT_NAMES } from '../../Constants';
+import { ROUND_PARAMETERS, SEAT_NAMES } from '../../Constants';
 import { withTranslation } from 'react-i18next';
 
 class RandomGameState extends React.Component {
@@ -143,7 +143,7 @@ class RandomGameState extends React.Component {
                     <ListGroupItem key={0}>
                         <Row>{t("utils.info", {
                             turn: this.state.turn,
-                            round: t("roundName", ROUND_NAMES[this.state.round]),
+                            round: t("roundName", ROUND_PARAMETERS[this.state.round]),
                             seat: t(SEAT_NAMES[this.state.userSeat])
                         })}</Row>
                         <Row>{t("utils.dora", {tile: getTileAsText(t, this.state.doraIndicator, true)})}</Row>

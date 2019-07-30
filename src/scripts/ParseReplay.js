@@ -1,8 +1,8 @@
-import { ALL_TILES_REMAINING, ROUND_NAMES, SAFETY_RATING_EXPLANATIONS } from '../Constants';
+import { ALL_TILES_REMAINING, ROUND_PARAMETERS } from '../Constants';
 import { convertTenhouHandToHand, convertHandToTenhouString } from './HandConversions';
-import { convertTenhouTilesToIndex, getTileAsText, convertTilesToAsciiSymbols, convertIndexesToTenhouTiles } from './TileConversions';
-import { CalculateDiscardUkeire, CalculateUkeireFromOnlyHand } from './UkeireCalculator';
-import CalculateMinimumShanten, { CalculateStandardShanten } from './ShantenCalculator';
+import { convertTenhouTilesToIndex, getTileAsText, convertIndexesToTenhouTiles } from './TileConversions';
+import { calculateDiscardUkeire, calculateUkeireFromOnlyHand } from './UkeireCalculator';
+import calculateMinimumShanten, { calculateStandardShanten } from './ShantenCalculator';
 import { evaluateBestDiscard, evaluateDiscardSafety } from './Evaluations';
 import { getShantenOffset } from './Utils';
 import ReplayTurn from '../models/ReplayTurn';
@@ -67,7 +67,7 @@ export function parseRoundNames(roundTexts) {
             return new LocalizedMessage("analyzer.replayError");
         }
 
-        let roundName = ROUND_NAMES[parseInt(match[1])];
+        let roundName = ROUND_PARAMETERS[parseInt(match[1])];
         let repeats = parseInt(match[2]);
         
         return new LocalizedMessage("roundName", {wind: roundName.wind, number: roundName.number, repeats: repeats});
@@ -113,7 +113,7 @@ export function parseRound(t, roundText, player) {
     currentTurn.message.appendLocalizedMessage("analyzer.startingHand", 
         {
             hand: convertHandToTenhouString(players[player].hand),
-            count: CalculateMinimumShanten(players[player].hand),
+            count: calculateMinimumShanten(players[player].hand),
             dora: convertIndexesToTenhouTiles(dora)
         }
     );
@@ -144,7 +144,7 @@ export function parseRound(t, roundText, player) {
                         remainingTiles[calledTiles[i]]--;
                     }
                 } else {
-                    baseShanten = CalculateStandardShanten(players[player].hand);
+                    baseShanten = calculateStandardShanten(players[player].hand);
                 }
                 
                 players[who].callTiles(calledTiles);
@@ -152,7 +152,7 @@ export function parseRound(t, roundText, player) {
                 if(who === player) {
                     currentTurn.hand = players[player].hand.slice();
                     currentTurn.message.appendLocalizedMessage("analyzer.call", {tile: getTileAsText(t, calledTiles[0]), meld: convertIndexesToTenhouTiles(calledTiles), hand: convertHandToTenhouString(players[player].hand)});
-                    let newShanten = CalculateStandardShanten(padHand(players[player].hand));
+                    let newShanten = calculateStandardShanten(padHand(players[player].hand));
                     if(newShanten >= baseShanten) {
                         currentTurn.message.appendLocalizedMessage("analyzer.callSameShanten");
                     }
@@ -186,7 +186,7 @@ export function parseRound(t, roundText, player) {
                 if(players[who].riichiTile > -1) continue;
 
                 let paddedHand = padHand(players[player].hand.slice());
-                let shanten = CalculateMinimumShanten(paddedHand);
+                let shanten = calculateMinimumShanten(paddedHand);
                 currentTurn.riichiDeclared(who, shanten);
 
                 players[who].riichiTile = -2;
@@ -312,13 +312,13 @@ function analyzeDiscardSafety(t, playerHand, chosenTile, players, remainingTiles
 function analyzeDiscardEfficiency(t, hand, chosenTile, remainingTiles, currentTurn) {
     let paddedHand = padHand(hand);
 
-    let ukeire = CalculateDiscardUkeire(paddedHand, remainingTiles, CalculateMinimumShanten);
+    let ukeire = calculateDiscardUkeire(paddedHand, remainingTiles, calculateMinimumShanten);
     paddedHand[chosenTile]--;
 
     let chosenUkeire = ukeire[chosenTile];
 
-    let shanten = CalculateMinimumShanten(paddedHand);
-    let handUkeire = CalculateUkeireFromOnlyHand(paddedHand, ALL_TILES_REMAINING.slice(), CalculateMinimumShanten).value;
+    let shanten = calculateMinimumShanten(paddedHand);
+    let handUkeire = calculateUkeireFromOnlyHand(paddedHand, ALL_TILES_REMAINING.slice(), calculateMinimumShanten).value;
     let bestTile = evaluateBestDiscard(ukeire);
 
     currentTurn.addEfficiencyMessage(t, chosenTile, chosenUkeire, bestTile, ukeire[bestTile], shanten, handUkeire);
