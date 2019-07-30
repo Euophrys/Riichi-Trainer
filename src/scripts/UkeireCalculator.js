@@ -2,7 +2,16 @@ import { convertRedFives } from "./TileConversions";
 import { evaluateBestDiscard } from './Evaluations';
 import { getShantenOffset } from "./Utils";
 
-export function CalculateDiscardUkeire(hand, remainingTiles, shantenFunction, baseShanten = -2, shantenOffset = -2) {
+/**
+ * Calculates the resulting ukeire from each possible discard in the hand.
+ * @param {TileCounts} hand The number of each tile in the player's hand.
+ * @param {TileCounts} remainingTiles The number of each tile the player cannot see.
+ * @param {Function} shantenFunction The function to use to calculate shanten
+ * @param {number} baseShanten The hand's current shanten, if precalculated.
+ * @param {number} shantenOffset The hand's current shanten offset, if precalculated.
+ * @returns {UkeireObject[]} The ukeire object for each discard.
+ */
+export function calculateDiscardUkeire(hand, remainingTiles, shantenFunction, baseShanten = -2, shantenOffset = -2) {
     let results = Array(hand.length).fill(0);
     let convertedHand = convertRedFives(hand);
 
@@ -22,7 +31,7 @@ export function CalculateDiscardUkeire(hand, remainingTiles, shantenFunction, ba
         }
 
         convertedHand[handIndex]--;
-        let ukeire = CalculateUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten, shantenOffset);
+        let ukeire = calculateUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten, shantenOffset);
         convertedHand[handIndex]++;
 
         results[handIndex] = ukeire;
@@ -31,7 +40,16 @@ export function CalculateDiscardUkeire(hand, remainingTiles, shantenFunction, ba
     return results;
 }
 
-export function CalculateUkeire(hand, remainingTiles, shantenFunction, baseShanten = -2, shantenOffset = -2) {
+/**
+ * Calculates the ukeire of a hand.
+ * @param {TileCounts} hand The number of each tile in the player's hand.
+ * @param {TileCounts} remainingTiles The number of each tile the player cannot see.
+ * @param {Function} shantenFunction The function to use to calculate shanten
+ * @param {number} baseShanten The hand's current shanten, if precalculated.
+ * @param {number} shantenOffset The hand's current shanten offset, if precalculated.
+ * @returns {UkeireObject} The ukeire data.
+ */
+export function calculateUkeire(hand, remainingTiles, shantenFunction, baseShanten = -2, shantenOffset = -2) {
     let convertedHand = convertRedFives(hand);
     let convertedTiles = convertRedFives(remainingTiles);
 
@@ -68,29 +86,52 @@ export function CalculateUkeire(hand, remainingTiles, shantenFunction, baseShant
     };
 }
 
-export function CalculateDiscardUkeireUpgrades(hand, remainingTiles, shantenFunction) {
+/**
+ * Calculates the resulting number of upgrades from each possible discard in the hand.
+ * @param {TileCounts} hand The number of each tile in the player's hand.
+ * @param {TileCounts} remainingTiles The number of each tile the player cannot see.
+ * @param {Function} shantenFunction The function to use to calculate shanten
+ * @param {number} baseShanten The hand's current shanten, if precalculated.
+ * @param {number} shantenOffset The hand's current shanten offset, if precalculated.
+ */
+export function calculateDiscardUkeireUpgrades(hand, remainingTiles, shantenFunction, baseShanten = -2, shantenOffset = -2) {
     let results = Array(hand.length).fill(0);
     let convertedHand = convertRedFives(hand);
-    let shantenOffset = getShantenOffset(convertedHand);
-    let baseShanten = shantenFunction(convertedHand) - shantenOffset;
-    let baseUkeire = CalculateUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten, shantenOffset).value;
+    
+    if(shantenOffset === -2) {
+        shantenOffset = getShantenOffset(convertedHand);
+    }
+    
+    if (baseShanten === -2) {
+        baseShanten = shantenFunction(convertedHand) - shantenOffset;
+    }
+
+    let baseUkeire = calculateUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten, shantenOffset).value;
 
     for (let handIndex = 0; handIndex < hand.length; handIndex++) {
         if (hand[handIndex] === 0) continue;
 
         hand[handIndex]--;
-        let ukeire = CalculateUkeireUpgrades(convertedHand, remainingTiles, shantenFunction, baseShanten, baseUkeire, shantenOffset);
+        let upgrades = calculateUkeireUpgrades(convertedHand, remainingTiles, shantenFunction, baseShanten, baseUkeire, shantenOffset);
         hand[handIndex]++;
 
         for (let i = 0; i < hand[handIndex]; i++) {
-            results[handIndex] = ukeire;
+            results[handIndex] = upgrades;
         }
     }
 
     return results;
 }
 
-export function CalculateUkeireUpgrades(hand, remainingTiles, shantenFunction, baseShanten = -2, baseUkeire = -1, shantenOffset = -2) {
+/**
+ * Calculates how many tiles can improve the ukeire of a hand.
+ * @param {TileCounts} hand The number of each tile in the player's hand.
+ * @param {TileCounts} remainingTiles The number of each tile the player cannot see.
+ * @param {Function} shantenFunction The function to use to calculate shanten
+ * @param {number} baseShanten The hand's current shanten, if precalculated.
+ * @param {number} shantenOffset The hand's current shanten offset, if precalculated.
+ */
+export function calculateUkeireUpgrades(hand, remainingTiles, shantenFunction, baseShanten = -2, baseUkeire = -1, shantenOffset = -2) {
     let convertedHand = convertRedFives(hand);
     let convertedTiles = convertRedFives(remainingTiles);
 
@@ -103,7 +144,7 @@ export function CalculateUkeireUpgrades(hand, remainingTiles, shantenFunction, b
     }
 
     if (baseUkeire === -1) {
-        baseUkeire = CalculateUkeire(hand, remainingTiles, shantenFunction, baseShanten, shantenOffset).value;
+        baseUkeire = calculateUkeire(hand, remainingTiles, shantenFunction, baseShanten, shantenOffset).value;
     }
 
     let value = 0;
@@ -118,22 +159,21 @@ export function CalculateUkeireUpgrades(hand, remainingTiles, shantenFunction, b
         remainingTiles[addedTile]--;
 
         if (shantenFunction(convertedHand) - shantenOffset === baseShanten
-            && CalculateUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten, shantenOffset).value > baseUkeire) {
-            let discards = CalculateDiscardUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten, shantenOffset);
+            && calculateUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten, shantenOffset).value > baseUkeire) {
+            let discards = calculateDiscardUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten, shantenOffset);
             let bestDiscard = evaluateBestDiscard(discards);
 
-            convertedHand[bestDiscard]--;
-
             if(addedTile !== bestDiscard) {
-                let newUkeire = CalculateUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten, shantenOffset).value;
+                convertedHand[bestDiscard]--;
+                let newUkeire = calculateUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten, shantenOffset).value;
 
                 if(newUkeire > baseUkeire) {
                     value += convertedTiles[addedTile];
                     tiles.push({tile: addedTile, discard: bestDiscard, count: convertedTiles[addedTile], resultingUkeire: newUkeire});
                 }
-            }
 
-            convertedHand[bestDiscard]++;
+                convertedHand[bestDiscard]++;
+            }
         }
 
         convertedHand[addedTile]--;
@@ -146,7 +186,13 @@ export function CalculateUkeireUpgrades(hand, remainingTiles, shantenFunction, b
     };
 }
 
-export function CalculateUkeireFromOnlyHand(hand, existingTiles, shantenFunction) {
+/**
+ * Calculates the ukeire of a hand, ignoring all other revealed tiles.
+ * @param {TileCounts} hand The hand to check.
+ * @param {TileCounts} existingTiles The number of each tile that could exist in the game.
+ * @param {Function} shantenFunction The shanten function to use.
+ */
+export function calculateUkeireFromOnlyHand(hand, existingTiles, shantenFunction) {
     let convertedHand = convertRedFives(hand);
     let remainingTiles = convertRedFives(existingTiles);
 
@@ -154,5 +200,5 @@ export function CalculateUkeireFromOnlyHand(hand, existingTiles, shantenFunction
         existingTiles[i] = Math.max(0, existingTiles[i] - convertedHand[i]);
     }
 
-    return CalculateUkeire(convertedHand, existingTiles, shantenFunction);
+    return calculateUkeire(convertedHand, existingTiles, shantenFunction);
 }

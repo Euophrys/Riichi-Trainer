@@ -2,8 +2,8 @@ import React from 'react';
 import { Row, Col, Button, Collapse, Card, CardBody } from 'reactstrap';
 import { convertHandToAsciiSymbols } from '../../scripts/HandConversions';
 import { getTileAsText, convertTilesToAsciiSymbols } from '../../scripts/TileConversions';
-import { CalculateDiscardUkeire } from '../../scripts/UkeireCalculator';
-import CalculateStandardShanten from '../../scripts/ShantenCalculator';
+import { calculateDiscardUkeire } from '../../scripts/UkeireCalculator';
+import calculateStandardShanten from '../../scripts/ShantenCalculator';
 import { ALL_TILES_REMAINING } from '../../Constants';
 import { evaluateBestDiscard } from '../../scripts/Evaluations';
 import { withTranslation } from 'react-i18next';
@@ -58,7 +58,7 @@ class ResultingHandInfo extends React.Component {
                 resultHand[tile]++;
                 remainingTiles[tile]--;
 
-                let discards = CalculateDiscardUkeire(resultHand, remainingTiles, CalculateStandardShanten);
+                let discards = calculateDiscardUkeire(resultHand, remainingTiles, calculateStandardShanten);
                 let bestDiscard = evaluateBestDiscard(discards);
                 resultHand[bestDiscard]--;
                 remainingTiles[tile]++;
