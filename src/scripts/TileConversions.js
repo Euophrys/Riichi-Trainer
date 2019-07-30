@@ -56,7 +56,7 @@ const honorKeys = ["values.hidden", "values.east", "values.south", "values.west"
 
 /**
  * Gets the png image for the given tile index for use in src tags.
- * @param {number} index The tile index.
+ * @param {TileIndex} index The tile index.
  * @returns {string} Tile image png, for use in src tags.
  */
 export function getTileImage(index) {
@@ -66,7 +66,7 @@ export function getTileImage(index) {
 /**
  * Converts a tile index into that tile's name.
  * @param {Function} t The i18next translation function.
- * @param {number} index The index of the tile to name.
+ * @param {TileIndex} index The index of the tile to name.
  * @param {boolean} verbose Whether to give the full name of the tile, or the short representation. Defaults to true.
  * @returns {string} The name of the tile.
  */
@@ -92,8 +92,8 @@ export function getTileAsText(t, index, verbose = true) {
 
 /**
  * Converts red fives to normal fives.
- * @param {number|number[]} tiles The tile index to convert, or an array of tile indexes.
- * @returns {number|number[]} The converted tile(s).
+ * @param {TileIndex|TileIndex[]} tiles The tile index to convert, or an array of tile indexes.
+ * @returns {TileIndex|TileIndex[]} The converted tile(s).
  */
 export function convertRedFives(tiles) {
     if (typeof tiles === 'number') {
@@ -118,7 +118,7 @@ export function convertRedFives(tiles) {
 
 /**
  * Converts a tile or array of tiles into their ascii representations.
- * @param {number|number[]} tiles The tile index to convert, or an array of tile indexes.
+ * @param {TileIndex|TileIndex[]} tiles The tile index to convert, or an array of tile indexes.
  * @returns {string|string[]} The ascii representation of the tile(s).
  */
 export function convertTilesToAsciiSymbols(tiles) {
@@ -141,7 +141,7 @@ export function convertTilesToAsciiSymbols(tiles) {
 
 /**
  * Converts a tile or array of tiles into a Tenhou-style string, such as 234m567s.
- * @param {number|number[]} indexes The tile index to convert, or an array of tile indexes.
+ * @param {TileIndex|TileIndex[]} indexes The tile index to convert, or an array of tile indexes.
  * @returns {string} The hand string, or "Error." if an invalid parameter was given.
  */
 export function convertIndexesToTenhouTiles(indexes) {
@@ -163,7 +163,7 @@ export function convertIndexesToTenhouTiles(indexes) {
 /**
  * Converts Tenhou-style tile indexes (from 0 to 135) to a tile index (0 to 37)
  * @param {number||number[]} tenhouTiles The Tenhou-style tile index to convert, or an array of Tenhou-style tile indexes.
- * @returns {number||number[]} The converted tile index(es).
+ * @returns {TileIndex|TileIndex[]} The converted tile index(es).
  */
 export function convertTenhouTilesToIndex(tenhouTiles) {
     if (typeof tenhouTiles === 'number') {
@@ -178,7 +178,7 @@ export function convertTenhouTilesToIndex(tenhouTiles) {
 /**
  * Converts a Tenhou-style tile index (from 0 to 135) to a tile index (0 to 37)
  * @param {number} tenhouTiles The Tenhou-style tile index to convert.
- * @returns {number} The converted tile index.
+ * @returns {TileIndex} The converted tile index.
  */
 function convertTenhouTileToIndex(tenhouTile){
     let base = Math.floor(tenhouTile / 4);

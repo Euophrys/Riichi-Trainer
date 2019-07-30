@@ -3,7 +3,7 @@ import { convertTenhouHandToHand, convertHandToTenhouString } from './HandConver
 import { convertTenhouTilesToIndex, getTileAsText, convertTilesToAsciiSymbols, convertIndexesToTenhouTiles } from './TileConversions';
 import { CalculateDiscardUkeire, CalculateUkeireFromOnlyHand } from './UkeireCalculator';
 import CalculateMinimumShanten, { CalculateStandardShanten } from './ShantenCalculator';
-import { evaluateBestDiscard, evaluateSafestDiscards } from './Evaluations';
+import { evaluateBestDiscard, evaluateDiscardSafety } from './Evaluations';
 import { getShantenOffset } from './Utils';
 import ReplayTurn from '../models/ReplayTurn';
 import LocalizedMessage from '../models/LocalizedMessage';
@@ -264,10 +264,10 @@ export function parseRound(t, roundText, player) {
 /**
  * Adds a message to the current turn regarding the safety of the player's discard.
  * @param {Function} t The i18next translation function.
- * @param {number[]} playerHand The player's current hand.
- * @param {number} chosenTile The tile the player chose to discard.
+ * @param {TileCounts} playerHand The player's current hand.
+ * @param {TileIndex} chosenTile The tile the player chose to discard.
  * @param {ReplayPlayer[]} players The player objects.
- * @param {number[]} remainingTiles The number of each tile remaining in concealed tiles.
+ * @param {TileCounts} remainingTiles The number of each tile remaining in concealed tiles.
  * @param {ReplayTurn} currentTurn The current turn object.
  */
 function analyzeDiscardSafety(t, playerHand, chosenTile, players, remainingTiles, currentTurn) {
@@ -278,7 +278,7 @@ function analyzeDiscardSafety(t, playerHand, chosenTile, players, remainingTiles
         if(players[i].isInRiichi()) {
             riichis++;
 
-            let safety = evaluateSafestDiscards(
+            let safety = evaluateDiscardSafety(
                 playerHand,
                 players[i].discards,
                 remainingTiles,
@@ -304,9 +304,9 @@ function analyzeDiscardSafety(t, playerHand, chosenTile, players, remainingTiles
 /**
  * Adds a message to the current turn regarding the efficiency of the chosen discard.
  * @param {Function} t The i18next translation function.
- * @param {number[]} hand The player's current hand.
- * @param {number} chosenTile The tile the player chose to discard.
- * @param {number[]} remainingTiles The number of each tile remaining in concealed tiles.
+ * @param {TileCounts} hand The player's current hand.
+ * @param {TileIndex} chosenTile The tile the player chose to discard.
+ * @param {TileCounts} remainingTiles The number of each tile remaining in concealed tiles.
  * @param {ReplayTurn} currentTurn The current turn object.
  */
 function analyzeDiscardEfficiency(t, hand, chosenTile, remainingTiles, currentTurn) {
@@ -326,7 +326,7 @@ function analyzeDiscardEfficiency(t, hand, chosenTile, remainingTiles, currentTu
 
 /**
  * Adds triplets of East wind tiles to an open hand as a hack to make ukeire calculations accurate.
- * @param {number[]} hand The hand to pad.
+ * @param {TileCounts} hand The hand to pad.
  */
 function padHand(hand) {
     let paddedHand = hand.slice();
@@ -341,7 +341,7 @@ function padHand(hand) {
  * Parses the starting hand of the given player from the round XML.
  * @param {string} roundText The round XML.
  * @param {number} player The index of the player to parse the hand of.
- * @returns {number[]} The player's starting hand.
+ * @returns {TileCounts} The player's starting hand.
  */
 function parseStartingHand(roundText, player) {
     let regex = new RegExp(`hai${player}="(.+?)"`, 'g');
@@ -396,7 +396,7 @@ function parseActionType(letter) {
 /**
  * Parses the called tiles from a tenhou replay node.
  * @param {string} call The string containing the encoded call.
- * @returns {number[]} The called tiles. Index 0 is the tile called.
+ * @returns {TileIndex[]} The called tiles. Index 0 is the tile called.
  */
 function getTilesFromCall(call) {
     let meldRegex = /m="(\d+?)"/;

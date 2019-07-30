@@ -3,7 +3,7 @@ import { SUIT_CHARACTERS, ASCII_TILES } from '../Constants';
 
 /**
  * Converts a hand array into a Tenhou hand string, such as 234m567s.
- * @param {number[]} hand An array containing the number of each tile present in the hand.
+ * @param {TileCounts} hand An array containing the number of each tile present in the hand.
  * @returns {string} The Tenhou hand string.
  */
 export function convertHandToTenhouString(hand) {
@@ -38,7 +38,7 @@ export function convertHandToTenhouString(hand) {
 
 /**
  * Converts a hand array into a string of ASCII characters.
- * @param {number[]} hand An array containing the number of each tile present in the hand.
+ * @param {TileCounts} hand An array containing the number of each tile present in the hand.
  * @returns {string} ASCII representation of the hand
  */
 export function convertHandToAsciiSymbols(hand) {
@@ -56,7 +56,7 @@ export function convertHandToAsciiSymbols(hand) {
 /**
  * Converts a Tenhou hand from a replay into a hand array.
  * @param {string} tenhouHand String of a Tenhou replay hand
- * @returns {number[]} An array containing the number of each tile present in the hand.
+ * @returns {TileCounts} An array containing the number of each tile present in the hand.
  */
 export function convertTenhouHandToHand(tenhouHand) {
     let handTiles = tenhouHand.split(",");
@@ -78,7 +78,7 @@ const emoji = [":0m:", ":1m:", ":2m:", ":3m:", ":4m:", ":5m:", ":6m:", ":7m:", "
 
 /**
  * Converts a hand array into a string of emoji for use on the Discord.
- * @param {number[]} hand An array containing the number of each tile present in the hand.
+ * @param {TileCounts} hand An array containing the number of each tile present in the hand.
  * @returns {string} A string of discord emoji.
  */
 export function convertHandToDiscordEmoji(hand) {
@@ -101,8 +101,8 @@ export function convertHandToDiscordEmoji(hand) {
 
 /**
  * Converts a hand array into an array of tile indexes.
- * @param {number[]} hand An array containing the number of each tile present in the hand.
- * @returns {number[]} An array of tile indexes.
+ * @param {TileCounts} hand An array containing the number of each tile present in the hand.
+ * @returns {TileIndex[]} An array of tile indexes.
  */
 export function convertHandToTileIndexArray(hand) {
     let result = [];
