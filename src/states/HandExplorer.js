@@ -3,7 +3,7 @@ import { Container, Row, Button, Col } from 'reactstrap';
 import Hand from '../components/Hand';
 import LoadButton from '../components/LoadButton';
 import HandFutures from '../components/hand-explorer/HandFutures';
-import { FillHand } from '../scripts/GenerateHand';
+import { fillHand } from '../scripts/GenerateHand';
 import { withTranslation } from 'react-i18next';
 
 class HandExplorer extends React.Component {
@@ -38,7 +38,7 @@ class HandExplorer extends React.Component {
             remainingTiles[i] = Math.max(0, remainingTiles[i] - loadData.hand[i]);
         }
 
-        let { hand } = FillHand(remainingTiles, loadData.hand, 14 - loadData.tiles);
+        let { hand } = fillHand(remainingTiles, loadData.hand, 14 - loadData.tiles);
 
         if (!hand) {
             this.setState({
