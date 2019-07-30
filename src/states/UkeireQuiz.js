@@ -8,25 +8,26 @@ import LoadButton from '../components/LoadButton';
 import DiscardPool from "../components/DiscardPool";
 import ValueTileDisplay from "../components/ValueTileDisplay";
 import StatsDisplay from "../components/ukeire-quiz/StatsDisplay";
-import { GenerateHand, FillHand } from '../scripts/GenerateHand';
+import { generateHand, fillHand } from '../scripts/GenerateHand';
 import { calculateDiscardUkeire, calculateUkeireFromOnlyHand } from "../scripts/UkeireCalculator";
 import { calculateMinimumShanten, calculateStandardShanten } from "../scripts/ShantenCalculator";
 import { convertRedFives } from "../scripts/TileConversions";
 import { convertHandToTenhouString, convertHandToTileIndexArray } from "../scripts/HandConversions";
 import { evaluateBestDiscard } from "../scripts/Evaluations";
-import { shuffleArray, removeRandomItem } from '../scripts/Utils';
+import { shuffleArray, removeRandomItem, getRandomItem } from '../scripts/Utils';
 import SortedHand from '../components/SortedHand';
 import Player from '../models/Player';
 import { PLAYER_NAMES } from '../Constants';
 import { withTranslation } from 'react-i18next';
 import LocalizedMessage from '../models/LocalizedMessage';
+import HistoryData from '../models/HistoryData';
 
 class UkeireQuiz extends React.Component {
     constructor(props) {
         super(props);
         this.onSettingsChanged = this.onSettingsChanged.bind(this);
         this.onTileClicked = this.onTileClicked.bind(this);
-        this.loadHand = this.loadHand.bind(this);
+        this.loadHand = this.onHandLoaded.bind(this);
         this.state = {
             hand: null,
             lastDraw: -1,
@@ -85,6 +86,7 @@ class UkeireQuiz extends React.Component {
         });
     }
 
+    /** Puts all the tiles in the player's hand into the player's discards. */
     discardHand() {
         let hand = this.state.hand;
         let players = this.state.players.slice();
@@ -102,21 +104,39 @@ class UkeireQuiz extends React.Component {
         });
     }
 
+    /** 
+     * Randomly chooses between East and South round. 
+     * @returns {number} 31 for East, 32 for South
+     */
     pickRoundWind() {
-        let possibilities = [31, 32];
-        return possibilities[Math.floor(Math.random() * possibilities.length)];
+        return getRandomItem([31, 32]);
     }
 
+    /**
+     * Randomly chooses a seat for the player, between East, South, West, and North (unless it's three player)
+     * @returns {number} A number between 31 and 34
+     */
     pickSeatWind() {
         let possibilities = [31, 32, 33];
         if (!this.state.settings.threePlayer) {
             possibilities.push(34);
         }
 
-        return possibilities[Math.floor(Math.random() * possibilities.length)];
+        return getRandomItem(possibilities);
     }
 
-    getNewHandState(hand, availableTiles, tilePool, history, dora, lastDraw = false, seatWind = false, roundWind = false) {
+    /**
+     * Sets the state to a clean slate based on the given parameters.
+     * @param {TileCounts} hand The player's hand.
+     * @param {TileCounts} availableTiles The tiles remaining in the wall.
+     * @param {TileIndex[]} tilePool A list of tile indexes representing the remaining tiles.
+     * @param {HistoryData[]} history A list of history objects.
+     * @param {TileIndex} dora The dora indicator.
+     * @param {TileIndex} lastDraw The tile the player just drew.
+     * @param {TileIndex} seatWind The player's seat.
+     * @param {TileIndex} roundWind The round.
+     */
+    setNewHandState(hand, availableTiles, tilePool, history, dora, lastDraw = false, seatWind = false, roundWind = false) {
         history.unshift({ message: new LocalizedMessage("trainer.start", {hand: convertHandToTenhouString(hand)}) });
 
         let players = [];
@@ -135,7 +155,7 @@ class UkeireQuiz extends React.Component {
         if(lastDraw !== false) hand[lastDraw]++;
         shuffle = shuffleArray(shuffle);
 
-        return {
+        this.setState({
             hand: hand,
             remainingTiles: availableTiles,
             tilePool: tilePool,
@@ -151,9 +171,10 @@ class UkeireQuiz extends React.Component {
             seatWind: seatWind,
             dora: dora,
             shuffle: shuffle
-        }
+        });
     }
 
+    /** Generates a new hand and fresh game state. */
     onNewHand() {
         let history = [];
         let dora = 1;
@@ -161,10 +182,13 @@ class UkeireQuiz extends React.Component {
 
         let minShanten = this.state.settings.minShanten;
         minShanten = Math.max(0, minShanten);
+
+        // Count how many suits are currently enabled.
         let allowedSuits = +this.state.settings.honors
             + +this.state.settings.bamboo
             + +this.state.settings.characters
             + +this.state.settings.circles;
+
         minShanten = Math.min(minShanten, allowedSuits);
 
         if (!this.state.settings.reshuffle && this.state.hand) {
@@ -177,7 +201,7 @@ class UkeireQuiz extends React.Component {
             }
 
             do {
-                let generationResult = GenerateHand(remainingTiles);
+                let generationResult = generateHand(remainingTiles);
                 hand = generationResult.hand;
                 availableTiles = generationResult.availableTiles;
                 tilePool = generationResult.tilePool;
@@ -190,14 +214,14 @@ class UkeireQuiz extends React.Component {
                 // Continues into the normal flow, rebuilding the wall.
             }
             else {
-                this.setState(this.getNewHandState(hand, availableTiles, tilePool, history, dora));
+                this.setNewHandState(hand, availableTiles, tilePool, history, dora);
                 return;
             }
         }
 
-        let remainingTiles = this.resetRemainingTiles();
+        let remainingTiles = this.getStartingTiles();
         do {
-            let generationResult = GenerateHand(remainingTiles);
+            let generationResult = generateHand(remainingTiles);
             hand = generationResult.hand;
             availableTiles = generationResult.availableTiles;
             tilePool = generationResult.tilePool;
@@ -216,39 +240,43 @@ class UkeireQuiz extends React.Component {
             availableTiles[dora]--;
         }
 
-        this.setState(this.getNewHandState(hand, availableTiles, tilePool, history, dora));
+        this.setNewHandState(hand, availableTiles, tilePool, history, dora);
     }
 
-    resetRemainingTiles() {
-        let remainingTiles = Array(38).fill(0);
+    /**
+     * Creates an array containing how many of each tile should be in the wall at the start of the game based on the current settings.
+     * @returns {TileCounts} The available tiles.
+     */
+    getStartingTiles() {
+        let availableTiles = Array(38).fill(0);
 
         if (this.state.settings.characters) {
             for (let i = 1; i < 10; i++) {
-                remainingTiles[i] = 4;
+                availableTiles[i] = 4;
             }
 
             if (this.state.settings.threePlayer) {
                 for (let i = 2; i < 9; i++) {
-                    remainingTiles[i] = 0;
+                    availableTiles[i] = 0;
                 }
             }
         }
 
         if (this.state.settings.circles) {
             for (let i = 11; i < 20; i++) {
-                remainingTiles[i] = 4;
+                availableTiles[i] = 4;
             }
         }
 
         if (this.state.settings.bamboo) {
             for (let i = 21; i < 30; i++) {
-                remainingTiles[i] = 4;
+                availableTiles[i] = 4;
             }
         }
 
         if (this.state.settings.honors) {
             for (let i = 31; i < 38; i++) {
-                remainingTiles[i] = 4;
+                availableTiles[i] = 4;
             }
         }
 
@@ -257,18 +285,19 @@ class UkeireQuiz extends React.Component {
             let suit = 10;
 
             for (let i = 0; i < this.state.settings.redFives; i++) {
-                if (remainingTiles[suit + 5] > 0) {
-                    remainingTiles[suit + 5]--;
-                    remainingTiles[suit]++;
+                if (availableTiles[suit + 5] > 0) {
+                    availableTiles[suit + 5]--;
+                    availableTiles[suit]++;
                 }
 
                 suit = (suit + 10) % 30;
             }
         }
 
-        return remainingTiles;
+        return availableTiles;
     }
 
+    /** Discards the clicked tile, adds a message comparing its efficiency with the best tile, and draws a new tile */
     onTileClicked(event) {
         let isComplete = this.state.isComplete;
         if (isComplete) return;
@@ -279,42 +308,38 @@ class UkeireQuiz extends React.Component {
 
         let shantenFunction = this.state.settings.exceptions ? calculateMinimumShanten : calculateStandardShanten;
         let ukeire = calculateDiscardUkeire(hand, remainingTiles, shantenFunction);
-        let ukeireValues = ukeire.map(o => o.value);
-        let bestUkeire = Math.max(...ukeireValues);
         let chosenUkeire = ukeire[convertRedFives(chosenTile)];
 
         let handString = convertHandToTenhouString(hand);
         hand[chosenTile]--;
 
         let shanten = shantenFunction(hand);
-        let handUkeire = calculateUkeireFromOnlyHand(hand, this.resetRemainingTiles(), shantenFunction);
+        let handUkeire = calculateUkeireFromOnlyHand(hand, this.getStartingTiles(), shantenFunction);
         let bestTile = evaluateBestDiscard(ukeire, this.state.dora + 1);
 
         let players = this.state.players.slice();
         players[0].discards.push(chosenTile);
 
         let achievedTotal = this.state.achievedTotal + chosenUkeire.value;
-        let possibleTotal = this.state.possibleTotal + bestUkeire;
+        let possibleTotal = this.state.possibleTotal + ukeire[bestTile].value;
         let tilePool = this.state.tilePool.slice();
         let drawnTile = -1;
 
-        let historyObject = {
+        let historyData = new HistoryData (
             chosenTile,
             chosenUkeire,
             bestTile,
-            bestUkeire,
+            ukeire[bestTile].value,
             shanten,
-            hand: handString,
+            handString,
             handUkeire,
-            drawnTile: -1,
-            message: "",
-            discards: players[0].discards.slice()
-        };
+            players[0].discards.slice()
+        );
 
         if (shanten <= 0 && handUkeire.value > 0) {
             // If the hand is tenpai, and has winning tiles outside of the hand, training is complete
             let message = new LocalizedMessage("trainer.complete", {achieved: achievedTotal, total: possibleTotal, percent: Math.floor(achievedTotal / possibleTotal * 1000) / 10})
-            historyObject.message = message;
+            historyData.message = message;
             isComplete = true;
         }
 
@@ -334,7 +359,7 @@ class UkeireQuiz extends React.Component {
                 hand[drawnTile]++;
                 remainingTiles[drawnTile]--;
 
-                historyObject.drawnTile = drawnTile;
+                historyData.drawnTile = drawnTile;
             }
             else {
                 // No tiles left in the wall
@@ -343,7 +368,7 @@ class UkeireQuiz extends React.Component {
         }
         
         let history = this.state.history;
-        history.unshift(historyObject);
+        history.unshift(historyData);
 
         let shuffle = this.state.shuffle.slice();
 
@@ -363,7 +388,7 @@ class UkeireQuiz extends React.Component {
             remainingTiles: remainingTiles,
             players: players,
             discardCount: this.state.discardCount + 1,
-            optimalCount: this.state.optimalCount + (chosenUkeire.value === bestUkeire ? 1 : 0),
+            optimalCount: this.state.optimalCount + (chosenUkeire.value === ukeire[bestTile].value ? 1 : 0),
             hasCopied: false,
             achievedTotal: achievedTotal,
             possibleTotal: possibleTotal,
@@ -375,6 +400,7 @@ class UkeireQuiz extends React.Component {
         }, isComplete ? () => this.saveStats() : undefined);
     }
 
+    /** Save the player's current stats into local storage. */
     saveStats() {
         let stats = this.state.stats;
         stats.totalDiscards += this.state.discardCount;
@@ -392,6 +418,7 @@ class UkeireQuiz extends React.Component {
         }
     }
 
+    /** Reset the player's stats to nothing. */
     resetStats() {
         let stats = {
             totalDiscards: 0,
@@ -410,13 +437,17 @@ class UkeireQuiz extends React.Component {
         }
     }
 
-    loadHand(loadData) {
+    /**
+     * Starts a new round with the hand the player loaded, if possible.
+     * @param {{hand:TileCounts, tiles:number, dora:TileIndex, roundWind:number, seatWind: number, draw:TileIndex}} loadData The data from the hand parser.
+     */
+    onHandLoaded(loadData) {
         if (loadData.tiles === 0) {
             this.logToHistory("trainer.error.load");
             return;
         }
 
-        let remainingTiles = this.resetRemainingTiles();
+        let remainingTiles = this.getStartingTiles();
 
         // Remove the tiles in the hand from the wall
         for (let i = 0; i < remainingTiles.length; i++) {
@@ -429,7 +460,7 @@ class UkeireQuiz extends React.Component {
             remainingTiles[dora]--;
         }
 
-        let { hand, availableTiles, tilePool } = FillHand(remainingTiles, loadData.hand, 14 - loadData.tiles);
+        let { hand, availableTiles, tilePool } = fillHand(remainingTiles, loadData.hand, 14 - loadData.tiles);
 
         if (!hand) {
             this.logToHistory("trainer.error.wallEmpty");
@@ -459,9 +490,13 @@ class UkeireQuiz extends React.Component {
             if(hand[draw] <= 0) draw = false;
         }
 
-        this.setState(this.getNewHandState(hand, availableTiles, tilePool, [], dora, draw, seatWind, roundWind));
+        this.setNewHandState(hand, availableTiles, tilePool, [], dora, draw, seatWind, roundWind);
     }
 
+    /**
+     * Adds an object to the history containing just a message.
+     * @param {string} text The localization key to log to the history.
+     */
     logToHistory(text) {
         let history = this.state.history;
         history.unshift({ message: new LocalizedMessage(text) });
@@ -500,7 +535,7 @@ class UkeireQuiz extends React.Component {
                         <Button className="btn-block" color={this.state.isComplete ? "success" : "warning"} onClick={() => this.onNewHand()}>{t("trainer.newHandButtonLabel")}</Button>
                     </Col>
                     <CopyButton hand={this.state.hand} />
-                    <LoadButton callback={this.loadHand} />
+                    <LoadButton callback={this.onHandLoaded} />
                 </Row>
                 <Row className="mt-2 no-gutters">
                     <History history={this.state.history} concise={this.state.settings.extraConcise} verbose={this.state.settings.verbose} spoilers={this.state.settings.spoilers}/>

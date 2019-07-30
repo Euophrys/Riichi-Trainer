@@ -5,17 +5,7 @@ import { withTranslation } from 'react-i18next';
 
 class HistoryMessage extends React.Component {    
     /* PROPS
-        data {
-            chosenTile,
-            chosenUkeire.value,
-            bestTile,
-            bestUkeire,
-            shanten,
-            hand,
-            handUkeire,
-            drawnTile,
-            message
-        },
+        data (HistoryData),
         verbose,
         concise,
         spoilers

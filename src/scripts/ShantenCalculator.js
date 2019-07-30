@@ -8,6 +8,10 @@ let pair;
 let partialSets;
 let bestShanten;
 
+/**
+ * Calculates the minimum shanten of the hand, considering a standard hand, seven pairs, or thirteen orphans.
+ * @param {TileCounts} handToCheck The hand to calculate the shanten of.
+ */
 export function calculateMinimumShanten(handToCheck) {
     let standardShanten = calculateStandardShanten(handToCheck);
     let chiitoiShanten = calculateChiitoitsuShanten(handToCheck);
@@ -16,6 +20,10 @@ export function calculateMinimumShanten(handToCheck) {
     return Math.min(standardShanten, chiitoiShanten, kokushiShanten);
 }
 
+/**
+ * Calculates how many tiles away from a complete knitted straight hand the current hand is. (WIP...)
+ * @param {TileCounts} handToCheck The hand to calculate the shanten of.
+ */
 export function calculateKnittedShanten(handToCheck) {
     let honorsCount = 0;
 
@@ -40,6 +48,10 @@ export function calculateKnittedShanten(handToCheck) {
     return Math.min(combinedShanten, knittedAndHonorsShanten);
 }
 
+/**
+ * Finds which knitted straight the hand is closest to.
+ * @param {TileCounts} handToCheck The hand to check.
+ */
 function findMostViableKnittedStraight(handToCheck) {
     let possibilites = [
         [1, 4, 7, 12, 15, 18, 23, 26, 29],
@@ -72,7 +84,10 @@ function findMostViableKnittedStraight(handToCheck) {
     return best;
 }
 
-// Seven Pairs
+/**
+ * Calculates how many tiles away from chiitoitsu/seven pairs the hand is.
+ * @param {TileCounts} handToCheck The hand to calculate the shanten of.
+ */
 function calculateChiitoitsuShanten(handToCheck) {
     hand = convertRedFives(handToCheck);
     let pairCount = 0, uniqueTiles = 0;
@@ -96,7 +111,10 @@ function calculateChiitoitsuShanten(handToCheck) {
     return shanten;
 }
 
-// Thirteen Orphans
+/**
+ * Calculates how many tiles away from kokushi/thirteen orphans the hand is.
+ * @param {TileCounts} handToCheck The hand to calculate the shanten of. 
+ */
 function calculateKokushiShanten(handToCheck) {
     let uniqueTiles = 0;
     let hasPair = 0;
@@ -116,6 +134,10 @@ function calculateKokushiShanten(handToCheck) {
     return 13 - uniqueTiles - hasPair;
 }
 
+/**
+ * Calculates how many tiles away from a complete standard hand the given hand is.
+ * @param {TileCounts} handToCheck The hand to calculate the shanten of.
+ */
 export function calculateStandardShanten(handToCheck) {
     hand = convertRedFives(handToCheck);
 
@@ -142,7 +164,10 @@ export function calculateStandardShanten(handToCheck) {
     return bestShanten;
 }
 
-// Removes all possible combinations of complete sets from the hand and checks the shanten of each.
+/**
+ * Removes all possible combinations of complete sets from the hand and recursively checks the shanten of each.
+ * @param {TileIndex} i The current tile index to check from.
+ */
 function removeCompletedSets(i) {
     // Skip to the next tile that exists in the hand.
     for (; i < hand.length && hand[i] === 0; i++) { }
@@ -175,6 +200,10 @@ function removeCompletedSets(i) {
     removeCompletedSets(i + 1);
 }
 
+/**
+ * Removes all possible combinations of pseudo sets from the hand and recursively checks the shanten of each.
+ * @param {TileIndex} i The current tile index to check from.
+ */
 function removePotentialSets(i) {
     // Skip to the next tile that exists in the hand
     for (; i < hand.length && hand[i] === 0; i++) { }

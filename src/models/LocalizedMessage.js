@@ -3,7 +3,6 @@
  */
 export default class LocalizedMessage {
     /**
-     * 
      * @param {String} key The localization key.
      * @param {Object} params The parameters used by the localization.
      */

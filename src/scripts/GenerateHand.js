@@ -1,5 +1,5 @@
 
-export function GenerateHand(remainingTiles) {
+export function generateHand(remainingTiles) {
     let tilePool = [];
     let availableTiles = remainingTiles.slice();
 
@@ -28,7 +28,7 @@ export function GenerateHand(remainingTiles) {
     };
 }
 
-export function FillHand(availableTiles, hand, tilesToFill) {
+export function fillHand(availableTiles, hand, tilesToFill) {
     let tilePool = [];
 
     for (let i = 0; i < availableTiles.length; i++) {

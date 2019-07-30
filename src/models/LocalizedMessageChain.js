@@ -61,6 +61,7 @@ export default class LocalizedMessageChain {
     /**
      * Translates the chain and returns it as an array.
      * @param {Function} t The i18next translation function.
+     * @returns {string[]} The array of localized strings.
      */
     generateArray(t) {
         let result = [];
@@ -79,6 +80,7 @@ export default class LocalizedMessageChain {
     /**
      * Translates the chain and concatenates it all together into a single string.
      * @param {Function} t The i18next translation function.
+     * @returns {string} The localized and concatenated message.
      */
     generateString(t) {
         return this.generateArray(t).join("");
