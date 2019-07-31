@@ -6,6 +6,7 @@ import UtilsState from "./UtilsState";
 import HandExplorer from "./HandExplorer";
 import SouthFourQuiz from './SouthFourQuiz';
 import { withTranslation } from "react-i18next";
+import DefenseState from './DefenseState';
 
 class MainMenu extends React.Component {
     constructor(props) {
@@ -17,33 +18,9 @@ class MainMenu extends React.Component {
         }
     }
 
-    onTrainerClicked() {
+    onSetActivePage(index) {
         this.setState({
-            active: 0
-        });
-    }
-
-    onAnalyzerClicked() {
-        this.setState({
-            active: 1
-        });
-    }
-
-    onUtilsClicked() {
-        this.setState({
-            active: 2
-        });
-    }
-
-    onExplorerClicked() {
-        this.setState({
-            active: 3
-        });
-    }
-
-    onAllLastClicked() {
-        this.setState({
-            active: 4
+            active: index
         });
     }
 
@@ -72,6 +49,8 @@ class MainMenu extends React.Component {
                 page = <HandExplorer/>; break;
             case 4:
                 page = <SouthFourQuiz/>; break;
+            case 5:
+                page = <DefenseState/>; break;
             default:
                 page = <UkeireQuiz/>;
         }
@@ -80,11 +59,12 @@ class MainMenu extends React.Component {
             <React.Fragment>
                 <Container className="mb-4">
                     <Row>
-                        <Button color="success" xs="4" disabled={this.state.active === 0} onClick={()=>this.onTrainerClicked()}>{t("menu.trainer")}</Button>
-                        <Button xs="4" disabled={this.state.active === 1} onClick={()=>this.onAnalyzerClicked()}>{t("menu.analyzer")}</Button>
-                        <Button xs="4" disabled={this.state.active === 4} onClick={()=>this.onAllLastClicked()}>{t("menu.allLast")}</Button>
-                        <Button xs="4" disabled={this.state.active === 3} onClick={()=>this.onExplorerClicked()}>{t("menu.explorer")}</Button>
-                        <Button xs="4" disabled={this.state.active === 2} onClick={()=>this.onUtilsClicked()}>{t("menu.utils")}</Button>
+                        <Button color="success" xs="4" disabled={this.state.active === 0} onClick={()=>this.onSetActivePage(0)}>{t("menu.trainer")}</Button>
+                        <Button xs="4" disabled={this.state.active === 1} onClick={()=>this.onSetActivePage(1)}>{t("menu.analyzer")}</Button>
+                        <Button xs="4" disabled={this.state.active === 4} onClick={()=>this.onSetActivePage(4)}>{t("menu.allLast")}</Button>
+                        <Button xs="4" disabled={this.state.active === 5} onClick={()=>this.onSetActivePage(5)}>Folding</Button>
+                        <Button xs="4" disabled={this.state.active === 3} onClick={()=>this.onSetActivePage(3)}>{t("menu.explorer")}</Button>
+                        <Button xs="4" disabled={this.state.active === 2} onClick={()=>this.onSetActivePage(2)}>{t("menu.utils")}</Button>
                     </Row>
                     <Row>
                         <Dropdown isOpen={this.state.dropdownOpen} toggle={() => this.toggleDropdown()}>

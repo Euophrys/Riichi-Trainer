@@ -1,22 +1,16 @@
+import { removeRandomItem } from "./Utils";
+import { convertHandToTileIndexArray } from "./HandConversions";
 
 export function generateHand(remainingTiles) {
-    let tilePool = [];
     let availableTiles = remainingTiles.slice();
-
-    for (let i = 0; i < availableTiles.length; i++) {
-        if (availableTiles[i] === 0) continue;
-
-        for (let j = 0; j < availableTiles[i]; j++) {
-            tilePool.push(i);
-        }
-    }
+    let tilePool = convertHandToTileIndexArray(availableTiles);
 
     if (tilePool.length < 14) return { hand: undefined, availableTiles: undefined, tilePool: undefined };
 
     let hand = Array(38).fill(0);
 
     for (let i = 0; i < 14; i++) {
-        let tile = tilePool.splice(Math.random() * tilePool.length, 1);
+        let tile = removeRandomItem(tilePool);
         hand[tile]++;
         availableTiles[tile]--;
     }
@@ -28,21 +22,14 @@ export function generateHand(remainingTiles) {
     };
 }
 
-export function fillHand(availableTiles, hand, tilesToFill) {
-    let tilePool = [];
-
-    for (let i = 0; i < availableTiles.length; i++) {
-        if (availableTiles[i] === 0) continue;
-
-        for (let j = 0; j < availableTiles[i]; j++) {
-            tilePool.push(i);
-        }
-    }
+export function fillHand(remainingTiles, hand, tilesToFill) {
+    let availableTiles = remainingTiles.slice();
+    let tilePool = convertHandToTileIndexArray(availableTiles);
 
     if (tilePool.length < tilesToFill) return { hand: undefined, availableTiles: undefined, tilePool: undefined };
 
     for (let i = 0; i < tilesToFill; i++) {
-        let tile = tilePool.splice(Math.random() * tilePool.length, 1);
+        let tile = removeRandomItem(tilePool);
         hand[tile]++;
         availableTiles[tile]--;
     }
