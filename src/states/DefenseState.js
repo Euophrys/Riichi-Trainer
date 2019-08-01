@@ -128,6 +128,7 @@ class DefenseState extends React.Component {
             if (!player.isInRiichi() && player.discards.length < minDiscards) {
                 if (riichiPlayers.some((index => players[index].takesTurnBefore(player)))) {
                     // Someone declared riichi before this player discarded
+                    this.drawTilesToFourteen(player, tilePool);
                     let discard = this.discardSafestTile(player, players, tilePool);
 
                     for (let j = 0; j < riichiPlayers.length; j++) {
@@ -137,6 +138,7 @@ class DefenseState extends React.Component {
                     }
                 } else {
                     // This player discarded before any riichis happened
+                    this.drawTilesToFourteen(player, tilePool);
                     this.discardMostEfficientTile(player, players, tilePool);
                 }
             }

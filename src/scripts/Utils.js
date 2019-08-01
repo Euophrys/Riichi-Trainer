@@ -80,3 +80,48 @@ export function getShantenOffset(hand) {
     let offset = Math.floor((14 - tiles.length) / 3) * 2;
     return offset;
 }
+
+/**
+ * Converts a character, such as "p", to a suit base, such as 10.
+ * @param {string} character The character to convert.
+ */
+export function characterToSuit(character) {
+    if (character === "m" || character === "w" || character === "c") {
+        return 0;
+    }
+
+    if (character === "p") {
+        return 10;
+    }
+
+    if (character === "s" || character === "b") {
+        return 20;
+    }
+
+    if (character === "z" || character === "h") {
+        return 30;
+    }
+
+    return -1;
+}
+
+/**
+ * Gets the suit character for a tile.
+ * @param {TileIndex} index The tile to get the suit letter of.
+ */
+export function suitCharacterFromTile(index) {
+    let tensPlace = index % 10;
+
+    switch (tensPlace) {
+        case 0:
+            return "m";
+        case 1:
+            return "p";
+        case 2:
+            return "s";
+        case 3:
+            return "z";
+        default:
+            return -1;
+    }
+}
