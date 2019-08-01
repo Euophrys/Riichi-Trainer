@@ -144,7 +144,8 @@ export const ja = {
             allLast: "All Last Trainer",
             explorer: "Explorer",
             utils: "Misc. Utils",
-            language: "言語"
+            language: "言語",
+            defense: "ベタ降り"
         },
         allLast: {
             placements: {
@@ -223,21 +224,21 @@ export const ja = {
             bestSafety: "Safest tile: {{tile}}, with a safety rating of {{rating}}. ({{- explanation}})",
             safetyExplanations: {
                 zero: "You shouldn't see this message. Tell me if you do.",
-                one: "non-suji 4/5/6",
-                two: "non-suji 3/7",
-                three: "non-suji 2/8",
+                one: "無スジ4/5/6",
+                two: "無スジ3/7",
+                three: "無スジ2/8",
                 four: "one-chance",
-                five: "non-suji 1/9",
-                six: "first honor tile",
-                seven: "suji 3/7",
-                eight: "suji 2/8",
-                nine: "suji 4/5/6",
-                ten: "second honor tile",
-                eleven: "first suji terminal",
-                twelve: "second suji terminal",
-                thirteen: "third suji terminal / third honor",
-                fourteen: "fourth suji terminal / fourth honor",
-                fifteen: "genbutsu, 100% safe"
+                five: "無スジ1/9",
+                six: "first 字牌",
+                seven: "筋3/7",
+                eight: "筋2/8",
+                nine: "筋4/5/6",
+                ten: "second 字牌",
+                eleven: "first suji 老頭牌",
+                twelve: "second suji 老頭牌",
+                thirteen: "third suji 老頭牌 / third 字牌",
+                fourteen: "fourth suji 老頭牌 / fourth 字牌",
+                fifteen: "現物"
             }
         },
         explorer: {
@@ -256,6 +257,16 @@ export const ja = {
                 upgrades: "Tiles that increase ukeire: {{count}} ({{tiles}})",
                 expandUpgrades: "Show Upgrade Results"
             }
+        },
+        defense: {
+            instructions: "Discard the safest tile.",
+            finalHands: "Final Hands:",
+            hand: "{{player}}: {{hand}}",
+            safetyRatings: "Safety Ratings",
+            averagedSafetyRating: "Against multiple riichis, the safety ratings will be averaged together, and the highest chosen as best.",
+            safetyRating: "{{rating}}: {{- explanation}}",
+            riichiCount: "Number of riichis: ",
+            minTurns: "Minimum turns before a riichi is declared: "
         },
         utils: {
             convertHeader: "Hand Conversion",

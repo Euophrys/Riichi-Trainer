@@ -2,6 +2,7 @@ import { getTileAsText } from "../../scripts/TileConversions";
 import HistoryData from "../../models/HistoryData";
 
 export default class UkeireHistoryData extends HistoryData {
+    /** A history object for the ukeire trainer, which tells the efficiency of a given discard. */
     constructor(chosenTile = -1, chosenUkeire = -1, bestTile = -1, bestUkeire = -1, shanten = -1, hand = "", handUkeire = -1, discards = [], drawnTile = -1, message = undefined) {
         super(message);
         this.chosenTile = chosenTile;
@@ -82,6 +83,7 @@ export default class UkeireHistoryData extends HistoryData {
         return className;
     }
 
+    /** Returns whether the hand is in furiten, or might be later. */
     isFuriten() {
         return this.chosenUkeire.tiles.some(tile => this.discards.includes(tile));
     }

@@ -10,6 +10,7 @@ export default class Player {
         /** @type {number[]} */
         this.discardsAfterRiichi = [];
         this.riichiTile = -1;
+        /** The discard with which this player declared riichi. */
         this.riichiIndex = -1;
         this.seat = 0;
         this.points = 25000;

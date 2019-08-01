@@ -153,7 +153,8 @@ export const en = {
             allLast: "All Last Trainer",
             explorer: "Explorer",
             utils: "Misc. Utils",
-            language: "Language"
+            language: "Language",
+            defense: "Folding"
         },
         allLast: {
             placements: {

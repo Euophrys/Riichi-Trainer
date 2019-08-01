@@ -153,7 +153,8 @@ export const fr = {
             allLast: "Entraînement Oorasu",
             explorer: "Explorateur",
             utils: "Utilitaires",
-            language: "Langue"
+            language: "Langue",
+            defense: "Betaori"
         },
         allLast: {
             placements: {
@@ -266,6 +267,16 @@ export const fr = {
                 upgrades: "Tuiles qui augmentent l'ukeire : {{count}} ({{tiles}})",
                 expandUpgrades: "Afficher les améliorations"
             }
+        },
+        defense: {
+            instructions: "Discard the safest tile.",
+            finalHands: "Final Hands:",
+            hand: "{{player}}: {{hand}}",
+            safetyRatings: "Le taux de sûreté",
+            averagedSafetyRating: "Against multiple riichis, the safety ratings will be averaged together, and the highest chosen as best.",
+            safetyRating: "{{rating}}: {{- explanation}}",
+            riichiCount: "Number of riichis: ",
+            minTurns: "Minimum turns before a riichi is declared: "
         },
         utils: {
             convertHeader: "Conversion de main",

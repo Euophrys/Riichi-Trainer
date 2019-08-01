@@ -52,6 +52,7 @@ class DefenseState extends React.Component {
         });
     }
 
+    /** Generates a fresh game state. */
     onNewHand() {
         /** @type {Player[]} */
         let players = [];
@@ -61,9 +62,11 @@ class DefenseState extends React.Component {
         let dora = randomInt(10, 1) + randomInt(3) * 10;
         remainingTiles[dora]--;
 
+        // Pick numberOfRiichis random players to be in riichi.
         let riichiPlayers = shuffleArray([1, 2, 3]).slice(0, this.state.settings.numberOfRiichis);
         let playerSeat = randomInt(4);
 
+        // Generate players with random hands
         for (let i = 0; i < 4; i++) {
             let player = new Player();
             let shanten = 0;
@@ -79,6 +82,7 @@ class DefenseState extends React.Component {
             player.name = PLAYER_NAMES[i];
             player.seat = (playerSeat + i) % 4;
 
+            // If this is one of the players who calls riichi, bring their hand to tenpai
             if (riichiPlayers.indexOf(i) > -1) {
                 let finishResult = this.finishHand(player, tilePool, remainingTiles);
                 tilePool = finishResult.tilePool;
@@ -91,6 +95,7 @@ class DefenseState extends React.Component {
         let minDiscards = Math.min(...riichiPlayers.map(player => players[player].discards.length));
         let maxDiscards = Math.max(...riichiPlayers.map(player => players[player].discards.length));
 
+        // Bring all the riichi players to the same number of discards
         for (let i = 0; i < riichiPlayers.length; i++) {
             let currentPlayer = players[riichiPlayers[i]];
             let riichiIndex = currentPlayer.riichiIndex;
@@ -111,14 +116,16 @@ class DefenseState extends React.Component {
             }
         }
 
+        // Fill the discards of each player.
         players.forEach((player) => {
+            // Discards made before any riichi
             while (player.discards.length < minDiscards - 1) {
                 let tile = removeRandomItem(tilePool);
                 player.discards.push(tile);
             }
 
+            // Discard made on the same turn as the first riichi
             if (!player.isInRiichi() && player.discards.length < minDiscards) {
-                // This player needs to discard one more tile
                 if (riichiPlayers.some((index => players[index].takesTurnBefore(player)))) {
                     // Someone declared riichi before this player discarded
                     let discard = this.discardSafestTile(player, players, tilePool);
@@ -134,25 +141,26 @@ class DefenseState extends React.Component {
                 }
             }
 
+            // Discards made after the first riichi
             while (player.discards.length < maxDiscards) {
-                if (player.isInRiichi()) {
-                    let tile = removeRandomItem(tilePool);
-                    player.discards.push(tile);
-                    
-                    for (let j = 0; j < riichiPlayers.length; j++) {
-                        let otherPlayer = players[riichiPlayers[j]];
-                        if (player.discards.length - 1 > otherPlayer.riichiIndex ||
-                            (player.discards.length - 1 === otherPlayer.riichiIndex && otherPlayer.takesTurnBefore(player))) {
-                            otherPlayer.discardsAfterRiichi.push(tile);
-                        }
-                    }
-                } else {
-                    let discard = this.discardSafestTile(player, players, tilePool);
+                let discard;
 
-                    for (let j = 0; j < riichiPlayers.length; j++) {
-                        if (players[riichiPlayers[j]].takesTurnBefore(player)) {
-                            players[riichiPlayers[j]].discardsAfterRiichi.push(discard);
-                        }
+                if (player.isInRiichi()) {
+                    // This player can't change their hand
+                    discard = removeRandomItem(tilePool);
+                    player.discards.push(discard);
+                    
+                } else {
+                    // Fold vs the first (and maybe second) riichi
+                    this.drawTilesToFourteen(player, tilePool);
+                    discard = this.discardSafestTile(player, players, tilePool);
+                }
+
+                for (let j = 0; j < riichiPlayers.length; j++) {
+                    let otherPlayer = players[riichiPlayers[j]];
+                    if (player.discards.length - 1 > otherPlayer.riichiIndex ||
+                        (player.discards.length - 1 === otherPlayer.riichiIndex && otherPlayer.takesTurnBefore(player))) {
+                        otherPlayer.discardsAfterRiichi.push(discard);
                     }
                 }
             }
@@ -161,6 +169,7 @@ class DefenseState extends React.Component {
         // playerSeat -> dealerIndex: 0 -> 0, 1 -> 3, 2 -> 2, 3 -> 1
         let dealerIndex = (4 - playerSeat) % 4;
 
+        // Discard a tile for the players whose turn comes before the user's
         for (let i = dealerIndex; i > 0; i = (i + 1) % 4) {
             let discard = -1;
 
@@ -168,6 +177,7 @@ class DefenseState extends React.Component {
                 discard = removeRandomItem(tilePool);
                 players[i].discards.push(discard);
             } else {
+                this.drawTilesToFourteen(players[i], tilePool);
                 discard = this.discardSafestTile(players[i], players, tilePool);
             }
 
@@ -190,17 +200,26 @@ class DefenseState extends React.Component {
         });
     }
 
-    discardMostEfficientTile(player, players, tilePool) {
-        this.drawTilesToFourteen(player, tilePool);
-
-        let ukeire = calculateDiscardUkeire(player.hand, this.getTilesVisibleToPlayer(player, players), calculateMinimumShanten);
+    /**
+     * 
+     * @param {Player} player The player who is discarding.
+     * @param {Player[]} players The players in the game.
+     * @returns {TileIndex} The tile the player discarded.
+     */
+    discardMostEfficientTile(player, players) {
+        let ukeire = calculateDiscardUkeire(player.hand, this.getTilesHiddenFromPlayer(player, players), calculateMinimumShanten);
         let bestTile = evaluateBestDiscard(ukeire);
         player.discardTile(bestTile);
+        return bestTile;
     }
 
-    discardSafestTile(player, players, tilePool) {
-        this.drawTilesToFourteen(player, tilePool);
-
+    /**
+     * Discards the safest tile from the player's hand and returns it.
+     * @param {Player} player The player who is discarding.
+     * @param {Player[]} players The players in the game.
+     * @returns {TileIndex} The tile the player discarded.
+     */
+    discardSafestTile(player, players) {
         let averageSafety = this.getAverageSafety(player, players);
         let bestSafety = Math.max(...averageSafety);
         let bestChoice = averageSafety.indexOf(bestSafety);
@@ -209,6 +228,11 @@ class DefenseState extends React.Component {
         return bestChoice;
     }
 
+    /**
+     * Draws tiles until the player's hand has 14 tiles.
+     * @param {Player} player The player to draw tiles.
+     * @param {TileIndex[]} tilePool The tiles in the wall.
+     */
     drawTilesToFourteen(player, tilePool) {
         let tilesInHand = player.hand.reduce((a, b) => a + b, 0);
         for (let i = tilesInHand; i <= 14; i++) {
@@ -216,7 +240,13 @@ class DefenseState extends React.Component {
         }
     }
 
-    getTilesVisibleToPlayer(player, players) {
+    /**
+     * Counts how many of each tile a player can't see.
+     * @param {Player} player The player to view from.
+     * @param {Player[]} players The players in the game.
+     * @returns {TileCounts} The number of each tile that can't be seen by the player.
+     */
+    getTilesHiddenFromPlayer(player, players) {
         let visibleTiles = ALL_TILES_REMAINING.slice();
 
         for (let i = 0; i < player.hand.length; i++) {
@@ -232,6 +262,12 @@ class DefenseState extends React.Component {
         return visibleTiles;
     }
 
+    /**
+     * Calculates the average safety for each tile in the given player's hand.
+     * @param {Player} player The player with the hand to check.
+     * @param {Player[]} players The players in the game.
+     * @returns {number[]} The average safety for each tile in the hand.
+     */
     getAverageSafety(player, players) {
         let totalSafety = Array(38).fill(0);
         let riichis = 0;
@@ -243,7 +279,7 @@ class DefenseState extends React.Component {
                 let safety = evaluateDiscardSafety(
                     player.hand,
                     players[i].discards,
-                    this.getTilesVisibleToPlayer(player, players),
+                    this.getTilesHiddenFromPlayer(player, players),
                     players[i].discardsAfterRiichi,
                     players[i].riichiTile
                 );
@@ -258,13 +294,14 @@ class DefenseState extends React.Component {
     }
 
     /**
-     * Brings the hand to tenpai
+     * Brings the player's hand to tenpai after some useless turns.
      * @param {Player} player 
      * @param {TileIndex[]} tilePool 
      * @param {TileCounts} remainingTiles 
      */
     finishHand(player, tilePool, remainingTiles) {
         let shanten = calculateMinimumShanten(player.hand);
+        // We do this manually instead of using the function because we care about the ukeire counts.
         let ukeire = calculateDiscardUkeire(player.hand, remainingTiles, calculateMinimumShanten, shanten);
         let bestTile = evaluateBestDiscard(ukeire);
         let uselessTurns = this.state.settings.minimumTurnsBeforeRiichi + randomInt(5);
@@ -341,6 +378,7 @@ class DefenseState extends React.Component {
                 discard = removeRandomItem(tilePool);
                 players[i].discards.push(discard);
             } else {
+                this.drawTilesToFourteen(players[i], tilePool);
                 discard = this.discardSafestTile(players[i], players, tilePool);
             }
 
@@ -388,6 +426,11 @@ class DefenseState extends React.Component {
         });
     }
 
+    /**
+     * Adds the given tile to the "discardsAfterRiichi" of each riichi'd player.
+     * @param {TileIndex} tile The tile discarded.
+     * @param {Player[]} players The players in the game.
+     */
     tileDiscardedAfterRiichi(tile, players) {
         for (let i = 1; i < players.length; i++) {
             if(players[i].isInRiichi()) {

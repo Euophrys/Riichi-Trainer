@@ -62,7 +62,7 @@ class MainMenu extends React.Component {
                         <Button color="success" xs="4" disabled={this.state.active === 0} onClick={()=>this.onSetActivePage(0)}>{t("menu.trainer")}</Button>
                         <Button xs="4" disabled={this.state.active === 1} onClick={()=>this.onSetActivePage(1)}>{t("menu.analyzer")}</Button>
                         <Button xs="4" disabled={this.state.active === 4} onClick={()=>this.onSetActivePage(4)}>{t("menu.allLast")}</Button>
-                        <Button xs="4" disabled={this.state.active === 5} onClick={()=>this.onSetActivePage(5)}>Folding</Button>
+                        <Button xs="4" disabled={this.state.active === 5} onClick={()=>this.onSetActivePage(5)}>{t("menu.defense")}</Button>
                         <Button xs="4" disabled={this.state.active === 3} onClick={()=>this.onSetActivePage(3)}>{t("menu.explorer")}</Button>
                         <Button xs="4" disabled={this.state.active === 2} onClick={()=>this.onSetActivePage(2)}>{t("menu.utils")}</Button>
                     </Row>

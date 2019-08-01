@@ -3,6 +3,7 @@ import { SAFETY_RATING_EXPLANATIONS } from '../../Constants';
 import HistoryData from '../../models/HistoryData';
 
 export default class SafetyHistoryData extends HistoryData {
+    /** A history object for the defense trainer, which tells the safety of a given discard. */
     constructor(chosenTile = -1, chosenSafety = -1, bestTile = -1, bestSafety = -1, drawnTile = -1, message = undefined) {
         super(message);
         this.chosenTile = chosenTile;
@@ -36,7 +37,7 @@ export default class SafetyHistoryData extends HistoryData {
         if(this.drawnTile >= 0) {
             result += t("history.verbose.draw", {tile: getTileAsText(t, this.drawnTile, verbose)});
         }
-        
+
         result += super.getMessage(t);
         return result;
     }
