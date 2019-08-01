@@ -2,6 +2,7 @@ import React from 'react';
 import { Container, Button, Input, InputGroup, InputGroupAddon, ListGroupItem, ListGroup } from 'reactstrap';
 import { convertHandToAsciiSymbols, convertHandToDiscordEmoji } from '../../scripts/HandConversions';
 import { withTranslation } from 'react-i18next';
+import { characterToSuit } from '../../scripts/Utils';
 
 class ConvertHand extends React.Component {
     constructor(props) {
@@ -22,7 +23,7 @@ class ConvertHand extends React.Component {
 
         while (index < characters.length && tiles < 14) {
             do {
-                offset = this.getOffset(characters[index]);
+                offset = characterToSuit(characters[index]);
                 index++;
             } while (offset === -1 && index < characters.length);
 
@@ -53,26 +54,6 @@ class ConvertHand extends React.Component {
         this.setState({
             hand: hand
         });
-    }
-
-    getOffset(character) {
-        if (character === "m" || character === "w" || character === "c") {
-            return 0;
-        }
-
-        if (character === "p" || character === "d") {
-            return 10;
-        }
-
-        if (character === "s" || character === "b") {
-            return 20;
-        }
-
-        if (character === "z" || character === "h") {
-            return 30;
-        }
-
-        return -1;
     }
 
     render() {

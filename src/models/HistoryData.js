@@ -1,14 +1,36 @@
+import LocalizedMessage from "./LocalizedMessage";
+
 export default class HistoryData {
-    constructor(chosenTile = -1, chosenUkeire = -1, bestTile = -1, bestUkeire = -1, shanten = -1, hand = "", handUkeire = -1, discards = [], drawnTile = -1, message = "") {
-        this.chosenTile = chosenTile;
-        this.chosenUkeire = chosenUkeire;
-        this.bestTile = bestTile;
-        this.bestUkeire = bestUkeire;
-        this.shanten = shanten;
-        this.hand = hand;
-        this.handUkeire = handUkeire;
-        this.discards = discards;
-        this.drawnTile = drawnTile;
+    /**
+     * A history object containing just a message.
+     * @param {LocalizedMessage} message 
+     */
+    constructor(message) {
         this.message = message;
+    }
+
+    /**
+     * Generates a localized string.
+     * @param {Function} t The i18next translation function.
+     * @param {bool} concise Whether to use concise language.
+     * @param {bool} verbose Whether to use verbose tile names.
+     * @param {bool} spoilers Whether to give spoilers.
+     * @returns {string} The localized text associated with this history message.
+     */
+    getMessage(t, concise, verbose, spoilers) {
+        if(!this.message) return "";
+
+        return this.message.generateString(t);
+    }
+
+    /** Gets the class that this history message should have. */
+    getClassName() {
+        if(!this.message || !this.message.key) return "";
+
+        if(this.message.key.indexOf("error") > -1) {
+            return "bg-danger text-white";
+        }
+
+        return "";
     }
 }

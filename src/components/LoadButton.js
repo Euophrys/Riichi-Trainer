@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Input, InputGroup, InputGroupAddon, Col } from 'reactstrap';
 import { withTranslation } from 'react-i18next';
+import { characterToSuit } from '../scripts/Utils';
 
 class LoadButton extends React.Component {
     onClick() {
@@ -19,7 +20,7 @@ class LoadButton extends React.Component {
         characters = characters.split('').reverse();
         while (index < characters.length && tiles < 14) {
             do {
-                offset = this.getOffset(characters[index]);
+                offset = characterToSuit(characters[index]);
                 index++;
             } while (offset === -1 && index < characters.length);
 
@@ -69,26 +70,6 @@ class LoadButton extends React.Component {
         }
 
         return false;
-    }
-
-    getOffset(character) {
-        if (character === "m" || character === "w" || character === "c") {
-            return 0;
-        }
-
-        if (character === "p") {
-            return 10;
-        }
-
-        if (character === "s" || character === "b") {
-            return 20;
-        }
-
-        if (character === "z" || character === "h") {
-            return 30;
-        }
-
-        return -1;
     }
 
     render() {

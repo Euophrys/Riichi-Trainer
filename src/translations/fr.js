@@ -153,7 +153,8 @@ export const fr = {
             allLast: "Entraînement Oorasu",
             explorer: "Explorateur",
             utils: "Utilitaires",
-            language: "Langue"
+            language: "Langue",
+            defense: "Betaori"
         },
         allLast: {
             placements: {
@@ -228,9 +229,9 @@ export const fr = {
             win: "Le joueur {{number}} a remporté la main.",
             kandora: "Le nouvel indicateur de dora est le {{tile}}.",
             draw: "Vous avez pioché le {{tile}}. ({{hand}})",
-            chosenSafety: "Le taux de sûreté du {{tile}} est de {{rating}}. ({{explanation}}) ",
+            chosenSafety: "Le taux de sûreté du {{tile}} est de {{rating}}. ({{- explanation}}) ",
             correctSafety: "Il s'agissait de la tuile la plus sûre.",
-            bestSafety: "Tuile la plus sûre : {{tile}}, avec un taux de sûreté de {{rating}}. ({{explanation}})",
+            bestSafety: "Tuile la plus sûre : {{tile}}, avec un taux de sûreté de {{rating}}. ({{- explanation}})",
             safetyExplanations: {
                 zero: "Vous n'êtes pas censé voir ce message. Prévenez-moi, le cas échéant.",
                 one: "non-suji 4/5/6",
@@ -266,6 +267,16 @@ export const fr = {
                 upgrades: "Tuiles qui augmentent l'ukeire : {{count}} ({{tiles}})",
                 expandUpgrades: "Afficher les améliorations"
             }
+        },
+        defense: {
+            instructions: "Discard the safest tile.",
+            finalHands: "Final Hands:",
+            hand: "{{player}}: {{hand}}",
+            safetyRatings: "Le taux de sûreté",
+            averagedSafetyRating: "Against multiple riichis, the safety ratings will be averaged together, and the highest chosen as best.",
+            safetyRating: "{{rating}}: {{- explanation}}",
+            riichiCount: "Number of riichis: ",
+            minTurns: "Minimum turns before a riichi is declared: "
         },
         utils: {
             convertHeader: "Conversion de main",

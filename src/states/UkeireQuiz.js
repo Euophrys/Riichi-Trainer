@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Row, Button, Col } from 'reactstrap';
 import Hand from '../components/Hand';
-import History from "../components/ukeire-quiz/History";
+import History from "../components/History";
 import Settings from '../components/ukeire-quiz/Settings';
 import CopyButton from '../components/CopyButton';
 import LoadButton from '../components/LoadButton';
@@ -20,6 +20,7 @@ import Player from '../models/Player';
 import { PLAYER_NAMES } from '../Constants';
 import { withTranslation } from 'react-i18next';
 import LocalizedMessage from '../models/LocalizedMessage';
+import UkeireHistoryData from '../components/ukeire-quiz/UkeireHistoryData';
 import HistoryData from '../models/HistoryData';
 
 class UkeireQuiz extends React.Component {
@@ -130,14 +131,14 @@ class UkeireQuiz extends React.Component {
      * @param {TileCounts} hand The player's hand.
      * @param {TileCounts} availableTiles The tiles remaining in the wall.
      * @param {TileIndex[]} tilePool A list of tile indexes representing the remaining tiles.
-     * @param {HistoryData[]} history A list of history objects.
+     * @param {UkeireHistoryData[]} history A list of history objects.
      * @param {TileIndex} dora The dora indicator.
      * @param {TileIndex} lastDraw The tile the player just drew.
      * @param {TileIndex} seatWind The player's seat.
      * @param {TileIndex} roundWind The round.
      */
     setNewHandState(hand, availableTiles, tilePool, history, dora, lastDraw = false, seatWind = false, roundWind = false) {
-        history.unshift({ message: new LocalizedMessage("trainer.start", {hand: convertHandToTenhouString(hand)}) });
+        history.unshift(new HistoryData(new LocalizedMessage("trainer.start", {hand: convertHandToTenhouString(hand)})));
 
         let players = [];
         let numberOfPlayers = this.state.settings.threePlayer ? 3 : 4;
@@ -325,7 +326,7 @@ class UkeireQuiz extends React.Component {
         let tilePool = this.state.tilePool.slice();
         let drawnTile = -1;
 
-        let historyData = new HistoryData (
+        let historyData = new UkeireHistoryData (
             chosenTile,
             chosenUkeire,
             bestTile,
@@ -499,7 +500,7 @@ class UkeireQuiz extends React.Component {
      */
     logToHistory(text) {
         let history = this.state.history;
-        history.unshift({ message: new LocalizedMessage(text) });
+        history.unshift(new HistoryData(new LocalizedMessage(text)));
         this.setState({
             history: history,
         });

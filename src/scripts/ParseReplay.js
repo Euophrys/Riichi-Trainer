@@ -7,7 +7,7 @@ import { evaluateBestDiscard, evaluateDiscardSafety } from './Evaluations';
 import { getShantenOffset } from './Utils';
 import ReplayTurn from '../models/ReplayTurn';
 import LocalizedMessage from '../models/LocalizedMessage';
-import ReplayPlayer from '../models/ReplayPlayer';
+import Player from '../models/Player';
 
 /**
  * Separates the individual rounds from a replay.
@@ -86,7 +86,7 @@ export function parseRound(t, roundText, player) {
     let players = [];
 
     for(let i = 0; i < 4; i++) {
-        players.push(new ReplayPlayer(parseStartingHand(roundText, i)));
+        players.push(new Player(parseStartingHand(roundText, i)));
     }
 
     for(let j = 0; j < players[player].hand.length; j++) {
@@ -266,7 +266,7 @@ export function parseRound(t, roundText, player) {
  * @param {Function} t The i18next translation function.
  * @param {TileCounts} playerHand The player's current hand.
  * @param {TileIndex} chosenTile The tile the player chose to discard.
- * @param {ReplayPlayer[]} players The player objects.
+ * @param {Player[]} players The player objects.
  * @param {TileCounts} remainingTiles The number of each tile remaining in concealed tiles.
  * @param {ReplayTurn} currentTurn The current turn object.
  */

@@ -1,6 +1,6 @@
 import LocalizedMessageChain from "../models/LocalizedMessageChain";
 // eslint-disable-next-line no-unused-vars
-import ReplayPlayer from "./ReplayPlayer";
+import Player from "./Player";
 import { getTileAsText, convertTilesToAsciiSymbols, convertIndexesToTenhouTiles } from "../scripts/TileConversions";
 import { convertHandToTenhouString } from "../scripts/HandConversions";
 import { SAFETY_RATING_EXPLANATIONS } from "../Constants";
@@ -39,7 +39,7 @@ export default class ReplayTurn {
     /**
      * Adds a message saying what tile the player drew and sets the hand and draw accordingly.
      * @param {Function} t The i18next translation function.
-     * @param {ReplayPlayer} player The current player.
+     * @param {Player} player The current player.
      * @param {number} tile The index of the tile drawn.
      */
     tileDrawn(t, player, tile) {        
@@ -51,7 +51,7 @@ export default class ReplayTurn {
 
     /**
      * Copies the current hand, discards, and calls from the given player.
-     * @param {ReplayPlayer} player The player to copy from.
+     * @param {Player} player The player to copy from.
      */
     copyFrom(player) {
         this.hand = player.hand.slice();

@@ -28,7 +28,11 @@ class DiscardPool extends React.Component {
                     <Row><u>{t(players[i].name)} ({t(SEAT_NAMES[players[i].seat])})</u></Row>
                     <Row className="no-gutters px-sm-0 px-md-4 px-lg-5 px-xl-0 mx-lg-4">
                         {players[i].discards.map((tile, index) => {
-                            return <Col xs="1" sm="2" md="2" xl="1" key={players[i].name + index}><Tile className="discardTile" tile={tile}/></Col>
+                            return (
+                                <Col xs="1" sm="2" md="2" xl="1" key={players[i].name + index} style={index === players[i].riichiIndex ? {backgroundColor: "red"} : {}}>
+                                    <Tile className="discardTile" tile={tile}/>
+                                </Col>
+                            );
                         })}
                     </Row>
                 </ListGroupItem>
