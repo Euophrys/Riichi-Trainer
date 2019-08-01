@@ -218,9 +218,9 @@ export const ja = {
             win: "Player {{number}} won the round.",
             kandora: "The new dora indicator is the {{tile}}.",
             draw: "You drew the {{tile}}. ({{hand}})",
-            chosenSafety: "The {{tile}}'s safety rating is {{rating}}. ({{explanation}}) ",
+            chosenSafety: "The {{tile}}'s safety rating is {{rating}}. ({{- explanation}}) ",
             correctSafety: "That was the safest tile.",
-            bestSafety: "Safest tile: {{tile}}, with a safety rating of {{rating}}. ({{explanation}})",
+            bestSafety: "Safest tile: {{tile}}, with a safety rating of {{rating}}. ({{- explanation}})",
             safetyExplanations: {
                 zero: "You shouldn't see this message. Tell me if you do.",
                 one: "non-suji 4/5/6",

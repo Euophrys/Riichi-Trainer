@@ -23,6 +23,14 @@ export default class Player {
     }
 
     /**
+     * Returns whether this player's turn comes before the other player's.
+     * @param {Player} player The player to compare with.
+     */
+    takesTurnBefore(player) {
+        return this.seat < player.seat;
+    }
+
+    /**
      * Adds the call to the player's calls and removes the tiles from the player's hand.
      * @param {number[]} calledTiles The tiles that are in the call.
      */

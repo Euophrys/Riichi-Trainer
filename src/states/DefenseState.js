@@ -1,22 +1,28 @@
 import React from 'react';
 import { withTranslation } from "react-i18next";
-import { Container, Row, Col, Button } from 'reactstrap';
+import { Container, Row, Col, Button, Collapse, Card, CardBody } from 'reactstrap';
 import DiscardPool from '../components/DiscardPool';
 import Hand from '../components/Hand';
-import History from '../components/ukeire-quiz/History';
+import History from '../components/History';
 import Player from "../models/Player";
-import { ALL_TILES_REMAINING, PLAYER_NAMES } from "../Constants";
+import { ALL_TILES_REMAINING, PLAYER_NAMES, SAFETY_RATING_EXPLANATIONS } from "../Constants";
 import { generateHand } from "../scripts/GenerateHand";
 import { shuffleArray, randomInt, removeRandomItem, getRandomItem } from "../scripts/Utils";
 import calculateMinimumShanten from "../scripts/ShantenCalculator";
 import { calculateDiscardUkeire } from "../scripts/UkeireCalculator";
 import { evaluateBestDiscard, evaluateDiscardSafety } from "../scripts/Evaluations";
-import { convertHandToTileIndexArray } from "../scripts/HandConversions";
+import { convertHandToTileIndexArray, convertHandToTenhouString } from "../scripts/HandConversions";
+import SafetyHistoryData from '../components/defense-trainer/SafetyHistoryData';
+import HistoryData from '../models/HistoryData';
+import LocalizedMessage from '../models/LocalizedMessage';
+import LocalizedMessageChain from '../models/LocalizedMessageChain';
+import DefenseSettings from '../components/defense-trainer/DefenseSettings';
 
 class DefenseState extends React.Component {
     constructor(props) {
         super(props);
         this.onTileClicked = this.onTileClicked.bind(this);
+        this.onSettingsChanged = this.onSettingsChanged.bind(this);
         this.state = {
             lastDraw: 0,
             isComplete: false,
@@ -26,17 +32,24 @@ class DefenseState extends React.Component {
             tilePool: [],
             discardCount: 0,
             dora: 0,
+            chartCollapsed: true,
             settings: {
                 verbose: true,
-                spoilers: true,
-                numberOfRiichis: 2,
-                minimumTurnsBeforeRiichi: 5,
+                numberOfRiichis: 1,
+                minimumTurnsBeforeRiichi: 4,
             }
         }
     }
 
     componentDidMount() {
-        this.onNewHand();
+        // Ensure settings are loaded before starting a new hand.
+        this.setState({}, () => this.onNewHand());
+    }
+
+    onSettingsChanged(settings) {
+        this.setState({
+            settings: settings
+        });
     }
 
     onNewHand() {
@@ -49,7 +62,7 @@ class DefenseState extends React.Component {
         remainingTiles[dora]--;
 
         let riichiPlayers = shuffleArray([1, 2, 3]).slice(0, this.state.settings.numberOfRiichis);
-        let playerSeat = randomInt(5, 1);
+        let playerSeat = randomInt(4);
 
         for (let i = 0; i < 4; i++) {
             let player = new Player();
@@ -75,55 +88,75 @@ class DefenseState extends React.Component {
             players.push(player);
         }
 
-        let minDiscards = Math.max(...riichiPlayers.map(player => players[player].discards.length));
+        let minDiscards = Math.min(...riichiPlayers.map(player => players[player].discards.length));
         let maxDiscards = Math.max(...riichiPlayers.map(player => players[player].discards.length));
 
-        for (let i = 0; i < players.length; i++) {
-            while (players[i].discards.length < minDiscards - 1) {
+        for (let i = 0; i < riichiPlayers.length; i++) {
+            let currentPlayer = players[riichiPlayers[i]];
+            let riichiIndex = currentPlayer.riichiIndex;
+
+            for(let j = riichiIndex; j < maxDiscards; j++) {
+                for (let k = 0; k < riichiPlayers.length; k++) {
+                    if (k === i) continue;
+
+                    let otherPlayer = players[riichiPlayers[k]];
+                    
+                    if (otherPlayer.discards.length <= j) continue;
+
+                    if (j > riichiIndex ||
+                        (j === riichiIndex && currentPlayer.takesTurnBefore(otherPlayer))) {
+                            currentPlayer.discardsAfterRiichi.push(otherPlayer.discards[j]);
+                    }
+                }
+            }
+        }
+
+        players.forEach((player) => {
+            while (player.discards.length < minDiscards - 1) {
                 let tile = removeRandomItem(tilePool);
-                players[i].discards.push(tile);
+                player.discards.push(tile);
             }
 
-            if (players[i].discards.length < minDiscards) {
+            if (!player.isInRiichi() && player.discards.length < minDiscards) {
                 // This player needs to discard one more tile
-                if (riichiPlayers.some((index => players[index].seat < players[i].seat))) {
+                if (riichiPlayers.some((index => players[index].takesTurnBefore(player)))) {
                     // Someone declared riichi before this player discarded
-                    let discard = this.discardSafestTile(players[i], players, tilePool);
+                    let discard = this.discardSafestTile(player, players, tilePool);
 
                     for (let j = 0; j < riichiPlayers.length; j++) {
-                        if (players[riichiPlayers[j]].seat < players[i].seat) {
+                        if (players[riichiPlayers[j]].takesTurnBefore(player)) {
                             players[riichiPlayers[j]].discardsAfterRiichi.push(discard);
                         }
                     }
                 } else {
                     // This player discarded before any riichis happened
-                    this.discardMostEfficientTile(players[i], players, tilePool);
+                    this.discardMostEfficientTile(player, players, tilePool);
                 }
             }
 
-            while (players[i].discards.length < maxDiscards) {
-                if (players[i].isInRiichi()) {
+            while (player.discards.length < maxDiscards) {
+                if (player.isInRiichi()) {
                     let tile = removeRandomItem(tilePool);
-                    players[i].discards.push(tile);
+                    player.discards.push(tile);
                     
                     for (let j = 0; j < riichiPlayers.length; j++) {
-                        if (players[riichiPlayers[j]].riichiIndex > players[i].riichiIndex
-                            || (players[riichiPlayers[j]].riichiIndex === players[i].riichiIndex
-                                && players[riichiPlayers[j]].seat < players[i].seat)) {
-                            players[riichiPlayers[j]].discardsAfterRiichi.push(tile);
+                        let otherPlayer = players[riichiPlayers[j]];
+                        if (player.discards.length - 1 > otherPlayer.riichiIndex ||
+                            (player.discards.length - 1 === otherPlayer.riichiIndex && otherPlayer.takesTurnBefore(player))) {
+                            otherPlayer.discardsAfterRiichi.push(tile);
                         }
                     }
                 } else {
-                    let discard = this.discardSafestTile(players[i], players, tilePool);
+                    let discard = this.discardSafestTile(player, players, tilePool);
 
                     for (let j = 0; j < riichiPlayers.length; j++) {
-                        if (players[riichiPlayers[j]].seat < players[i].seat) {
+                        if (players[riichiPlayers[j]].takesTurnBefore(player)) {
                             players[riichiPlayers[j]].discardsAfterRiichi.push(discard);
                         }
                     }
                 }
             }
-        }
+        });
 
         // playerSeat -> dealerIndex: 0 -> 0, 1 -> 3, 2 -> 2, 3 -> 1
         let dealerIndex = (4 - playerSeat) % 4;
@@ -138,15 +171,18 @@ class DefenseState extends React.Component {
                 discard = this.discardSafestTile(players[i], players, tilePool);
             }
 
-            for (let j = 0; j < riichiPlayers.length; j++) {
-                players[riichiPlayers[j]].discardsAfterRiichi.push(discard);
-            }
+            this.tileDiscardedAfterRiichi(discard, players);
+        }
+
+        // Dead wall
+        for (let i = 0; i < 13; i++) {
+            removeRandomItem(tilePool);
         }
 
         this.setState({
             players: players,
             tilePool: tilePool,
-            history: [],
+            history: [new HistoryData(new LocalizedMessage("trainer.start", {hand: convertHandToTenhouString(players[0].hand)}))],
             discardCount: 0,
             dora: dora,
             lastDraw: -1,
@@ -284,12 +320,15 @@ class DefenseState extends React.Component {
     }
 
     onTileClicked(event) {
+        let { t } = this.props;
         let isComplete = this.state.isComplete;
         if (isComplete) return;
 
         let chosenTile = parseInt(event.target.name);
         let players = this.state.players.slice();
+        let averageSafety = this.getAverageSafety(players[0], players);
         players[0].discardTile(chosenTile);
+        this.tileDiscardedAfterRiichi(chosenTile, players);
 
         let tilePool = this.state.tilePool.slice();
 
@@ -305,27 +344,61 @@ class DefenseState extends React.Component {
                 discard = this.discardSafestTile(players[i], players, tilePool);
             }
 
-            for (let j = 1; j < players.length; j++) {
-                if(players[i].isInRiichi()) {
-                    players[i].discardsAfterRiichi.push(discard);
-                }
-            }
+            this.tileDiscardedAfterRiichi(discard, players);
         }
 
         let draw = -1;
+        let history = this.state.history.slice();
 
         if (tilePool.length === 0) {
             isComplete = true;
+            let hands = new LocalizedMessageChain();
+            hands.appendLocalizedMessage("defense.finalHands");
+            for (let i = 0; i < players.length; i++) {
+                hands.appendLineBreak();
+                hands.appendLocalizedMessage("defense.hand", {
+                    player:t(players[i].name),
+                    hand:convertHandToTenhouString(players[i].hand)
+                });
+            }
+            history.unshift(new HistoryData(hands));
         } else {
             draw = removeRandomItem(tilePool);
             players[0].hand[draw]++;
         }
 
+        let bestSafety = Math.max(...averageSafety);
+        let bestTile = averageSafety.indexOf(bestSafety);
+
+        history.unshift(new SafetyHistoryData(
+            chosenTile,
+            averageSafety[chosenTile],
+            bestTile,
+            bestSafety,
+            draw
+        ));
+
         this.setState({
             players: players,
             tilePool: tilePool,
             discardCount: this.state.discardCount + 1,
-            lastDraw: draw
+            lastDraw: draw,
+            history: history,
+            isComplete: isComplete
+        });
+    }
+
+    tileDiscardedAfterRiichi(tile, players) {
+        for (let i = 1; i < players.length; i++) {
+            if(players[i].isInRiichi()) {
+                players[i].discardsAfterRiichi.push(tile);
+            }
+        }
+    }
+
+    toggleChart() {
+        this.setState({
+            chartCollapsed: !this.state.chartCollapsed
         });
     }
 
@@ -334,10 +407,25 @@ class DefenseState extends React.Component {
 
         if (!this.state.players.length) return <Container/>;
 
+        let safetyRatings = SAFETY_RATING_EXPLANATIONS.map((explanation, index) => {
+            if (index === 0) return <Row></Row>;
+            return <Row key={index}>{t("defense.safetyRating", {rating:index, explanation: t(explanation)})}</Row>
+        }).reverse();
+
         return (
             <Container>
+                <DefenseSettings onChange={this.onSettingsChanged}/>
+                <Container>
+                    <Button color="primary" onClick={() => this.toggleChart()}>{t("defense.safetyRatings")}</Button>
+                    <Collapse isOpen={!this.state.chartCollapsed}>
+                        <Card><CardBody>
+                            <Row>{t("defense.averagedSafetyRating")}</Row>
+                            {safetyRatings}
+                        </CardBody></Card>
+                    </Collapse>
+                </Container>
                 <Row className="mb-2 mt-2">
-                    <span>Discard the safest tile.</span>
+                    <span>{t("defense.instructions")}</span>
                 </Row>
                     <Hand tiles={this.state.players[0].hand}
                         lastDraw={this.state.lastDraw}

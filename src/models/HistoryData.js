@@ -1,14 +1,27 @@
+import LocalizedMessage from "./LocalizedMessage";
+
 export default class HistoryData {
-    constructor(chosenTile = -1, chosenUkeire = -1, bestTile = -1, bestUkeire = -1, shanten = -1, hand = "", handUkeire = -1, discards = [], drawnTile = -1, message = "") {
-        this.chosenTile = chosenTile;
-        this.chosenUkeire = chosenUkeire;
-        this.bestTile = bestTile;
-        this.bestUkeire = bestUkeire;
-        this.shanten = shanten;
-        this.hand = hand;
-        this.handUkeire = handUkeire;
-        this.discards = discards;
-        this.drawnTile = drawnTile;
+    /**
+     * 
+     * @param {LocalizedMessage} message 
+     */
+    constructor(message) {
         this.message = message;
+    }
+
+    getMessage(t, concise, verbose, spoilers) {
+        if(!this.message) return "";
+
+        return this.message.generateString(t);
+    }
+
+    getClassName() {
+        if(!this.message || !this.message.key) return "";
+
+        if(this.message.key.indexOf("error") > -1) {
+            return "bg-danger text-white";
+        }
+
+        return "";
     }
 }

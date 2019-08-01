@@ -228,9 +228,9 @@ export const en = {
             win: "Player {{number}} won the round.",
             kandora: "The new dora indicator is the {{tile}}.",
             draw: "You drew the {{tile}}. ({{hand}})",
-            chosenSafety: "The {{tile}}'s safety rating is {{rating}}. ({{explanation}}) ",
+            chosenSafety: "The {{tile}}'s safety rating is {{rating}}. ({{- explanation}}) ",
             correctSafety: "That was the safest tile.",
-            bestSafety: "Safest tile: {{tile}}, with a safety rating of {{rating}}. ({{explanation}})",
+            bestSafety: "Safest tile: {{tile}}, with a safety rating of {{rating}}. ({{- explanation}})",
             safetyExplanations: {
                 zero: "You shouldn't see this message. Tell me if you do.",
                 one: "non-suji 4/5/6",
@@ -266,6 +266,16 @@ export const en = {
                 upgrades: "Tiles that increase ukeire: {{count}} ({{tiles}})",
                 expandUpgrades: "Show Upgrade Results"
             }
+        },
+        defense: {
+            instructions: "Discard the safest tile.",
+            finalHands: "Final Hands:",
+            hand: "{{player}}: {{hand}}",
+            safetyRatings: "Safety Ratings",
+            averagedSafetyRating: "Against multiple riichis, the safety ratings will be averaged together, and the highest chosen as best.",
+            safetyRating: "{{rating}}: {{- explanation}}",
+            riichiCount: "Number of riichis: ",
+            minTurns: "Minimum turns before a riichi is declared: "
         },
         utils: {
             convertHeader: "Hand Conversion",

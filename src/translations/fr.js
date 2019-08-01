@@ -228,9 +228,9 @@ export const fr = {
             win: "Le joueur {{number}} a remporté la main.",
             kandora: "Le nouvel indicateur de dora est le {{tile}}.",
             draw: "Vous avez pioché le {{tile}}. ({{hand}})",
-            chosenSafety: "Le taux de sûreté du {{tile}} est de {{rating}}. ({{explanation}}) ",
+            chosenSafety: "Le taux de sûreté du {{tile}} est de {{rating}}. ({{- explanation}}) ",
             correctSafety: "Il s'agissait de la tuile la plus sûre.",
-            bestSafety: "Tuile la plus sûre : {{tile}}, avec un taux de sûreté de {{rating}}. ({{explanation}})",
+            bestSafety: "Tuile la plus sûre : {{tile}}, avec un taux de sûreté de {{rating}}. ({{- explanation}})",
             safetyExplanations: {
                 zero: "Vous n'êtes pas censé voir ce message. Prévenez-moi, le cas échéant.",
                 one: "non-suji 4/5/6",
