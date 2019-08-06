@@ -1,6 +1,5 @@
 import { convertRedFives } from "./TileConversions";
 import { evaluateBestDiscard } from './Evaluations';
-import { getShantenOffset } from "./Utils";
 
 /**
  * Calculates the resulting ukeire from each possible discard in the hand.
@@ -11,16 +10,12 @@ import { getShantenOffset } from "./Utils";
  * @param {number} shantenOffset The hand's current shanten offset, if precalculated.
  * @returns {UkeireObject[]} The ukeire object for each discard.
  */
-export function calculateDiscardUkeire(hand, remainingTiles, shantenFunction, baseShanten = -2, shantenOffset = -2) {
+export function calculateDiscardUkeire(hand, remainingTiles, shantenFunction, baseShanten = -2) {
     let results = Array(hand.length).fill(0);
     let convertedHand = convertRedFives(hand);
 
-    if(shantenOffset === -2) {
-        shantenOffset = getShantenOffset(convertedHand);
-    }
-
     if (baseShanten === -2) {
-        baseShanten = shantenFunction(convertedHand) - shantenOffset;
+        baseShanten = shantenFunction(convertedHand);
     }
 
     // Check the ukeire of each hand that results from each discard
@@ -31,7 +26,7 @@ export function calculateDiscardUkeire(hand, remainingTiles, shantenFunction, ba
         }
 
         convertedHand[handIndex]--;
-        let ukeire = calculateUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten, shantenOffset);
+        let ukeire = calculateUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten);
         convertedHand[handIndex]++;
 
         results[handIndex] = ukeire;
@@ -49,16 +44,12 @@ export function calculateDiscardUkeire(hand, remainingTiles, shantenFunction, ba
  * @param {number} shantenOffset The hand's current shanten offset, if precalculated.
  * @returns {UkeireObject} The ukeire data.
  */
-export function calculateUkeire(hand, remainingTiles, shantenFunction, baseShanten = -2, shantenOffset = -2) {
+export function calculateUkeire(hand, remainingTiles, shantenFunction, baseShanten = -2) {
     let convertedHand = convertRedFives(hand);
     let convertedTiles = convertRedFives(remainingTiles);
 
-    if(shantenOffset === -2) {
-        shantenOffset = getShantenOffset(convertedHand);
-    }
-
     if (baseShanten === -2) {
-        baseShanten = shantenFunction(convertedHand) - shantenOffset;
+        baseShanten = shantenFunction(convertedHand);
     }
 
     let value = 0;
@@ -71,7 +62,7 @@ export function calculateUkeire(hand, remainingTiles, shantenFunction, baseShant
 
         convertedHand[addedTile]++;
 
-        if (shantenFunction(convertedHand) - shantenOffset < baseShanten) {
+        if (shantenFunction(convertedHand, baseShanten - 1) < baseShanten) {
             // Improves shanten. Add the number of remaining tiles to the ukeire count
             value += convertedTiles[addedTile];
             tiles.push(addedTile);
@@ -94,25 +85,21 @@ export function calculateUkeire(hand, remainingTiles, shantenFunction, baseShant
  * @param {number} baseShanten The hand's current shanten, if precalculated.
  * @param {number} shantenOffset The hand's current shanten offset, if precalculated.
  */
-export function calculateDiscardUkeireUpgrades(hand, remainingTiles, shantenFunction, baseShanten = -2, shantenOffset = -2) {
+export function calculateDiscardUkeireUpgrades(hand, remainingTiles, shantenFunction, baseShanten = -2) {
     let results = Array(hand.length).fill(0);
     let convertedHand = convertRedFives(hand);
     
-    if(shantenOffset === -2) {
-        shantenOffset = getShantenOffset(convertedHand);
-    }
-    
     if (baseShanten === -2) {
-        baseShanten = shantenFunction(convertedHand) - shantenOffset;
+        baseShanten = shantenFunction(convertedHand);
     }
 
-    let baseUkeire = calculateUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten, shantenOffset).value;
+    let baseUkeire = calculateUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten).value;
 
     for (let handIndex = 0; handIndex < hand.length; handIndex++) {
         if (hand[handIndex] === 0) continue;
 
         hand[handIndex]--;
-        let upgrades = calculateUkeireUpgrades(convertedHand, remainingTiles, shantenFunction, baseShanten, baseUkeire, shantenOffset);
+        let upgrades = calculateUkeireUpgrades(convertedHand, remainingTiles, shantenFunction, baseShanten, baseUkeire);
         hand[handIndex]++;
 
         for (let i = 0; i < hand[handIndex]; i++) {
@@ -131,20 +118,16 @@ export function calculateDiscardUkeireUpgrades(hand, remainingTiles, shantenFunc
  * @param {number} baseShanten The hand's current shanten, if precalculated.
  * @param {number} shantenOffset The hand's current shanten offset, if precalculated.
  */
-export function calculateUkeireUpgrades(hand, remainingTiles, shantenFunction, baseShanten = -2, baseUkeire = -1, shantenOffset = -2) {
+export function calculateUkeireUpgrades(hand, remainingTiles, shantenFunction, baseShanten = -2, baseUkeire = -1) {
     let convertedHand = convertRedFives(hand);
     let convertedTiles = convertRedFives(remainingTiles);
-
-    if(shantenOffset === -2) {
-        shantenOffset = getShantenOffset(convertedHand);
-    }
 
     if (baseShanten === -2) {
         baseShanten = shantenFunction(convertedHand);
     }
 
     if (baseUkeire === -1) {
-        baseUkeire = calculateUkeire(hand, remainingTiles, shantenFunction, baseShanten, shantenOffset).value;
+        baseUkeire = calculateUkeire(hand, remainingTiles, shantenFunction, baseShanten).value;
     }
 
     let value = 0;
@@ -158,16 +141,18 @@ export function calculateUkeireUpgrades(hand, remainingTiles, shantenFunction, b
         convertedHand[addedTile]++;
         remainingTiles[addedTile]--;
 
-        if (shantenFunction(convertedHand) - shantenOffset === baseShanten
-            && calculateUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten, shantenOffset).value > baseUkeire) {
-            let discards = calculateDiscardUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten, shantenOffset);
+        if (shantenFunction(convertedHand, baseShanten - 1) === baseShanten
+            && calculateUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten).value > baseUkeire) {
+            // Find the best tile to cut
+            let discards = calculateDiscardUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten);
             let bestDiscard = evaluateBestDiscard(discards);
 
-            if(addedTile !== bestDiscard) {
+            if (addedTile !== bestDiscard) {
+                // Check the ukeire of the hand after cutting the best tile
                 convertedHand[bestDiscard]--;
-                let newUkeire = calculateUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten, shantenOffset).value;
+                let newUkeire = calculateUkeire(convertedHand, remainingTiles, shantenFunction, baseShanten).value;
 
-                if(newUkeire > baseUkeire) {
+                if (newUkeire > baseUkeire) {
                     value += convertedTiles[addedTile];
                     tiles.push({tile: addedTile, discard: bestDiscard, count: convertedTiles[addedTile], resultingUkeire: newUkeire});
                 }

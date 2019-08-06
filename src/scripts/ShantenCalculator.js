@@ -7,13 +7,14 @@ let completeSets;
 let pair;
 let partialSets;
 let bestShanten;
+let mininumShanten;
 
 /**
  * Calculates the minimum shanten of the hand, considering a standard hand, seven pairs, or thirteen orphans.
  * @param {TileCounts} handToCheck The hand to calculate the shanten of.
  */
-export function calculateMinimumShanten(handToCheck) {
-    let standardShanten = calculateStandardShanten(handToCheck);
+export function calculateMinimumShanten(handToCheck, mininumShanten = -1) {
+    let standardShanten = calculateStandardShanten(handToCheck, mininumShanten);
     let chiitoiShanten = calculateChiitoitsuShanten(handToCheck);
     let kokushiShanten = calculateKokushiShanten(handToCheck);
 
@@ -138,8 +139,9 @@ function calculateKokushiShanten(handToCheck) {
  * Calculates how many tiles away from a complete standard hand the given hand is.
  * @param {TileCounts} handToCheck The hand to calculate the shanten of.
  */
-export function calculateStandardShanten(handToCheck) {
+export function calculateStandardShanten(handToCheck, mininumShanten_ = -1) {
     hand = convertRedFives(handToCheck);
+    mininumShanten = mininumShanten_;
 
     // Initialize variables
     completeSets = 0;
@@ -169,6 +171,7 @@ export function calculateStandardShanten(handToCheck) {
  * @param {TileIndex} i The current tile index to check from.
  */
 function removeCompletedSets(i) {
+    if (bestShanten <= mininumShanten) return;
     // Skip to the next tile that exists in the hand.
     for (; i < hand.length && hand[i] === 0; i++) { }
 
@@ -205,6 +208,7 @@ function removeCompletedSets(i) {
  * @param {TileIndex} i The current tile index to check from.
  */
 function removePotentialSets(i) {
+    if (bestShanten <= mininumShanten) return;
     // Skip to the next tile that exists in the hand
     for (; i < hand.length && hand[i] === 0; i++) { }
 

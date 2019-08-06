@@ -20,7 +20,7 @@ export default class SafetyHistoryData extends HistoryData {
 
         result += t("analyzer.chosenSafety", {
             tile: getTileAsText(t, this.chosenTile, verbose),
-            rating: this.chosenSafety,
+            rating: Math.floor(this.chosenSafety * 10) / 10,
             explanation: t(SAFETY_RATING_EXPLANATIONS[Math.floor(this.chosenSafety)])
         });
 
@@ -29,7 +29,7 @@ export default class SafetyHistoryData extends HistoryData {
         } else {
             result += t("analyzer.bestSafety", {
                 tile: getTileAsText(t, this.bestTile, verbose),
-                rating: this.bestSafety,
+                rating: Math.floor(this.bestSafety * 10) / 10,
                 explanation: t(SAFETY_RATING_EXPLANATIONS[Math.floor(this.bestSafety)])
             });
         }

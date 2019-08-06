@@ -25,7 +25,7 @@ export function getRandomItem(array) {
  * @returns {any} The removed item.
  */
 export function removeRandomItem(array) {
-    return array.splice(randomInt(array.length), 1);
+    return array.splice(randomInt(array.length), 1)[0];
 }
 
 /**
