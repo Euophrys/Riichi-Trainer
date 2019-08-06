@@ -375,8 +375,7 @@ class UkeireQuiz extends React.Component {
 
         if(chosenTile !== this.state.lastDraw) {
             for(let i = 0; i < shuffle.length; i++) {
-                // This needs to be ==... for some reason
-                if(shuffle[i] == chosenTile) {
+                if(shuffle[i] === chosenTile) {
                     shuffle[i] = this.state.lastDraw;
                     break;
                 }
