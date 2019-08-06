@@ -7,16 +7,25 @@ let completeSets;
 let pair;
 let partialSets;
 let bestShanten;
+let mininumShanten;
 
-export function CalculateMinimumShanten(handToCheck) {
-    let standardShanten = CalculateStandardShanten(handToCheck);
-    let chiitoiShanten = CalculateChiitoitsuShanten(handToCheck);
-    let kokushiShanten = CalculateKokushiShanten(handToCheck);
+/**
+ * Calculates the minimum shanten of the hand, considering a standard hand, seven pairs, or thirteen orphans.
+ * @param {TileCounts} handToCheck The hand to calculate the shanten of.
+ */
+export function calculateMinimumShanten(handToCheck, mininumShanten = -1) {
+    let standardShanten = calculateStandardShanten(handToCheck, mininumShanten);
+    let chiitoiShanten = calculateChiitoitsuShanten(handToCheck);
+    let kokushiShanten = calculateKokushiShanten(handToCheck);
 
     return Math.min(standardShanten, chiitoiShanten, kokushiShanten);
 }
 
-export function CalculateKnittedShanten(handToCheck) {
+/**
+ * Calculates how many tiles away from a complete knitted straight hand the current hand is. (WIP...)
+ * @param {TileCounts} handToCheck The hand to calculate the shanten of.
+ */
+export function calculateKnittedShanten(handToCheck) {
     let honorsCount = 0;
 
     for (let i = 31; i < handToCheck.length; i++) {
@@ -34,12 +43,16 @@ export function CalculateKnittedShanten(handToCheck) {
     }
 
     let knittedStraightShanten = 9 - bestKnittedStraight.length;
-    let standardShanten = CalculateStandardShanten(hand);
+    let standardShanten = calculateStandardShanten(hand);
     let combinedShanten = standardShanten - Math.floor(bestKnittedStraight / 3) * 2;
 
     return Math.min(combinedShanten, knittedAndHonorsShanten);
 }
 
+/**
+ * Finds which knitted straight the hand is closest to.
+ * @param {TileCounts} handToCheck The hand to check.
+ */
 function findMostViableKnittedStraight(handToCheck) {
     let possibilites = [
         [1, 4, 7, 12, 15, 18, 23, 26, 29],
@@ -72,8 +85,11 @@ function findMostViableKnittedStraight(handToCheck) {
     return best;
 }
 
-// Seven Pairs
-function CalculateChiitoitsuShanten(handToCheck) {
+/**
+ * Calculates how many tiles away from chiitoitsu/seven pairs the hand is.
+ * @param {TileCounts} handToCheck The hand to calculate the shanten of.
+ */
+function calculateChiitoitsuShanten(handToCheck) {
     hand = convertRedFives(handToCheck);
     let pairCount = 0, uniqueTiles = 0;
 
@@ -96,8 +112,11 @@ function CalculateChiitoitsuShanten(handToCheck) {
     return shanten;
 }
 
-// Thirteen Orphans
-function CalculateKokushiShanten(handToCheck) {
+/**
+ * Calculates how many tiles away from kokushi/thirteen orphans the hand is.
+ * @param {TileCounts} handToCheck The hand to calculate the shanten of. 
+ */
+function calculateKokushiShanten(handToCheck) {
     let uniqueTiles = 0;
     let hasPair = 0;
 
@@ -116,8 +135,13 @@ function CalculateKokushiShanten(handToCheck) {
     return 13 - uniqueTiles - hasPair;
 }
 
-export function CalculateStandardShanten(handToCheck) {
+/**
+ * Calculates how many tiles away from a complete standard hand the given hand is.
+ * @param {TileCounts} handToCheck The hand to calculate the shanten of.
+ */
+export function calculateStandardShanten(handToCheck, mininumShanten_ = -1) {
     hand = convertRedFives(handToCheck);
+    mininumShanten = mininumShanten_;
 
     // Initialize variables
     completeSets = 0;
@@ -130,26 +154,30 @@ export function CalculateStandardShanten(handToCheck) {
         if (hand[i] >= 2) {
             pair++;
             hand[i] -= 2;
-            RemoveCompletedSets(1);
+            removeCompletedSets(1);
             hand[i] += 2;
             pair--;
         }
     }
 
     // Check shanten when there's nothing used as a pair
-    RemoveCompletedSets(1);
+    removeCompletedSets(1);
 
     return bestShanten;
 }
 
-// Removes all possible combinations of complete sets from the hand and checks the shanten of each.
-function RemoveCompletedSets(i) {
+/**
+ * Removes all possible combinations of complete sets from the hand and recursively checks the shanten of each.
+ * @param {TileIndex} i The current tile index to check from.
+ */
+function removeCompletedSets(i) {
+    if (bestShanten <= mininumShanten) return;
     // Skip to the next tile that exists in the hand.
     for (; i < hand.length && hand[i] === 0; i++) { }
 
     if (i >= hand.length) {
         // We've gone through the whole hand, now check for partial sets.
-        RemovePotentialSets(1);
+        removePotentialSets(1);
         return;
     }
 
@@ -157,7 +185,7 @@ function RemoveCompletedSets(i) {
     if (hand[i] >= 3) {
         completeSets++;
         hand[i] -= 3;
-        RemoveCompletedSets(i);
+        removeCompletedSets(i);
         hand[i] += 3;
         completeSets--;
     }
@@ -166,16 +194,21 @@ function RemoveCompletedSets(i) {
     if (i < 30 && hand[i + 1] !== 0 && hand[i + 2] !== 0) {
         completeSets++;
         hand[i]--; hand[i + 1]--; hand[i + 2]--;
-        RemoveCompletedSets(i);
+        removeCompletedSets(i);
         hand[i]++; hand[i + 1]++; hand[i + 2]++;
         completeSets--;
     }
 
     // Check all alternative hand configurations
-    RemoveCompletedSets(i + 1);
+    removeCompletedSets(i + 1);
 }
 
-function RemovePotentialSets(i) {
+/**
+ * Removes all possible combinations of pseudo sets from the hand and recursively checks the shanten of each.
+ * @param {TileIndex} i The current tile index to check from.
+ */
+function removePotentialSets(i) {
+    if (bestShanten <= mininumShanten) return;
     // Skip to the next tile that exists in the hand
     for (; i < hand.length && hand[i] === 0; i++) { }
 
@@ -194,7 +227,7 @@ function RemovePotentialSets(i) {
         if (hand[i] === 2) {
             partialSets++;
             hand[i] -= 2;
-            RemovePotentialSets(i);
+            removePotentialSets(i);
             hand[i] += 2;
             partialSets--;
         }
@@ -203,7 +236,7 @@ function RemovePotentialSets(i) {
         if (i < 30 && hand[i + 1] !== 0) {
             partialSets++;
             hand[i]--; hand[i + 1]--;
-            RemovePotentialSets(i);
+            removePotentialSets(i);
             hand[i]++; hand[i + 1]++;
             partialSets--;
         }
@@ -212,14 +245,14 @@ function RemovePotentialSets(i) {
         if (i < 30 && i % 10 <= 8 && hand[i + 2] !== 0) {
             partialSets++;
             hand[i]--; hand[i + 2]--;
-            RemovePotentialSets(i);
+            removePotentialSets(i);
             hand[i]++; hand[i + 2]++;
             partialSets--;
         }
     }
 
     // Check all alternative hand configurations
-    RemovePotentialSets(i + 1);
+    removePotentialSets(i + 1);
 }
 
-export default CalculateMinimumShanten;
+export default calculateMinimumShanten;

@@ -26,50 +26,57 @@ export const ja = {
             bamboo: "索"
         },
         shuupai: "{{value}}{{suit}}",
-        seats: {
-            East: "東",
-            South: "南",
-            West: "西",
-            North: "北"
+        winds: {
+            east: "東",
+            south: "南",
+            west: "西",
+            north: "北"
         },
+        roundName: "{{wind}}{{number}}局{{repeats}}本場",
         trainer: {
             disclaimer: "Disclaimer: This trainer will train your ability to maximize your hand's efficiency in the current turn. It won't help you maximize efficiency in future turns, or to learn when it's proper to ignore efficiency, or how to build value. Playing the way this trainer suggests in every hand is not the optimal way to play mahjong, but the are hands where you want to play this way. High level players don't always play like this, but all high level players CAN play like this. Make sure to supplement this training with further reading to learn when it might not be the best line of play, and check the settings for more targeted training.",
-            instructions: "Click the tile you want to discard.",
-            start: "Started a new hand: {{hand}}",
-            complete: "Your hand is now ready. Congratulations! Your efficiency was {{achieved}}/{{total}}, or {{percent}}%.",
+            instructions: "打ちたいの牌をクリックしてください。",
+            start: "新し手牌を始まりました： {{hand}}",
+            complete: "手が聴牌になりました。おめでとう！あなたの効率は{{achieved}}/{{total}}か{{percent}}%。",
+            newHandButtonLabel: "新し手牌",
+            loadButtonLabel: "手牌をロード",
+            roundWind: "場風:",
+            seatWind: "自風:",
+            doraIndicator: "ドラ表示:",
+            copyHand: "手牌をコピー",
+            copied: "コピーしました！",
             error: {
                 load: "Error: Couldn't understand provided hand",
                 wallEmpty: "Error: Not enough tiles to make a hand.",
                 wallEmptyShuffle: "There aren't enough tiles left in the wall to make a new hand. Shuffling."
             },
-            newHandButtonLabel: "New Hand",
-            loadButtonLabel: "Load Hand",
-            roundWind: "場風:",
-            seatWind: "自風:",
-            doraIndicator: "ドラ表示:",
-            copyHand: "Copy Hand",
-            copied: "Copied!"
+            playerNames: {
+                you: "私",
+                right: "下家",
+                across: "対面",
+                left: "上家"
+            }
         },
         history: {
             label: "Hand History",
             tenhouLinkText: "[Accepted Tiles]",
             concise: {
-                discard: "Discard: {{tile}}",
+                discard: "　捨て牌: {{tile}}",
                 acceptance: " ({{count}} tile).",
-                loweredShanten: " (lowered shanten).",
-                optimal: " Best:",
+                loweredShanten: " (went back in shanten).",
+                optimal: " 最高捨て牌:",
                 optimalSpoiler: " {{tile}}",
-                best: " That was the best choice!",
+                best: "　それは一番いい選択でした！",
                 exceptionalNoten: " All of your winning tiles are in your hand, so you aren't tenpai yet.",
                 furiten: " フリテン.",
-                furitenWarning: " Be careful of future furiten.",
+                furitenWarning: "フリテンをきを付けてください。",
                 exhausted: " There are no tiles left in the wall. Better luck next time! ",
                 draw: " ツモ: {{tile}}. "
             },
             verbose: {
                 discard: "You chose to discard the {{tile}}, which",
                 acceptance: " results in {{count}} tile that can improve the hand.",
-                loweredShanten: " lowers your shanten - you are now further from ready.",
+                loweredShanten: " increases your shanten - you are now further from ready.",
                 optimal: " The most efficient tile to discard",
                 optimalSpoiler: ", the {{tile}}, ",
                 best: " That was the best choice!",
@@ -81,9 +88,9 @@ export const ja = {
             }
         },
         discards: {
-            label: "Discard Pool",
+            label: "河",
             discardCount: "You've discarded {{count}} tile.",
-            tilesLeft: "There is {{count}} tile left in the wall.",
+            tilesLeft: "山に{{count}}枚残ります。",
         },
         settings: {
             buttonLabel: "設定",
@@ -92,7 +99,7 @@ export const ja = {
             circles: "筒子",
             bamboo: "索子",
             honors: "字牌",
-            sanma: "Three player rules",
+            sanma: "三麻",
             redFives: "Number of Red Fives:",
             verbose: "Verbose tile names (\"one of bamboo\" vs \"1s\")",
             concise: "Concise history",
@@ -102,7 +109,7 @@ export const ja = {
             exceptions: "Consider exception hands (Kokushi/Thirteen Orphans and Chiitoitsu/Seven Pairs)",
             minShanten: "Minimum starting hand shanten:",
             minShantenLimit: "(up to the number of allowed suits)",
-            sort: "Sort hand",
+            sort: "自動理牌",
             blind: "Conceal hand tiles"
         },
         stats: {
@@ -118,8 +125,8 @@ export const ja = {
             overall: "Overall Efficiency: {{percent}}% ({{achieved}}/{{total}})",
             reset: "Reset Stats",
             confirmation: "Are you sure you want to reset all of your stats to zero? You cannot undo this action.",
-            yes: "Yes, reset!",
-            no: "No, don't reset!"
+            yes: "はい、リセットをして下さい！",
+            no: "いいえ、リセットをしてないで下さい！"
         },
         credits: {
             label: "Credits",
@@ -137,7 +144,8 @@ export const ja = {
             allLast: "All Last Trainer",
             explorer: "Explorer",
             utils: "Misc. Utils",
-            language: "言語"
+            language: "言語",
+            defense: "ベタ降り"
         },
         allLast: {
             placements: {
@@ -148,6 +156,7 @@ export const ja = {
             },
             title: "All Last Trainer",
             maxFu: "Maximum Fu",
+            showDifferences: "Show Point Differences",
             loadInstructions: "Enter comma-separated scores for East, South, West, and North, in that order, to load a situation.",
             loadLabel: "Load Situation",
             newLabel: "New Random Situation",
@@ -159,16 +168,18 @@ export const ja = {
             riichiQuestion: "If {{player}} declares riichi, what is the minimum score you can {{action}} to get {{placement}}?",
             ron: "ron {{target}} with ",
             tsumo: "tsumo",
+            han: "飜",
+            fu: "符",
+            submit: "Submit",
             wrong: "Wrong! That score doesn't get you to {{placement}}! Highlight for the answer: ",
             tooMuch: "That score gets you to {{placement}}, but it's not the lowest possible. Highlight for the answer: ",
             correct: "Correct! That's the lowest score that gets you to {{placement}}!",
-            score: "{{han}} han {{fu}} fu",
+            score: "{{fu}}符{{han}}飜",
             results: "Results:",
             you: "YOU",
             error: {
                 few: "Error: Not enough scores provided.",
-                NaN: "Error: Could not understand the score for {{seat}}.",
-                dealerLast: "Error: Dealer is in last place. This is not supported yet."
+                NaN: "Error: Could not understand the score for {{seat}}."
             }
         },
         analyzer: {
@@ -208,34 +219,54 @@ export const ja = {
             win: "Player {{number}} won the round.",
             kandora: "The new dora indicator is the {{tile}}.",
             draw: "You drew the {{tile}}. ({{hand}})",
-            chosenSafety: "The {{tile}}'s safety rating is {{rating}}. ({{explanation}}) ",
+            chosenSafety: "The {{tile}}'s safety rating is {{rating}}. ({{- explanation}}) ",
             correctSafety: "That was the safest tile.",
-            bestSafety: "Safest tile: {{tile}}, with a safety rating of {{rating}}. ({{explanation}})",
+            bestSafety: "Safest tile: {{tile}}, with a safety rating of {{rating}}. ({{- explanation}})",
             safetyExplanations: {
                 zero: "You shouldn't see this message. Tell me if you do.",
-                one: "non-suji 4/5/6",
-                two: "non-suji 3/7",
-                three: "non-suji 2/8",
+                one: "無スジ4/5/6",
+                two: "無スジ3/7",
+                three: "無スジ2/8",
                 four: "one-chance",
-                five: "non-suji 1/9",
-                six: "first honor tile",
-                seven: "suji 3/7",
-                eight: "suji 2/8",
-                nine: "suji 4/5/6",
-                ten: "second honor tile",
-                eleven: "first suji terminal",
-                twelve: "second suji terminal",
-                thirteen: "third suji terminal / third honor",
-                fourteen: "fourth suji terminal / fourth honor",
-                fifteen: "genbutsu, 100% safe"
+                five: "無スジ1/9",
+                six: "first 字牌",
+                seven: "筋3/7",
+                eight: "筋2/8",
+                nine: "筋4/5/6",
+                ten: "second 字牌",
+                eleven: "first suji 老頭牌",
+                twelve: "second suji 老頭牌",
+                thirteen: "third suji 老頭牌 / third 字牌",
+                fourteen: "fourth suji 老頭牌 / fourth 字牌",
+                fifteen: "現物"
             }
         },
         explorer: {
             warning: "Warning: Loading a hand may cause the page to hang for 5-10 seconds, or more if you have an older computer, depending on the complexity of the hand. Loading a hand will show all of the ukeire and upgrade possibilities for each discard, even ones that go back in shanten. By default, options that are strictly worse than another option won't be displayed, but you can press the button below to change that. If you only need ukeire information, tenhou.net/2/ will suffice.",
-            shanten: "Shanten: The number of tiles away from ready your hand is.",
+            shanten: "向聴：　聴牌までの近さを数える単位。",
             ukeire: "Ukeire: The number of tiles that reduce your shanten.",
             notableDiscards: "Show Only Notable Discards",
             allDiscards: "Show All Possible Discards",
+            discardInfo: {
+                discard: "Discarding the {{tile}}:",
+                shanten: "{{count}}向聴",
+                ukeire: "Ukeire: {{count}} ({{tiles}})",
+                expand: "Show Next Shanten's Ukeire",
+                draw: "Draw {{draw}}, discard {{discard}}: {{count}} ukeire",
+                average: "Average: {{average}}",
+                upgrades: "Tiles that increase ukeire: {{count}} ({{tiles}})",
+                expandUpgrades: "Show Upgrade Results"
+            }
+        },
+        defense: {
+            instructions: "Discard the safest tile.",
+            finalHands: "Final Hands:",
+            hand: "{{player}}: {{hand}}",
+            safetyRatings: "Safety Ratings",
+            averagedSafetyRating: "Against multiple riichis, the safety ratings will be averaged together, and the highest chosen as best.",
+            safetyRating: "{{rating}}: {{- explanation}}",
+            riichiCount: "Number of riichis: ",
+            minTurns: "Minimum turns before a riichi is declared: "
         },
         utils: {
             convertHeader: "Hand Conversion",

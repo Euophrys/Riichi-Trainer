@@ -1,11 +1,13 @@
 import React from 'react';
-import { Container, Row, Input, InputGroup, InputGroupAddon, Col, ListGroup, ListGroupItem, Button, ListGroupItemHeading } from 'reactstrap';
+import { Container, Row, Input, InputGroup, InputGroupAddon, Col, ListGroup, ListGroupItem, Button, ListGroupItemHeading, Label } from 'reactstrap';
 import { getPoints } from '../scripts/ScoreCalculation';
 import Player from '../models/Player';
 import { randomInt, validateFu, shuffleArray } from '../scripts/Utils';
-import { SEAT_NAMES, NON_DEALER_RON_SCORES, NON_DEALER_TSUMO_SCORES, PLACEMENTS } from '../Constants';
+import { SEAT_NAMES, RON_SCORES, TSUMO_SCORES } from '../Constants';
 import GyakutenQuestion from '../components/south-four-quiz/GyakutenQuestion';
+import SouthFourResultMessage from "../models/SouthFourResultMessage";
 import { withTranslation } from 'react-i18next';
+import LocalizedMessage from '../models/LocalizedMessage';
 
 class SouthFourQuiz extends React.Component {
     constructor(props) {
@@ -15,6 +17,7 @@ class SouthFourQuiz extends React.Component {
             players: [],
             messages: [],
             maxFu: 50,
+            showDifferences: true,
             loadErrorMessage: ""
         }
 
@@ -43,10 +46,9 @@ class SouthFourQuiz extends React.Component {
     onLoadSituation() {
         let string = document.getElementById("loadScoresString").value;
         let scores = string.split(',');
-        let { t } = this.props;
 
         if(scores.length < 4) {
-            this.setState({loadErrorMessage: t("allLast.error.few")});
+            this.setState({loadErrorMessage: new LocalizedMessage("allLast.error.few")});
             return;
         }
         
@@ -56,7 +58,7 @@ class SouthFourQuiz extends React.Component {
             let converted = parseInt(scores[i]);
 
             if(isNaN(converted)) {
-                this.setState({loadErrorMessage: t("allLast.error.NaN", {seat: t(`seats.${SEAT_NAMES[i]}`)})});
+                this.setState({loadErrorMessage: new LocalizedMessage("allLast.error.NaN", {seat: `$t(${SEAT_NAMES[i]})`})});
                 return;
             }
 
@@ -65,11 +67,6 @@ class SouthFourQuiz extends React.Component {
         }
 
         players.sort((a, b) => a.points - b.points);
-        
-        if(players[0].seat === 0) {
-            this.setState({loadErrorMessage: t("allLast.error.dealerLast")});
-            return;
-        }
 
         this.setState({
             players: players,
@@ -99,9 +96,8 @@ class SouthFourQuiz extends React.Component {
             players.sort((a, b) => a.points - b.points);
         } while (players[1].points - players[0].points < 1500 || players[1].points - players[0].points > 16000);
 
-        // Give the lowest score a random non-dealer wind, then give the rest of the winds to the others
-        let seats = shuffleArray([1, 2, 3]);
-        seats.splice(randomInt(4,1), 0, 0);
+        // Assign random seats
+        let seats = shuffleArray([0, 1, 2, 3]);
 
         for( let i = 0; i < players.length; i++)
         {
@@ -123,50 +119,52 @@ class SouthFourQuiz extends React.Component {
             scores[0] += riichis[i] * 1000;
         }
 
-        let { t } = this.props;
-
         let required;
-        let feedback = t("allLast.wrong", {placement: t(`allLast.placements.${PLACEMENTS[placementTarget]}`)});
-        let canBeEqual = (players[0].seat + 1) % 4 < (players[placementTarget].seat + 1) % 4;
+        let message = new SouthFourResultMessage();
+        message.feedback = "allLast.wrong";
+        // South (1 -> 0) > West (2 -> 1) > North (3 -> 2) > East (0 -> 3)
+        let canBeEqual = (players[0].seat + 3) % 4 < (players[placementTarget].seat + 3) % 4;
+        let dealer = players[0].seat === 0;
         
         if(tsumo) {
             required = findMinimumTsumoValue(players, scores, placementTarget, this.state.maxFu, canBeEqual);
-            let points = getPoints(han, fu);
+
+            let points = getPoints(han, fu, dealer);
             scores[0] += points[0] * 2 + points[1];
             scores[1] -= players[1].seat > 0 ? points[0] : points[1];
             scores[2] -= players[2].seat > 0 ? points[0] : points[1];
             scores[3] -= players[3].seat > 0 ? points[0] : points[1];
             
-            if(points[0] === required.nondealer && points[1] === required.dealer) {
-                feedback = t("allLast.correct", {placement: t(`allLast.placements.${PLACEMENTS[placementTarget]}`)});;
-            } else if(points[0] > required.nondealer || points[1] > required.dealer) {
-                feedback = t("allLast.tooMuch", {placement: t(`allLast.placements.${PLACEMENTS[placementTarget]}`)});;
+            if((!dealer && points[0] === required.nondealer && points[1] === required.dealer)
+                || (dealer && points[0] === required.dealer)) {
+                message.feedback = "allLast.correct";
+            } else if((!dealer && (points[0] > required.nondealer || points[1] > required.dealer))
+                || (dealer && points[0] > required.dealer)) {
+                message.feedback = "allLast.tooMuch";
             }
         } else {
-            required = findMinimumRonValue(scores, ronTarget, placementTarget, this.state.maxFu, canBeEqual);
+            required = findMinimumRonValue(players, scores, ronTarget, placementTarget, this.state.maxFu, canBeEqual);
 
-            let points = getPoints(han, fu, false, false);
+            let points = getPoints(han, fu, dealer, false);
             scores[0] += points;
             scores[ronTarget] -= points;
 
-            if(points === required.value) {
-                feedback = t("allLast.correct", {placement: t(`allLast.placements.${PLACEMENTS[placementTarget]}`)});
-            } else if(points > required.value) {
-                feedback = t("allLast.tooMuch", {placement: t(`allLast.placements.${PLACEMENTS[placementTarget]}`)});
+            if((!dealer && points === required.nondealer)
+                || (dealer && points === required.dealer)) {
+                message.feedback = "allLast.correct";
+            } else if((!dealer && points > required.nondealer)
+                || (dealer && points > required.dealer)) {
+                message.feedback = "allLast.tooMuch";
             }
         }
         
+        message.placement = placementTarget;
+        message.playerSeats = players.map((player) => player.seat);
+        message.scores = scores;
+        message.requiredScore = required;
+
         let messages = this.state.messages.slice();
-        messages[index] = (
-            <Container>
-                <Row>{feedback}&nbsp;<span>{t("allLast.score", {han: required.han, fu: required.fu})}</span></Row>
-                <Row>{t("allLast.results")}</Row>
-                <Row>{t(`seats.${SEAT_NAMES[players[0].seat]}`) + ": " + scores[0]} ({t("allLast.you")})</Row>
-                <Row>{t(`seats.${SEAT_NAMES[players[1].seat]}`) + ": " + scores[1]} ({scores[1] - scores[0]})</Row>
-                <Row>{t(`seats.${SEAT_NAMES[players[2].seat]}`) + ": " + scores[2]} ({scores[2] - scores[0]})</Row>
-                <Row>{t(`seats.${SEAT_NAMES[players[3].seat]}`) + ": " + scores[3]} ({scores[3] - scores[0]})</Row>
-            </Container>
-        );
+        messages[index] = message;
 
         this.setState({messages: messages});
     }
@@ -193,30 +191,48 @@ class SouthFourQuiz extends React.Component {
         }
     }
 
+    onToggleDifferences() {
+        this.setState({
+            showDifferences: !this.state.showDifferences
+        });
+    }
+
     render() {
         if(this.state.players.length === 0) {
             return (
                 <div>One moment...</div>
             );
         }
-
-        let scores = this.state.players.map((player, index) => {
-            return <Row key={index}>{SEAT_NAMES[player.seat] + ": " + player.points} ({index === 0 ? "YOU" : "+" + (player.points - this.state.players[0].points)})</Row>
-        });
-
+        
         let { t } = this.props;
+        let scores = this.state.players.map((player, index) => {
+            if(this.state.showDifferences) {
+                return <Row key={index}>{t(SEAT_NAMES[player.seat]) + ": " + player.points} ({index === 0 ? "YOU" : "+" + (player.points - this.state.players[0].points)})</Row>;
+            } else {
+                return <Row key={index}>{t(SEAT_NAMES[player.seat]) + ": " + player.points}</Row>;
+            }
+        });
 
         return (
             <Container>
                 <ListGroup>
                 <ListGroupItemHeading><span>{t("allLast.title")}</span></ListGroupItemHeading>
                 <ListGroupItem>
-                    <Col xs="12" sm="8" md="6">
-                    <InputGroup>
-                        <InputGroupAddon addonType="prepend">{t("allLast.maxFu")}</InputGroupAddon>
-                        <Input type="number" value={this.state.maxFu} placeholder="Fu" step="5" min="20" max="130" onBlur={this.onFuChanged} onChange={this.onNumberChanged} />
-                    </InputGroup>
-                    </Col>
+                    <Row>
+                        <Col xs="12" sm="8" md="6">
+                            <InputGroup>
+                                <InputGroupAddon addonType="prepend">{t("allLast.maxFu")}</InputGroupAddon>
+                                <Input type="number" value={this.state.maxFu} placeholder={t("allLast.fu")} step="5" min="20" max="130" onBlur={this.onFuChanged} onChange={this.onNumberChanged} />
+                            </InputGroup>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col className="form-check form-check-inline">
+                            <Input className="form-check-input" type="checkbox" id="toggleDifference"
+                                checked={this.state.showDifferences} onChange={() => this.onToggleDifferences()} />
+                            <Label className="form-check-label" for="toggleDifference">{t("allLast.showDifferences")}</Label>
+                        </Col>
+                    </Row>
                 </ListGroupItem>
                 <ListGroupItem>
                     <Row>{t("allLast.loadInstructions")}</Row>
@@ -226,7 +242,7 @@ class SouthFourQuiz extends React.Component {
                             <Button color="warning" onClick={() => this.onLoadSituation()}>{t("allLast.loadLabel")}</Button>
                         </InputGroupAddon>
                     </InputGroup>
-                    <Row>{this.state.loadErrorMessage}</Row>
+                    <Row>{this.state.loadErrorMessage ? this.state.loadErrorMessage.generateString(t) : ""}</Row>
                 </ListGroupItem>
                 <ListGroupItem>
                     <Button onClick={() => this.generateNewQuiz()}>{t("allLast.newLabel")}</Button>
@@ -236,31 +252,31 @@ class SouthFourQuiz extends React.Component {
                     <Row>{t("allLast.info")}</Row>
                     {scores}
                 </ListGroupItem>
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={true}  ronTarget={0} placementTarget={1} index={0} riichis={[0, 0, 0, 0]} messages={this.state.messages}/>
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={1} placementTarget={1} index={1} riichis={[0, 0, 0, 0]} messages={this.state.messages}/>
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={2} placementTarget={1} index={2} riichis={[0, 0, 0, 0]} messages={this.state.messages}/>
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={3} placementTarget={1} index={3} riichis={[0, 0, 0, 0]} messages={this.state.messages}/>
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={true}  ronTarget={0} placementTarget={1} index={0} riichis={[0, 0, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={1} placementTarget={1} index={1} riichis={[0, 0, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={2} placementTarget={1} index={2} riichis={[0, 0, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={3} placementTarget={1} index={3} riichis={[0, 0, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
                 <ListGroupItemHeading><span>{t("allLast.riichiHeader")}</span></ListGroupItemHeading>
                 <ListGroupItem>
-                <Row>{t("allLast.info")}</Row>
+                    <Row>{t("allLast.info")}</Row>
                     {scores}
                 </ListGroupItem>
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={true}  ronTarget={0} placementTarget={1} index={4} riichis={[0, 0, 0, 1]} messages={this.state.messages}/>
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={1} placementTarget={1} index={5} riichis={[0, 0, 0, 1]} messages={this.state.messages}/>
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={3} placementTarget={1} index={6} riichis={[0, 0, 0, 1]} messages={this.state.messages}/>
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={true}  ronTarget={0} placementTarget={1} index={7} riichis={[0, 1, 0, 0]} messages={this.state.messages}/>
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={1} placementTarget={1} index={8} riichis={[0, 1, 0, 0]} messages={this.state.messages}/>
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={3} placementTarget={1} index={9} riichis={[0, 1, 0, 0]} messages={this.state.messages}/>
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={true}  ronTarget={0} placementTarget={1} index={4} riichis={[0, 0, 0, 1]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={1} placementTarget={1} index={5} riichis={[0, 0, 0, 1]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={3} placementTarget={1} index={6} riichis={[0, 0, 0, 1]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={true}  ronTarget={0} placementTarget={1} index={7} riichis={[0, 1, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={1} placementTarget={1} index={8} riichis={[0, 1, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={3} placementTarget={1} index={9} riichis={[0, 1, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
                 <ListGroupItemHeading><span>{t("allLast.higherHeader")}</span></ListGroupItemHeading>
                 <ListGroupItem>
-                <Row>{t("allLast.info")}</Row>
+                    <Row>{t("allLast.info")}</Row>
                     {scores}
                 </ListGroupItem>
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={true}  ronTarget={0} placementTarget={2} index={10} riichis={[0, 0, 0, 0]} messages={this.state.messages}/>
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={1} placementTarget={2} index={11} riichis={[0, 0, 0, 0]} messages={this.state.messages}/>
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={2} placementTarget={2} index={12} riichis={[0, 0, 0, 0]} messages={this.state.messages}/>
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={true}  ronTarget={0} placementTarget={3} index={13} riichis={[0, 0, 0, 0]} messages={this.state.messages}/>
-                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={3} placementTarget={3} index={14} riichis={[0, 0, 0, 0]} messages={this.state.messages}/>
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={true}  ronTarget={0} placementTarget={2} index={10} riichis={[0, 0, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={1} placementTarget={2} index={11} riichis={[0, 0, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={2} placementTarget={2} index={12} riichis={[0, 0, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={true}  ronTarget={0} placementTarget={3} index={13} riichis={[0, 0, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
+                <GyakutenQuestion onScoreSubmit={this.onSubmit} tsumo={false} ronTarget={3} placementTarget={3} index={14} riichis={[0, 0, 0, 0]} messages={this.state.messages} showDifferences={this.state.showDifferences} maxFu={this.state.maxFu} />
                 </ListGroup>
             </Container>
         );
@@ -268,55 +284,63 @@ class SouthFourQuiz extends React.Component {
 }
 
 function findMinimumTsumoValue(players, scores, placementTarget, maxFu, canBeEqual) {
-    for(let i = 0; i < NON_DEALER_TSUMO_SCORES.length; i++) {
-        if(NON_DEALER_TSUMO_SCORES[i].fu > maxFu) continue;
+    for(let i = 0; i < TSUMO_SCORES.length; i++) {
+        if(TSUMO_SCORES[i].fu > maxFu) continue;
 
         let newScores = scores.slice();
 
-        newScores[0] += NON_DEALER_TSUMO_SCORES[i].nondealer * 2 + NON_DEALER_TSUMO_SCORES[i].dealer;
-        newScores[1] -= players[1].seat === 0 ? NON_DEALER_TSUMO_SCORES[i].dealer : NON_DEALER_TSUMO_SCORES[i].nondealer;
-        newScores[2] -= players[2].seat === 0 ? NON_DEALER_TSUMO_SCORES[i].dealer : NON_DEALER_TSUMO_SCORES[i].nondealer;
-        newScores[3] -= players[3].seat === 0 ? NON_DEALER_TSUMO_SCORES[i].dealer : NON_DEALER_TSUMO_SCORES[i].nondealer;
+        if(players[0].seat === 0) {
+            newScores[0] += TSUMO_SCORES[i].dealer * 3;
+            newScores[1] -= TSUMO_SCORES[i].dealer;
+            newScores[2] -= TSUMO_SCORES[i].dealer;
+            newScores[3] -= TSUMO_SCORES[i].dealer;
+        } else {
+            newScores[0] += TSUMO_SCORES[i].nondealer * 2 + TSUMO_SCORES[i].dealer;
+            newScores[1] -= players[1].seat === 0 ? TSUMO_SCORES[i].dealer : TSUMO_SCORES[i].nondealer;
+            newScores[2] -= players[2].seat === 0 ? TSUMO_SCORES[i].dealer : TSUMO_SCORES[i].nondealer;
+            newScores[3] -= players[3].seat === 0 ? TSUMO_SCORES[i].dealer : TSUMO_SCORES[i].nondealer;
+        }
 
         let sortedScores = newScores.slice().sort((a, b) => a - b);
 
         if(canBeEqual) {
             if(sortedScores.lastIndexOf(newScores[0]) >= placementTarget) {
-                return NON_DEALER_TSUMO_SCORES[i];
+                return TSUMO_SCORES[i];
             }
         } else {
             if(sortedScores.indexOf(newScores[0]) >= placementTarget) {
-                return NON_DEALER_TSUMO_SCORES[i];
+                return TSUMO_SCORES[i];
             }
         }
     }
 
-    return NON_DEALER_TSUMO_SCORES[0];
+    return TSUMO_SCORES[0];
 }
 
-function findMinimumRonValue(scores, ronTarget, placementTarget, maxFu, canBeEqual) {
-    for(let i = 0; i < NON_DEALER_RON_SCORES.length; i++) {
-        if(NON_DEALER_RON_SCORES[i].fu > maxFu) continue;
+function findMinimumRonValue(players, scores, ronTarget, placementTarget, maxFu, canBeEqual) {
+    for(let i = 0; i < RON_SCORES.length; i++) {
+        if(RON_SCORES[i].fu > maxFu) continue;
 
         let newScores = scores.slice();
 
-        newScores[0] += NON_DEALER_RON_SCORES[i].value;
-        newScores[ronTarget] -= NON_DEALER_RON_SCORES[i].value;
+        let points = players[0].seat === 0 ? RON_SCORES[i].dealer : RON_SCORES[i].nondealer;
+        newScores[0] += points;
+        newScores[ronTarget] -= points;
 
         let sortedScores = newScores.slice().sort((a, b) => a - b);
 
         if(canBeEqual) {
             if(sortedScores.lastIndexOf(newScores[0]) >= placementTarget) {
-                return NON_DEALER_RON_SCORES[i];
+                return RON_SCORES[i];
             }
         } else {
             if(sortedScores.indexOf(newScores[0]) >= placementTarget) {
-                return NON_DEALER_RON_SCORES[i];
+                return RON_SCORES[i];
             }
         }
     }
 
-    return NON_DEALER_RON_SCORES[0];
+    return RON_SCORES[0];
 }
 
 export default withTranslation()(SouthFourQuiz);

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Container, Button, Input, InputGroup, InputGroupAddon, ListGroupItem, ListGroup } from 'reactstrap';
 import { convertHandToAsciiSymbols, convertHandToDiscordEmoji } from '../../scripts/HandConversions';
+import { withTranslation } from 'react-i18next';
+import { characterToSuit } from '../../scripts/Utils';
 
 class ConvertHand extends React.Component {
     constructor(props) {
@@ -21,7 +23,7 @@ class ConvertHand extends React.Component {
 
         while (index < characters.length && tiles < 14) {
             do {
-                offset = this.getOffset(characters[index]);
+                offset = characterToSuit(characters[index]);
                 index++;
             } while (offset === -1 && index < characters.length);
 
@@ -54,42 +56,23 @@ class ConvertHand extends React.Component {
         });
     }
 
-    getOffset(character) {
-        if (character === "m" || character === "w" || character === "c") {
-            return 0;
-        }
-
-        if (character === "p" || character === "d") {
-            return 10;
-        }
-
-        if (character === "s" || character === "b") {
-            return 20;
-        }
-
-        if (character === "z" || character === "h") {
-            return 30;
-        }
-
-        return -1;
-    }
-
     render() {
+        let { t } = this.props;
         return (
             <Container>
                 <InputGroup>
                     <Input id="convertHandString" placeholder="123m456p789s12345z" />
                     <InputGroupAddon addonType="append">
-                        <Button color="primary" onClick={() => this.onClick()}>Convert Hand</Button>
+                        <Button color="primary" onClick={() => this.onClick()}>{t("utils.convertButtonLabel")}</Button>
                     </InputGroupAddon>
                 </InputGroup>
                 <ListGroup>
-                    <ListGroupItem>ASCII: {convertHandToAsciiSymbols(this.state.hand)}</ListGroupItem>
-                    <ListGroupItem>Emoji: {convertHandToDiscordEmoji(this.state.hand)}</ListGroupItem>
+                    <ListGroupItem>{t("utils.ascii")} {convertHandToAsciiSymbols(this.state.hand)}</ListGroupItem>
+                    <ListGroupItem>{t("utils.emoji")} {convertHandToDiscordEmoji(this.state.hand)}</ListGroupItem>
                 </ListGroup>
             </Container>
         )
     }
 }
 
-export default ConvertHand;
+export default withTranslation()(ConvertHand);

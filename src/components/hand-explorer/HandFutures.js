@@ -1,8 +1,8 @@
 import React from 'react';
 import { Row, ListGroup, ListGroupItem } from 'reactstrap';
 import ResultingHandInfo from './ResultingHandInfo';
-import { CalculateUkeire, CalculateUkeireUpgrades, CalculateDiscardUkeire } from '../../scripts/UkeireCalculator';
-import { CalculateStandardShanten } from '../../scripts/ShantenCalculator';
+import { calculateUkeire, calculateUkeireUpgrades, calculateDiscardUkeire } from '../../scripts/UkeireCalculator';
+import { calculateStandardShanten } from '../../scripts/ShantenCalculator';
 import { ALL_TILES_REMAINING } from '../../Constants';
 
 function HandFutures(props) {
@@ -22,7 +22,7 @@ function HandFutures(props) {
         }
     }
 
-    let baseUkeire = Math.max(...CalculateDiscardUkeire(hand, remainingTiles, CalculateStandardShanten).map(u => u.value));
+    let baseUkeire = Math.max(...calculateDiscardUkeire(hand, remainingTiles, calculateStandardShanten).map(u => u.value));
 
     let infoObjects = tiles.map((tile) => {
         let newHand = hand.slice();
@@ -31,9 +31,9 @@ function HandFutures(props) {
         return {
             hand: newHand,
             discard: tile,
-            shanten: CalculateStandardShanten(newHand),
-            ukeire: CalculateUkeire(newHand, remainingTiles, CalculateStandardShanten),
-            upgrades: CalculateUkeireUpgrades(newHand, remainingTiles, CalculateStandardShanten, -2, baseUkeire)
+            shanten: calculateStandardShanten(newHand),
+            ukeire: calculateUkeire(newHand, remainingTiles, calculateStandardShanten),
+            upgrades: calculateUkeireUpgrades(newHand, remainingTiles, calculateStandardShanten, -2, baseUkeire)
         }
     });
 

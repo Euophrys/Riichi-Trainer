@@ -18,23 +18,26 @@ class DiscardPool extends React.Component {
     render() {
         let players = this.props.players;
         let pools = [];
+        let { t } = this.props;
 
         for(let i = 0; i < players.length; i++) {
             if (players[i].discards.length < 1) continue;
             
             pools.push(
                 <ListGroupItem key={i}>
-                    <Row><u>{players[i].name} ({SEAT_NAMES[players[i].seat]})</u></Row>
+                    <Row><u>{t(players[i].name)} ({t(SEAT_NAMES[players[i].seat])})</u></Row>
                     <Row className="no-gutters px-sm-0 px-md-4 px-lg-5 px-xl-0 mx-lg-4">
                         {players[i].discards.map((tile, index) => {
-                            return <Col xs="1" sm="2" md="2" xl="1" key={players[i].name + index}><Tile className="discardTile" tile={tile}/></Col>
+                            return (
+                                <Col xs="1" sm="2" md="2" xl="1" key={players[i].name + index} style={index === players[i].riichiIndex ? {backgroundColor: "red"} : {}}>
+                                    <Tile className="discardTile" tile={tile}/>
+                                </Col>
+                            );
                         })}
                     </Row>
                 </ListGroupItem>
             )
         }
-
-        let { t } = this.props;
 
         return (
             <Col xs="12" sm={this.state.collapsed ? "12" : ""}>
