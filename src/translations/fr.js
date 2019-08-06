@@ -269,14 +269,14 @@ export const fr = {
             }
         },
         defense: {
-            instructions: "Discard the safest tile.",
-            finalHands: "Final Hands:",
+            instructions: "Défausser la tuile la plus sûre.",
+            finalHands: "Dernières mains:",
             hand: "{{player}}: {{hand}}",
             safetyRatings: "Le taux de sûreté",
-            averagedSafetyRating: "Against multiple riichis, the safety ratings will be averaged together, and the highest chosen as best.",
+            averagedSafetyRating: "Contre plusieurs riichis, les taux de sûreté seront moyennées, la plus haute étant choisie comme meilleure.",
             safetyRating: "{{rating}}: {{- explanation}}",
-            riichiCount: "Number of riichis: ",
-            minTurns: "Minimum turns before a riichi is declared: "
+            riichiCount: "Nombre de riichis: ",
+            minTurns: "Tours minimums avant qu'un riichi soit déclaré: "
         },
         utils: {
             convertHeader: "Conversion de main",
