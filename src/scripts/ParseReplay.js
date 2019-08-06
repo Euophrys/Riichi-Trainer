@@ -156,6 +156,7 @@ export function parseRound(t, roundText, player) {
                     if(newShanten >= baseShanten) {
                         currentTurn.message.appendLocalizedMessage("analyzer.callSameShanten");
                     }
+                    currentTurn.message.appendLineBreak();
                 }
 
                 continue;
