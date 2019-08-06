@@ -9,7 +9,7 @@ export const ja = {
             six: "六",
             seven: "七",
             eight: "八",
-            nine: "八",
+            nine: "九",
             redFive: "赤五",
             east: "東",
             south: "南",
