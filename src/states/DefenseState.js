@@ -187,11 +187,14 @@ class DefenseState extends React.Component {
             this.tileDiscardedAfterRiichi(discard, players);
         }
 
-        // Remove tiles from the player's hand without adding them to the discards
-        let tiles = convertHandToTileIndexArray(players[0].hand);
-        while(tiles.length > this.state.settings.tilesInHand + 1) {
-            let tile = removeRandomItem(tiles);
-            players[0].hand[tile]--;
+        // Remove safe tiles from the player's hand without adding them to the discards
+        let tileCount = convertHandToTileIndexArray(players[0].hand).length;
+        while(tileCount > this.state.settings.tilesInHand + 1) {
+            let averageSafety = this.getAverageSafety(players[0], players);
+            let bestSafety = Math.max(...averageSafety);
+            let bestChoice = averageSafety.indexOf(bestSafety);
+            players[0].hand[bestChoice]--;
+            tileCount--;
         }
 
         // Dead wall
