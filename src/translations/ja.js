@@ -266,7 +266,8 @@ export const ja = {
             averagedSafetyRating: "Against multiple riichis, the safety ratings will be averaged together, and the highest chosen as best.",
             safetyRating: "{{rating}}: {{- explanation}}",
             riichiCount: "Number of riichis: ",
-            minTurns: "Minimum turns before a riichi is declared: "
+            minTurns: "Minimum turns before a riichi is declared: ",
+            tilesInHand: "Number of tiles in hand: "
         },
         utils: {
             convertHeader: "Hand Conversion",
