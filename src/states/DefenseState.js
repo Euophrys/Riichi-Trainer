@@ -37,6 +37,7 @@ class DefenseState extends React.Component {
                 verbose: true,
                 numberOfRiichis: 1,
                 minimumTurnsBeforeRiichi: 4,
+                tilesInHand: 13,
             }
         }
     }
@@ -184,6 +185,13 @@ class DefenseState extends React.Component {
             }
 
             this.tileDiscardedAfterRiichi(discard, players);
+        }
+
+        // Remove tiles from the player's hand without adding them to the discards
+        let tiles = convertHandToTileIndexArray(players[0].hand);
+        while(tiles.length > this.state.settings.tilesInHand + 1) {
+            let tile = removeRandomItem(tiles);
+            players[0].hand[tile]--;
         }
 
         // Dead wall
@@ -450,10 +458,8 @@ class DefenseState extends React.Component {
     render() {
         let { t } = this.props;
 
-        if (!this.state.players.length) return <Container/>;
-
         let safetyRatings = SAFETY_RATING_EXPLANATIONS.map((explanation, index) => {
-            if (index === 0) return <Row></Row>;
+            if (index === 0) return <Row key={index}></Row>;
             return <Row key={index}>{t("defense.safetyRating", {rating:index, explanation: t(explanation)})}</Row>
         }).reverse();
 
@@ -469,21 +475,25 @@ class DefenseState extends React.Component {
                         </CardBody></Card>
                     </Collapse>
                 </Container>
-                <Row className="mb-2 mt-2">
-                    <span>{t("defense.instructions")}</span>
-                </Row>
-                    <Hand tiles={this.state.players[0].hand}
-                        lastDraw={this.state.lastDraw}
-                        onTileClick={this.onTileClicked} />
-                <Row className="mt-2">
-                    <Col xs="6" sm="3" md="3" lg="2">
-                        <Button className="btn-block" color={this.state.isComplete ? "success" : "warning"} onClick={() => this.onNewHand()}>{t("trainer.newHandButtonLabel")}</Button>
-                    </Col>
-                </Row>
-                <Row className="mt-2 no-gutters">
-                    <History history={this.state.history} concise={true} verbose={this.state.settings.verbose} spoilers={this.state.settings.spoilers}/>
-                    <DiscardPool players={this.state.players} discardCount={this.state.discardCount} wallCount={this.state.tilePool && this.state.tilePool.length} />
-                </Row>
+                { this.state.players.length &&
+                    <React.Fragment>
+                        <Row className="mb-2 mt-2">
+                            <span>{t("defense.instructions")}</span>
+                        </Row>
+                            <Hand tiles={this.state.players[0].hand}
+                                lastDraw={this.state.lastDraw}
+                                onTileClick={this.onTileClicked} />
+                        <Row className="mt-2">
+                            <Col xs="6" sm="3" md="3" lg="2">
+                                <Button className="btn-block" color={this.state.isComplete ? "success" : "warning"} onClick={() => this.onNewHand()}>{t("trainer.newHandButtonLabel")}</Button>
+                            </Col>
+                        </Row>
+                        <Row className="mt-2 no-gutters">
+                            <History history={this.state.history} concise={true} verbose={this.state.settings.verbose} spoilers={this.state.settings.spoilers}/>
+                            <DiscardPool players={this.state.players} discardCount={this.state.discardCount} wallCount={this.state.tilePool && this.state.tilePool.length} />
+                        </Row>
+                    </React.Fragment>
+                }
             </Container>
         );
     }

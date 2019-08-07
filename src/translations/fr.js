@@ -276,7 +276,8 @@ export const fr = {
             averagedSafetyRating: "Contre plusieurs riichis, les taux de sûreté seront moyennées, la plus haute étant choisie comme meilleure.",
             safetyRating: "{{rating}}: {{- explanation}}",
             riichiCount: "Nombre de riichis: ",
-            minTurns: "Tours minimums avant qu'un riichi soit déclaré: "
+            minTurns: "Tours minimums avant qu'un riichi soit déclaré: ",
+            tilesInHand: "Nombre de tuiles en main: "
         },
         utils: {
             convertHeader: "Conversion de main",

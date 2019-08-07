@@ -25,17 +25,17 @@ class HistoryMessage extends React.Component {
         if(!this.props.data) return <ListGroupItem></ListGroupItem>;
 
         let message = this.props.data.getMessage(t, this.props.concise, this.props.verbose, this.props.spoilers);
-        let messageRows = message.split("<br/>").map((message) => <Row>{message}</Row>)
+        let messageRows = message.split("<br/>").map((message, index) => <Row key={index}>{message}</Row>)
 
         return (
-            <ListGroupItem className={this.props.data.getClassName()}>
-                <Collapse isOpen={!this.state.collapsed}>
-                    {messageRows}
-                    {this.props.data.hand ? <a className="tenhouLink" href={"http://tenhou.net/2/?q=" + this.props.data.hand} target="_blank" rel="noopener noreferrer">
-                        {t("history.tenhouLinkText")}
-                    </a> : ""}
-                </Collapse>
-            </ListGroupItem>
+            <Collapse isOpen={!this.state.collapsed}>
+                <ListGroupItem className={this.props.data.getClassName()}>
+                        {messageRows}
+                        {this.props.data.hand ? <a className="tenhouLink" href={"http://tenhou.net/2/?q=" + this.props.data.hand} target="_blank" rel="noopener noreferrer">
+                            {t("history.tenhouLinkText")}
+                        </a> : ""}
+                </ListGroupItem>
+            </Collapse>
         );
     }
 }
