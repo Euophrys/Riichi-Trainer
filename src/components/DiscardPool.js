@@ -30,7 +30,7 @@ class DiscardPool extends React.Component {
                         {players[i].discards.map((tile, index) => {
                             return (
                                 <Col xs="1" sm="2" md="2" xl="1" key={players[i].name + index} style={index === players[i].riichiIndex ? {backgroundColor: "red"} : {}}>
-                                    <Tile className="discardTile" tile={tile}/>
+                                    <Tile className="discardTile" tile={tile} showIndexes={this.props.showIndexes}/>
                                 </Col>
                             );
                         })}
