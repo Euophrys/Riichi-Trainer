@@ -1,4 +1,5 @@
 .handTile {
+    position: relative;
     width: 7%;
     height:7%;
     padding-left: 2px;
@@ -6,12 +7,28 @@
 }
 
 .discardTile {
+    position: relative;
     width: 100%;
     height: 100%;
     padding-top: 2px;
     padding-bottom: 2px;
     padding-left: 2px;
     padding-right: 2px;
+}
+
+.tile {
+    width: 100%;
+    height: 100%;
+}
+
+.index {
+    position: absolute;
+    top: -3px;
+    right: 6px;
+    font-size: 1em;
+    color: red;
+    font-weight: bold;
+    text-shadow: -1px -1px 0 #f5f0eb, 1px -1px 0 #f5f0eb, -1px 1px 0 #f5f0eb, 1px 1px 0 #f5f0eb;
 }
 
 .tenhouLink {

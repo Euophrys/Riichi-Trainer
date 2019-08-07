@@ -189,7 +189,7 @@ class DefenseState extends React.Component {
 
         // Remove safe tiles from the player's hand without adding them to the discards
         let tileCount = convertHandToTileIndexArray(players[0].hand).length;
-        while(tileCount > this.state.settings.tilesInHand + 1) {
+        while(tileCount > this.state.settings.tilesInHand) {
             let averageSafety = this.getAverageSafety(players[0], players);
             let bestSafety = Math.max(...averageSafety);
             let bestChoice = averageSafety.indexOf(bestSafety);
@@ -485,7 +485,8 @@ class DefenseState extends React.Component {
                         </Row>
                             <Hand tiles={this.state.players[0].hand}
                                 lastDraw={this.state.lastDraw}
-                                onTileClick={this.onTileClicked} />
+                                onTileClick={this.onTileClicked}
+                                showIndexes={this.state.settings.showIndexes} />
                         <Row className="mt-2">
                             <Col xs="6" sm="3" md="3" lg="2">
                                 <Button className="btn-block" color={this.state.isComplete ? "success" : "warning"} onClick={() => this.onNewHand()}>{t("trainer.newHandButtonLabel")}</Button>
