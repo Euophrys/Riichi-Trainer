@@ -1,6 +1,6 @@
 import { ALL_TILES_REMAINING, ROUND_PARAMETERS } from '../Constants';
-import { convertTenhouHandToHand, convertHandToTenhouString, convertHandToTileIndexArray } from './HandConversions';
-import { convertTenhouTilesToIndex, getTileAsText, convertIndexesToTenhouTiles, convertStringTileToIndex } from './TileConversions';
+import { convertHandToTenhouString, convertHandToTileIndexArray } from './HandConversions';
+import { getTileAsText, convertIndexesToTenhouTiles, convertStringTileToIndex } from './TileConversions';
 import { calculateDiscardUkeire, calculateUkeireFromOnlyHand } from './UkeireCalculator';
 import calculateMinimumShanten, { calculateStandardShanten } from './ShantenCalculator';
 import { evaluateBestDiscard, evaluateDiscardSafety } from './Evaluations';
