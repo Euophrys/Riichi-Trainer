@@ -41,7 +41,7 @@ class ReplayAnalysis extends React.Component {
             let URL = document.getElementById('tenhouURL').value;
             if (URL !== "") {
                 let tenhouRegex = /\/\?log=(.+?)&tw/;
-                let majsoulRegex = /\/\?paipu=(.+?)/;
+                let majsoulRegex = /\/\?paipu=(.+)/;
                 let match = tenhouRegex.exec(URL);
 
                 if (match) {
@@ -50,8 +50,8 @@ class ReplayAnalysis extends React.Component {
                     match = majsoulRegex.exec(URL);
 
                     if (match) {
-                        // todo replace with majsoul replay destination
-                        URLfeedback = <a href={`http://e0.mjv.jp/0/log/?${match[1]}`} target="_blank" rel="noopener noreferrer">{t("analyzer.downloadInstructions")}</a>;
+                        let uuid = match[1].split("_")[0];
+                        URLfeedback = <a href={`https://mjusgs.mahjongsoul.com:2882/majsoul/game_record/${uuid}`} target="_blank" rel="noopener noreferrer">{t("analyzer.downloadInstructions")}</a>;
                     } else {
                         URLfeedback = <div>{t("analyzer.invalidURL")}</div>;
                     }

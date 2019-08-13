@@ -59,22 +59,23 @@ export function parseRoundNames(roundTexts) {
  * @returns {ReplayTurn[]} An array of turns.
  */
 export function parseRound(t, roundText, player) {
-    console.log(player);
     let remainingTiles = ALL_TILES_REMAINING.slice();
     let players = [];
-    let lines = roundText.split(/\r?\n/);
-
+    let lines = roundText.split("Record");
+    
     for(let i = 0; i < 4; i++) {
         players.push(new Player(parseStartingHand(lines[0], i)));
     }
 
+    lines.shift();
+    
     for(let j = 0; j < players[player].hand.length; j++) {
         remainingTiles[j] = Math.max(remainingTiles[j] - players[player].hand[j], 0);
     }
-
+    
     let doraRegex = /(\d\w)/;
     let dora = doraRegex.exec(roundText);
-
+    
     if(dora) {
         dora = convertStringTileToIndex(dora[1]);
         remainingTiles[dora]--;
@@ -96,11 +97,11 @@ export function parseRound(t, roundText, player) {
 
     currentTurn.message.appendLineBreak();
 
-    let callRegex = /RecordChiPengGang.*(\d\w).*(\d\w).*(\d\w)/;
-    let discardRegex = /RecordDiscardTile.*(\d\w)/;
-    let drawRegex = /RecordDealTile.*(\d\w)/;
-    let winRegex = /RecordHule/;
-    let closedKanRegex = /RecordAnGangAddGang.*(\d\w)/;
+    let callRegex = /ChiPengGang.*?(\d\w).*?(\d\w).*?(\d\w)/;
+    let discardRegex = /DiscardTile.*?(\d\w)/;
+    let drawRegex = /DealTile.*?(\d\w)/;
+    let winRegex = /Hule/;
+    let closedKanRegex = /AnGangAddGang.*?(\d\w)/;
     let playerHandLengths = players.map((player) => convertHandToTileIndexArray(player.hand).length);
     let currentPlayer = playerHandLengths.indexOf(14);
 
@@ -292,14 +293,14 @@ function analyzeDiscardSafety(t, playerHand, chosenTile, players, remainingTiles
  */
 function analyzeDiscardEfficiency(t, hand, chosenTile, remainingTiles, currentTurn) {
     let paddedHand = padHand(hand);
-
-    let ukeire = calculateDiscardUkeire(paddedHand, remainingTiles, calculateMinimumShanten);
+    let shantenFunction = getShantenOffset(hand) > 0 ? calculateStandardShanten : calculateMinimumShanten;
+    let ukeire = calculateDiscardUkeire(paddedHand, remainingTiles, shantenFunction);
     paddedHand[chosenTile]--;
 
     let chosenUkeire = ukeire[chosenTile];
 
-    let shanten = calculateMinimumShanten(paddedHand);
-    let handUkeire = calculateUkeireFromOnlyHand(paddedHand, ALL_TILES_REMAINING.slice(), calculateMinimumShanten).value;
+    let shanten = shantenFunction(paddedHand);
+    let handUkeire = calculateUkeireFromOnlyHand(paddedHand, ALL_TILES_REMAINING.slice(), shantenFunction).value;
     let bestTile = evaluateBestDiscard(ukeire);
 
     currentTurn.addEfficiencyMessage(t, chosenTile, chosenUkeire, bestTile, ukeire[bestTile], shanten, handUkeire);

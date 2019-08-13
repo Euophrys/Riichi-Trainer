@@ -312,14 +312,14 @@ function analyzeDiscardSafety(t, playerHand, chosenTile, players, remainingTiles
  */
 function analyzeDiscardEfficiency(t, hand, chosenTile, remainingTiles, currentTurn) {
     let paddedHand = padHand(hand);
-
-    let ukeire = calculateDiscardUkeire(paddedHand, remainingTiles, calculateMinimumShanten);
+    let shantenFunction = getShantenOffset(hand) > 0 ? calculateStandardShanten : calculateMinimumShanten;
+    let ukeire = calculateDiscardUkeire(paddedHand, remainingTiles, shantenFunction);
     paddedHand[chosenTile]--;
 
     let chosenUkeire = ukeire[chosenTile];
 
-    let shanten = calculateMinimumShanten(paddedHand);
-    let handUkeire = calculateUkeireFromOnlyHand(paddedHand, ALL_TILES_REMAINING.slice(), calculateMinimumShanten).value;
+    let shanten = shantenFunction(paddedHand);
+    let handUkeire = calculateUkeireFromOnlyHand(paddedHand, ALL_TILES_REMAINING.slice(), shantenFunction).value;
     let bestTile = evaluateBestDiscard(ukeire);
 
     currentTurn.addEfficiencyMessage(t, chosenTile, chosenUkeire, bestTile, ukeire[bestTile], shanten, handUkeire);
