@@ -37,16 +37,24 @@ class ReplayAnalysis extends React.Component {
     onURLChanged() {
         let URLfeedback = <div/>
         let { t } = this.props;
-        if(document.getElementById('tenhouURL')) {
+        if (document.getElementById('tenhouURL')) {
             let URL = document.getElementById('tenhouURL').value;
-            if(URL !== "") {
-                let gameRegex = /\/\?log=(.+?)&tw/;
-                let match = gameRegex.exec(URL);
+            if (URL !== "") {
+                let tenhouRegex = /\/\?log=(.+?)&tw/;
+                let majsoulRegex = /\/\?paipu=(.+?)/;
+                let match = tenhouRegex.exec(URL);
 
-                if(match) {
+                if (match) {
                     URLfeedback = <a href={`http://e0.mjv.jp/0/log/?${match[1]}`} target="_blank" rel="noopener noreferrer">{t("analyzer.downloadInstructions")}</a>;
                 } else {
-                    URLfeedback = <div>{t("analyzer.invalidURL")}</div>;
+                    match = majsoulRegex.exec(URL);
+
+                    if (match) {
+                        // todo replace with majsoul replay destination
+                        URLfeedback = <a href={`http://e0.mjv.jp/0/log/?${match[1]}`} target="_blank" rel="noopener noreferrer">{t("analyzer.downloadInstructions")}</a>;
+                    } else {
+                        URLfeedback = <div>{t("analyzer.invalidURL")}</div>;
+                    }
                 }
             }
         }
