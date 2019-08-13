@@ -134,6 +134,57 @@ export function parseRound(t, roundText, player) {
                 continue;
             }
 
+            if(actionInfo.discard) {
+                if(actionInfo.player === 0) {
+                    // Might be DORA
+                    let doraRegex = /hai="(\d+?)"/;
+                    let doraMatch = doraRegex.exec(match[2]);
+
+                    if(doraMatch) {
+                        let newDoraIndicator = convertTenhouTilesToIndex(parseInt(doraMatch[1]));
+                        remainingTiles[newDoraIndicator]--;
+                        currentTurn.message.appendLocalizedMessage("analyzer.kandora", {tile: getTileAsText(t, newDoraIndicator)});
+                        continue;
+                    }
+                }
+
+                let discardIndex = convertTenhouTilesToIndex(parseInt(match[2]));
+
+                if(actionInfo.player === player) {
+                    analyzeDiscardEfficiency(t, players[player].hand, discardIndex, remainingTiles, currentTurn);
+                    analyzeDiscardSafety(t, players[player].hand, discardIndex, players, remainingTiles, currentTurn);
+                    currentTurn.copyFrom(players[player]);
+                    turns.push(currentTurn);
+                    currentTurn = new ReplayTurn();
+                }
+                
+                players[actionInfo.player].discardTile(discardIndex);
+
+                for(let i = 0; i < players.length; i++) {
+                    if(players[i].isInRiichi()) {
+                        players[i].discardsAfterRiichi.push(discardIndex);
+                    }
+                }
+
+                if(actionInfo.player !== player) {
+                    remainingTiles[discardIndex]--;
+                }
+                
+                continue;
+            }
+
+            if(actionInfo.draw) {
+                let index = convertTenhouTilesToIndex(parseInt(match[2]));
+                players[actionInfo.player].hand[index]++;
+
+                if(actionInfo.player === player) {
+                    currentTurn.tileDrawn(t, players[player], index);
+                    remainingTiles[index]--;
+                }
+
+                continue;
+            }
+
             if(actionInfo.call) {
                 let who = parseInt(whoRegex.exec(match[2])[1]);
                 let calledTiles = getTilesFromCall(match[2]);
@@ -204,57 +255,6 @@ export function parseRound(t, roundText, player) {
 
             if(actionInfo.disconnect) {
                 // TODO: Don't analyze safety from disconnected players.
-            }
-
-            if(actionInfo.discard) {
-                if(actionInfo.player === 0) {
-                    // Might be DORA
-                    let doraRegex = /hai="(\d+?)"/;
-                    let doraMatch = doraRegex.exec(match[2]);
-
-                    if(doraMatch) {
-                        let newDoraIndicator = convertTenhouTilesToIndex(parseInt(doraMatch[1]));
-                        remainingTiles[newDoraIndicator]--;
-                        currentTurn.message.appendLocalizedMessage("analyzer.kandora", {tile: getTileAsText(t, newDoraIndicator)});
-                        continue;
-                    }
-                }
-
-                let discardIndex = convertTenhouTilesToIndex(parseInt(match[2]));
-
-                if(actionInfo.player === player) {
-                    analyzeDiscardEfficiency(t, players[player].hand, discardIndex, remainingTiles, currentTurn);
-                    analyzeDiscardSafety(t, players[player].hand, discardIndex, players, remainingTiles, currentTurn);
-                    currentTurn.copyFrom(players[player]);
-                    turns.push(currentTurn);
-                    currentTurn = new ReplayTurn();
-                }
-                
-                players[actionInfo.player].discardTile(discardIndex);
-
-                for(let i = 0; i < players.length; i++) {
-                    if(players[i].isInRiichi()) {
-                        players[i].discardsAfterRiichi.push(discardIndex);
-                    }
-                }
-
-                if(actionInfo.player !== player) {
-                    remainingTiles[discardIndex]--;
-                }
-                
-                continue;
-            }
-
-            if(actionInfo.draw) {
-                let index = convertTenhouTilesToIndex(parseInt(match[2]));
-                players[actionInfo.player].hand[index]++;
-
-                if(actionInfo.player === player) {
-                    currentTurn.tileDrawn(t, players[player], index);
-                    remainingTiles[index]--;
-                }
-
-                continue;
             }
         }
     } while (match);

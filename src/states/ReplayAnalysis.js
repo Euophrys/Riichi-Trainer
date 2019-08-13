@@ -1,9 +1,10 @@
 import React from 'react';
-import { 
+import {
     Container, Dropdown, DropdownItem, DropdownMenu, DropdownToggle,
     Row, ListGroup, ListGroupItem, Col, Input,
     Card, CardBody, Button } from 'reactstrap';
-import { parseRounds, parseRound, parseRoundNames, parsePlayers } from '../scripts/ParseReplay';
+import * as ParseTenhouReplay from '../scripts/ParseTenhouReplay';
+import * as ParseMajsoulReplay from '../scripts/ParseMajsoulReplay';
 import Hand from '../components/Hand';
 import { convertIndexesToTenhouTiles, convertTilesToAsciiSymbols } from '../scripts/TileConversions';
 import { convertHandToTenhouString } from '../scripts/HandConversions';
@@ -23,6 +24,7 @@ class ReplayAnalysis extends React.Component {
             turns: [],
             URLfeedback: "",
             currentTurn: 0,
+            tenhou: true,
         }
 
         this.onURLChanged = this.onURLChanged.bind(this);
@@ -56,7 +58,7 @@ class ReplayAnalysis extends React.Component {
 
     onFileChanged(files) {
         let file = document.getElementById("fileInput").files[0];
-        
+
         let player = 0;
         let playerRegex = /tw=(\d{1})/;
         let match = playerRegex.exec(file.name);
@@ -75,10 +77,18 @@ class ReplayAnalysis extends React.Component {
     }
 
     onFileLoaded(e) {
-        let replayText = e.target.result;
-        let rounds = parseRounds(replayText);
-        
+        let replayText = e.target.result.trim();
+        let tenhou = replayText.charAt(0) === "<";
+        let rounds;
+
+        if (tenhou) {
+            rounds = ParseTenhouReplay.parseRounds(replayText);
+        } else {
+            rounds = ParseMajsoulReplay.parseRounds(replayText);
+        }
+
         this.setState({
+            tenhou: tenhou,
             text: e.target.result,
             rounds: rounds
         });
@@ -98,7 +108,15 @@ class ReplayAnalysis extends React.Component {
 
     onRoundChoice(index) {
         let { t } = this.props;
-        let turns = parseRound(t, this.state.rounds[index], this.state.player);
+
+        let turns;
+
+        if(this.state.tenhou) {
+            turns = ParseTenhouReplay.parseRound(t, this.state.rounds[index], this.state.player);
+        } else {
+            turns = ParseMajsoulReplay.parseRound(t, this.state.rounds[index], this.state.player);
+        }
+
         this.setState({
             turns: turns,
             currentRound: index,
@@ -109,7 +127,15 @@ class ReplayAnalysis extends React.Component {
     onPlayerChoice(index) {
         let currentRound = Math.max(0, this.state.currentRound);
         let { t } = this.props;
-        let turns = parseRound(t, this.state.rounds[currentRound], index);
+
+        let turns;
+
+        if(this.state.tenhou) {
+            turns = ParseTenhouReplay.parseRound(t, this.state.rounds[currentRound], index);
+        } else {
+            turns = ParseMajsoulReplay.parseRound(t, this.state.rounds[currentRound], index);
+        }
+
         this.setState({
             turns: turns,
             player: index,
@@ -120,7 +146,15 @@ class ReplayAnalysis extends React.Component {
 
     parseRound() {
         let { t } = this.props;
-        let turns = parseRound(t, this.state.rounds[this.state.currentRound], this.state.player);
+
+        let turns;
+
+        if(this.state.tenhou) {
+            turns = ParseTenhouReplay.parseRound(t, this.state.rounds[this.state.currentRound], this.state.player);
+        } else {
+            turns = ParseMajsoulReplay.parseRound(t, this.state.rounds[this.state.currentRound], this.state.player);
+        }
+
         this.setState({
             turns: turns
         });
@@ -149,7 +183,7 @@ class ReplayAnalysis extends React.Component {
                 break;
             }
         }
-        
+
         this.setState({currentTurn: currentTurn});
     }
 
@@ -157,14 +191,27 @@ class ReplayAnalysis extends React.Component {
         let roundItems;
         let playerItems;
         let { t } = this.props;
-        let roundNames = parseRoundNames(this.state.rounds);
+
+        let roundNames;
+        if (this.state.tenhou) {
+            roundNames = ParseTenhouReplay.parseRoundNames(this.state.rounds);
+        } else {
+            roundNames = ParseMajsoulReplay.parseRoundNames(this.state.rounds);
+        }
 
         if(this.state.rounds.length) {
             roundItems = roundNames.map((roundName, index) => {
                 return <DropdownItem disabled={index === this.state.currentRound} onClick={()=>this.onRoundChoice(index)}>{roundName.generateString(t)}</DropdownItem>;
             });
 
-            let playerNames = parsePlayers(t, this.state.text);
+            let playerNames;
+
+            if (this.state.tenhou) {
+                playerNames = ParseTenhouReplay.parsePlayers(t, this.state.text);
+            } else {
+                playerNames = ParseMajsoulReplay.parsePlayers(t, this.state.text);
+            }
+            
             playerItems = playerNames.map((player, index) => {
                 return <DropdownItem disabled={index === this.state.player} onClick={()=>this.onPlayerChoice(index)}>{index}: {player}</DropdownItem>
             });
@@ -172,7 +219,7 @@ class ReplayAnalysis extends React.Component {
 
         let message = <ListGroupItem/>;
         let currentTurn = this.state.turns[this.state.currentTurn];
-        
+
         if(this.state.turns.length) {
             let messageArray = currentTurn.message.generateString(t).split("<br/>");
             message = <ListGroupItem className={currentTurn.className}>{messageArray.map((row) => <Row>{row}</Row>)}</ListGroupItem>;

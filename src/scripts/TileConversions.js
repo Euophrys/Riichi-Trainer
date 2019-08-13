@@ -38,6 +38,7 @@ import chun from '../tileImages/chun.png';
 import back from '../tileImages/back.png';
 import { convertHandToTenhouString } from './HandConversions';
 import { SUIT_CHARACTERS, ASCII_TILES } from '../Constants';
+import { characterToSuit } from './Utils';
 
 /** Array of png images for each tile. */
 const images = [
@@ -202,3 +203,11 @@ const tenhouToIndexLookup = [
     21, 22, 23, 24, 25, 26, 27, 28, 29,
     31, 32, 33, 34, 35, 36, 37
 ];
+
+/**
+ * Converts a string representation of a tile into the index.
+ * @param {string} tile A string tile, such as 3z
+ */
+export function convertStringTileToIndex(tile) {
+    return parseInt(tile.charAt(0)) + characterToSuit(tile.charAt(1));
+}
