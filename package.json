@@ -1,6 +1,6 @@
 {
-  "name": "efficiency-drill",
-  "version": "2.0.0",
+  "name": "riichi-trainer",
+  "version": "3.0.0",
   "private": true,
   "homepage": "./",
   "dependencies": {
