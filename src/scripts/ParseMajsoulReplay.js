@@ -73,7 +73,7 @@ export function parseRound(t, roundText, player) {
         remainingTiles[j] = Math.max(remainingTiles[j] - players[player].hand[j], 0);
     }
     
-    let doraRegex = /(\d\w)/;
+    let doraRegex = /(\d[spmz])/;
     let dora = doraRegex.exec(roundText);
     
     if(dora) {
@@ -97,13 +97,16 @@ export function parseRound(t, roundText, player) {
 
     currentTurn.message.appendLineBreak();
 
-    let callRegex = /ChiPengGang.*?(\d\w).*?(\d\w).*?(\d\w)/;
-    let discardRegex = /DiscardTile.*?(\d\w)/;
-    let drawRegex = /DealTile.*?(\d\w)/;
+    let callRegex = /ChiPengGang.*?(\d[spmz]).*?(\d[spmz]).*?(\d[spmz])/;
+    let discardRegex = /DiscardTile.*?(\d[spmz])/;
+    let drawRegex = /DealTile.*?(\d[spmz])/;
     let winRegex = /Hule/;
-    let closedKanRegex = /AnGangAddGang.*?(\d\w)/;
+    let closedKanRegex = /AnGangAddGang.*?(\d[spmz])/;
+    // NoTile = ryuukyoku, LiuJu = abortive draw
+    let ryuukyokuRegex = /NoTile|LiuJu/;
     let playerHandLengths = players.map((player) => convertHandToTileIndexArray(player.hand).length);
     let currentPlayer = playerHandLengths.indexOf(14);
+    let shantens = players.map((player) => calculateMinimumShanten(player.hand));
 
     for(let l = 0; l < lines.length; l++) {
         let line = unescape(lines[l]);
@@ -118,6 +121,20 @@ export function parseRound(t, roundText, player) {
                 currentTurn.copyFrom(players[player]);
                 turns.push(currentTurn);
                 currentTurn = new ReplayTurn();
+            } else if (players[currentPlayer].calledTiles.length === 0) {
+                // Example: if their starting hand was 3 shanten, no reason to check if they're tenpai for three more turns
+                shantens[currentPlayer]--;
+                if (shantens[currentPlayer] === 0) {
+                    shantens[currentPlayer] = calculateMinimumShanten(players[currentPlayer].hand, 0);
+
+                    if (shantens[currentPlayer] === 0) {
+                        // Tenpai, no calls, so let's assume they call riichi, since I don't know how to check
+                        let paddedHand = padHand(players[player].hand.slice());
+                        let shanten = calculateMinimumShanten(paddedHand);
+                        currentTurn.riichiDeclared(currentPlayer, shanten);
+                        players[currentPlayer].riichiTile = -2;
+                    }
+                }
             }
             
             players[currentPlayer].discardTile(discardIndex);
@@ -199,18 +216,7 @@ export function parseRound(t, roundText, player) {
 
         /* Dunno how to get this in majsoul
         if(actionInfo.riichi) {
-            let who = whoRegex.exec(match[2]);
-
-            if(!who) {
-                currentTurn.hand = turns[turns.length - 1].hand.slice();
-                currentTurn.message.appendLocalizedMessage("analyzer.ryuukyoku");
-                turns.push(currentTurn);
-                break;
-            }
-
-            who = parseInt(who[1]);
-
-            if(who === player) {
+            if(currentPlayer === player) {
                 if(players[player].riichiTile > -1) {
                     currentTurn.hand = turns[turns.length - 1].hand.slice();
                     currentTurn.message.appendLocalizedMessage("analyzer.playerRiichi");
@@ -220,21 +226,29 @@ export function parseRound(t, roundText, player) {
                 continue;
             }
 
-            if(players[who].riichiTile > -1) continue;
+            if(players[currentPlayer].riichiTile > -1) continue;
 
             let paddedHand = padHand(players[player].hand.slice());
             let shanten = calculateMinimumShanten(paddedHand);
-            currentTurn.riichiDeclared(who, shanten);
+            currentTurn.riichiDeclared(currentPlayer, shanten);
 
-            players[who].riichiTile = -2;
+            players[currentPlayer].riichiTile = -2;
             continue;
         }
         */
 
         let winMatch = winRegex.exec(line);
-        if(winMatch) {
+        if (winMatch) {
             if(currentTurn.hand.length === 0) currentTurn.hand = turns[turns.length - 1].hand.slice();
             currentTurn.message.appendLocalizedMessage("analyzer.win", {number: "?"});
+            turns.push(currentTurn);
+            break;
+        }
+
+        let ryuukyokuMatch = ryuukyokuRegex.exec(line);
+        if (ryuukyokuMatch) {
+            if(currentTurn.hand.length === 0) currentTurn.hand = turns[turns.length - 1].hand.slice();
+            currentTurn.message.appendLocalizedMessage("analyzer.ryuukyoku");
             turns.push(currentTurn);
             break;
         }
