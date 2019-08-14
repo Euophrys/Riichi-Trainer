@@ -33,7 +33,7 @@ class LoadButton extends React.Component {
                     if (hand[tile] < 4) {
                         hand[tile]++;
                         tiles++;
-                        if(draw === false) draw = tile;
+                        if (draw === false) draw = tile;
                     }
                 }
                 else if (tile === 0) {
@@ -42,7 +42,7 @@ class LoadButton extends React.Component {
                     if (tile !== 30 && hand[tile] + hand[tile + 5] < 4) {
                         hand[tile]++;
                         tiles++;
-                        if(draw === false) draw = tile;
+                        if (draw === false) draw = tile;
                     }
                 }
 

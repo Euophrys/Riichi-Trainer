@@ -2,7 +2,8 @@ import React from 'react';
 import {
     Container, Dropdown, DropdownItem, DropdownMenu, DropdownToggle,
     Row, ListGroup, ListGroupItem, Col, Input,
-    Card, CardBody, Button } from 'reactstrap';
+    Card, CardBody, Button
+} from 'reactstrap';
 import * as ParseTenhouReplay from '../scripts/ParseTenhouReplay';
 import * as ParseMajsoulReplay from '../scripts/ParseMajsoulReplay';
 import Hand from '../components/Hand';
@@ -35,7 +36,7 @@ class ReplayAnalysis extends React.Component {
     }
 
     onURLChanged() {
-        let URLfeedback = <div/>
+        let URLfeedback = <div />
         let { t } = this.props;
         if (document.getElementById('tenhouURL')) {
             let URL = document.getElementById('tenhouURL').value;
@@ -70,7 +71,7 @@ class ReplayAnalysis extends React.Component {
         let player = 0;
         let playerRegex = /tw=(\d{1})/;
         let match = playerRegex.exec(file.name);
-        if(match) {
+        if (match) {
             player = parseInt(match[1]);
         }
 
@@ -119,7 +120,7 @@ class ReplayAnalysis extends React.Component {
 
         let turns;
 
-        if(this.state.tenhou) {
+        if (this.state.tenhou) {
             turns = ParseTenhouReplay.parseRound(t, this.state.rounds[index], this.state.player);
         } else {
             turns = ParseMajsoulReplay.parseRound(t, this.state.rounds[index], this.state.player);
@@ -138,7 +139,7 @@ class ReplayAnalysis extends React.Component {
 
         let turns;
 
-        if(this.state.tenhou) {
+        if (this.state.tenhou) {
             turns = ParseTenhouReplay.parseRound(t, this.state.rounds[currentRound], index);
         } else {
             turns = ParseMajsoulReplay.parseRound(t, this.state.rounds[currentRound], index);
@@ -157,7 +158,7 @@ class ReplayAnalysis extends React.Component {
 
         let turns;
 
-        if(this.state.tenhou) {
+        if (this.state.tenhou) {
             turns = ParseTenhouReplay.parseRound(t, this.state.rounds[this.state.currentRound], this.state.player);
         } else {
             turns = ParseMajsoulReplay.parseRound(t, this.state.rounds[this.state.currentRound], this.state.player);
@@ -169,30 +170,30 @@ class ReplayAnalysis extends React.Component {
     }
 
     onNextTurn() {
-        if(this.state.currentTurn < this.state.turns.length - 1) {
-            this.setState({currentTurn: this.state.currentTurn + 1});
+        if (this.state.currentTurn < this.state.turns.length - 1) {
+            this.setState({ currentTurn: this.state.currentTurn + 1 });
         }
     }
 
     onPreviousTurn() {
-        if(this.state.currentTurn > 0) {
-            this.setState({currentTurn: this.state.currentTurn - 1});
+        if (this.state.currentTurn > 0) {
+            this.setState({ currentTurn: this.state.currentTurn - 1 });
         }
     }
 
     onNextIssue() {
-        if(this.state.currentTurn >= this.state.turns.length - 1) return;
+        if (this.state.currentTurn >= this.state.turns.length - 1) return;
         let currentTurn = this.state.currentTurn;
 
-        while(currentTurn < this.state.turns.length - 1) {
+        while (currentTurn < this.state.turns.length - 1) {
             currentTurn++;
 
-            if(this.state.turns[currentTurn].className !== "bg-success text-white") {
+            if (this.state.turns[currentTurn].className !== "bg-success text-white") {
                 break;
             }
         }
 
-        this.setState({currentTurn: currentTurn});
+        this.setState({ currentTurn: currentTurn });
     }
 
     render() {
@@ -207,9 +208,9 @@ class ReplayAnalysis extends React.Component {
             roundNames = ParseMajsoulReplay.parseRoundNames(this.state.rounds);
         }
 
-        if(this.state.rounds.length) {
+        if (this.state.rounds.length) {
             roundItems = roundNames.map((roundName, index) => {
-                return <DropdownItem disabled={index === this.state.currentRound} onClick={()=>this.onRoundChoice(index)}>{roundName.generateString(t)}</DropdownItem>;
+                return <DropdownItem disabled={index === this.state.currentRound} onClick={() => this.onRoundChoice(index)}>{roundName.generateString(t)}</DropdownItem>;
             });
 
             let playerNames;
@@ -219,24 +220,24 @@ class ReplayAnalysis extends React.Component {
             } else {
                 playerNames = ParseMajsoulReplay.parsePlayers(t, this.state.text);
             }
-            
+
             playerItems = playerNames.map((player, index) => {
-                return <DropdownItem disabled={index === this.state.player} onClick={()=>this.onPlayerChoice(index)}>{index}: {player}</DropdownItem>
+                return <DropdownItem disabled={index === this.state.player} onClick={() => this.onPlayerChoice(index)}>{index}: {player}</DropdownItem>
             });
         }
 
-        let message = <ListGroupItem/>;
+        let message = <ListGroupItem />;
         let currentTurn = this.state.turns[this.state.currentTurn];
 
-        if(this.state.turns.length) {
+        if (this.state.turns.length) {
             let messageArray = currentTurn.message.generateString(t).split("<br/>");
             message = <ListGroupItem className={currentTurn.className}>{messageArray.map((row) => <Row>{row}</Row>)}</ListGroupItem>;
         }
 
         let calls = "";
 
-        for(let i = 0; currentTurn && i < currentTurn.calls.length; i++) {
-            if(calls) calls += t("analyzer.callsSeparator");
+        for (let i = 0; currentTurn && i < currentTurn.calls.length; i++) {
+            if (calls) calls += t("analyzer.callsSeparator");
             calls += `${convertTilesToAsciiSymbols(currentTurn.calls[i])} (${convertIndexesToTenhouTiles(currentTurn.calls[i])})`;
         }
 
@@ -244,53 +245,53 @@ class ReplayAnalysis extends React.Component {
             <Container>
                 <Row>
                     <Card><CardBody>
-                        {t("analyzer.instructions1")}<br/>
-                        {t("analyzer.instructions2")}<br/>
-                        {t("analyzer.instructions3")}<br/>
-                        {t("analyzer.instructions4")}<br/><br/>
-                        {t("analyzer.instructions5")}<br/>
-                        {t("analyzer.instructions6")}<br/>
-                        {t("analyzer.instructions7")}<br/><br/>
-                        {t("analyzer.instructions8")}<br/>
+                        {t("analyzer.instructions1")}<br />
+                        {t("analyzer.instructions2")}<br />
+                        {t("analyzer.instructions3")}<br />
+                        {t("analyzer.instructions4")}<br /><br />
+                        {t("analyzer.instructions5")}<br />
+                        {t("analyzer.instructions6")}<br />
+                        {t("analyzer.instructions7")}<br /><br />
+                        {t("analyzer.instructions8")}<br />
                         {t("analyzer.instructions9")}
                     </CardBody></Card>
                 </Row>
                 <Row>
-                    <Input id="tenhouURL" placeholder={t("analyzer.URLplaceholder")} onChange={this.onURLChanged}/> <br/>
+                    <Input id="tenhouURL" placeholder={t("analyzer.URLplaceholder")} onChange={this.onURLChanged} /> <br />
                     {this.state.URLfeedback}
                 </Row>
                 <Row>
                     <Input type="file" id="fileInput" onChange={this.onFileChanged} />
                 </Row>
-                { this.state.rounds.length && (
+                {this.state.rounds.length && (
                     <Row>
                         <Col xs="6">
                             <Dropdown isOpen={this.state.roundDropdownOpen} toggle={this.toggleRoundDropdown}>
-                            <DropdownToggle caret>
-                                {t("analyzer.roundSelect")}
-                            </DropdownToggle>
-                            <DropdownMenu>
-                                {roundItems}
-                            </DropdownMenu>
+                                <DropdownToggle caret>
+                                    {t("analyzer.roundSelect")}
+                                </DropdownToggle>
+                                <DropdownMenu>
+                                    {roundItems}
+                                </DropdownMenu>
                             </Dropdown>
                         </Col>
                         <Col xs="6">
                             <Dropdown isOpen={this.state.playerDropdownOpen} toggle={this.togglePlayerDropdown}>
-                            <DropdownToggle caret>
-                                {t("analyzer.playerSelect")}
-                            </DropdownToggle>
-                            <DropdownMenu>
-                                {playerItems}
-                            </DropdownMenu>
+                                <DropdownToggle caret>
+                                    {t("analyzer.playerSelect")}
+                                </DropdownToggle>
+                                <DropdownMenu>
+                                    {playerItems}
+                                </DropdownMenu>
                             </Dropdown>
                         </Col>
                     </Row>
                 )}
-                { this.state.turns.length && (
+                {this.state.turns.length && (
                     <React.Fragment>
-                        <br/>
-                        <Hand tiles={currentTurn.hand} lastDraw={currentTurn.draw}/>
-                        <br/>
+                        <br />
+                        <Hand tiles={currentTurn.hand} lastDraw={currentTurn.draw} />
+                        <br />
                         <Row>
                             <Col xs="4">
                                 <Button color="primary" block={true} xs="6" disabled={this.state.currentTurn <= 0} onClick={() => this.onPreviousTurn()}>{t("analyzer.previousTurn")}</Button>
@@ -302,12 +303,12 @@ class ReplayAnalysis extends React.Component {
                                 <Button color="primary" block={true} xs="6" disabled={this.state.currentTurn >= this.state.turns.length - 1} onClick={() => this.onNextIssue()}>{t("analyzer.nextIssue")}</Button>
                             </Col>
                         </Row>
-                        <br/>
+                        <br />
                         <ListGroup>
                             <ListGroupItem>
-                                <Row>{t("analyzer.turn", {round: roundNames[this.state.currentRound].generateString(t), turn: this.state.currentTurn + 1})}</Row>
-                                <Row>{currentTurn.discards.length ? t("analyzer.discards", {symbols: convertTilesToAsciiSymbols(currentTurn.discards), tiles: convertIndexesToTenhouTiles(currentTurn.discards)}) : ""}</Row>
-                                <Row>{calls.length > 0 ? t("analyzer.calls", {calls: calls}) : ""}</Row>
+                                <Row>{t("analyzer.turn", { round: roundNames[this.state.currentRound].generateString(t), turn: this.state.currentTurn + 1 })}</Row>
+                                <Row>{currentTurn.discards.length ? t("analyzer.discards", { symbols: convertTilesToAsciiSymbols(currentTurn.discards), tiles: convertIndexesToTenhouTiles(currentTurn.discards) }) : ""}</Row>
+                                <Row>{calls.length > 0 ? t("analyzer.calls", { calls: calls }) : ""}</Row>
                             </ListGroupItem>
                             {message}
                             <ListGroupItem>

@@ -101,17 +101,17 @@ class DefenseState extends React.Component {
             let currentPlayer = players[riichiPlayers[i]];
             let riichiIndex = currentPlayer.riichiIndex;
 
-            for(let j = riichiIndex; j < maxDiscards; j++) {
+            for (let j = riichiIndex; j < maxDiscards; j++) {
                 for (let k = 0; k < riichiPlayers.length; k++) {
                     if (k === i) continue;
 
                     let otherPlayer = players[riichiPlayers[k]];
-                    
+
                     if (otherPlayer.discards.length <= j) continue;
 
                     if (j > riichiIndex ||
                         (j === riichiIndex && currentPlayer.takesTurnBefore(otherPlayer))) {
-                            currentPlayer.discardsAfterRiichi.push(otherPlayer.discards[j]);
+                        currentPlayer.discardsAfterRiichi.push(otherPlayer.discards[j]);
                     }
                 }
             }
@@ -152,7 +152,7 @@ class DefenseState extends React.Component {
                     // This player can't change their hand
                     discard = removeRandomItem(tilePool);
                     player.discards.push(discard);
-                    
+
                 } else {
                     // Fold vs the first (and maybe second) riichi
                     this.drawTilesToFourteen(player, tilePool);
@@ -189,7 +189,7 @@ class DefenseState extends React.Component {
 
         // Remove safe tiles from the player's hand without adding them to the discards
         let tileCount = convertHandToTileIndexArray(players[0].hand).length;
-        while(tileCount > this.state.settings.tilesInHand + 1) {
+        while (tileCount > this.state.settings.tilesInHand + 1) {
             let averageSafety = this.getAverageSafety(players[0], players);
             let bestSafety = Math.max(...averageSafety);
             let bestChoice = averageSafety.indexOf(bestSafety);
@@ -205,7 +205,7 @@ class DefenseState extends React.Component {
         this.setState({
             players: players,
             tilePool: tilePool,
-            history: [new HistoryData(new LocalizedMessage("trainer.start", {hand: convertHandToTenhouString(players[0].hand)}))],
+            history: [new HistoryData(new LocalizedMessage("trainer.start", { hand: convertHandToTenhouString(players[0].hand) }))],
             discardCount: 0,
             dora: dora,
             lastDraw: -1,
@@ -284,9 +284,9 @@ class DefenseState extends React.Component {
     getAverageSafety(player, players) {
         let totalSafety = Array(38).fill(0);
         let riichis = 0;
-    
-        for(let i = 0; i < players.length; i++) {
-            if(players[i].isInRiichi()) {
+
+        for (let i = 0; i < players.length; i++) {
+            if (players[i].isInRiichi()) {
                 riichis++;
 
                 let safety = evaluateDiscardSafety(
@@ -296,8 +296,8 @@ class DefenseState extends React.Component {
                     players[i].discardsAfterRiichi,
                     players[i].riichiTile
                 );
-    
-                for(let j = 0; j < totalSafety.length; j++) {
+
+                for (let j = 0; j < totalSafety.length; j++) {
                     totalSafety[j] += safety[j];
                 }
             }
@@ -321,18 +321,18 @@ class DefenseState extends React.Component {
         let drawnTile = 0;
         player.discardTile(bestTile);
 
-        for(let i = 0; i <= uselessTurns - shanten; i++) {
+        for (let i = 0; i <= uselessTurns - shanten; i++) {
             // Draw a useless tile.
             while (true) {
                 drawnTile = removeRandomItem(tilePool);
-                
+
                 if (ukeire[bestTile].tiles.includes(drawnTile)) {
                     tilePool.push(drawnTile);
                 } else {
                     break;
                 }
             }
-            
+
             remainingTiles[drawnTile]--;
             player.hand[drawnTile]++;
 
@@ -341,21 +341,21 @@ class DefenseState extends React.Component {
             player.discardTile(bestTile);
         }
 
-        while(shanten > 0) {
+        while (shanten > 0) {
             while (true) {
                 drawnTile = getRandomItem(ukeire[bestTile].tiles);
-                
+
                 if (tilePool.includes(drawnTile)) {
                     break;
                 }
             }
-            
+
             remainingTiles[drawnTile]--;
             player.hand[drawnTile]++;
 
             shanten = calculateMinimumShanten(player.hand);
 
-            if(shanten === 0) player.riichiTile = -2;
+            if (shanten === 0) player.riichiTile = -2;
 
             ukeire = calculateDiscardUkeire(player.hand, remainingTiles, calculateMinimumShanten, shanten);
             bestTile = evaluateBestDiscard(ukeire);
@@ -365,7 +365,7 @@ class DefenseState extends React.Component {
         return {
             player: player,
             tilePool: convertHandToTileIndexArray(remainingTiles),
-            remainingTiles: remainingTiles            
+            remainingTiles: remainingTiles
         }
     }
 
@@ -408,8 +408,8 @@ class DefenseState extends React.Component {
             for (let i = 0; i < players.length; i++) {
                 hands.appendLineBreak();
                 hands.appendLocalizedMessage("defense.hand", {
-                    player:t(players[i].name),
-                    hand:convertHandToTenhouString(players[i].hand)
+                    player: t(players[i].name),
+                    hand: convertHandToTenhouString(players[i].hand)
                 });
             }
             history.unshift(new HistoryData(hands));
@@ -446,7 +446,7 @@ class DefenseState extends React.Component {
      */
     tileDiscardedAfterRiichi(tile, players) {
         for (let i = 1; i < players.length; i++) {
-            if(players[i].isInRiichi()) {
+            if (players[i].isInRiichi()) {
                 players[i].discardsAfterRiichi.push(tile);
             }
         }
@@ -463,12 +463,12 @@ class DefenseState extends React.Component {
 
         let safetyRatings = SAFETY_RATING_EXPLANATIONS.map((explanation, index) => {
             if (index === 0) return <Row key={index}></Row>;
-            return <Row key={index}>{t("defense.safetyRating", {rating:index, explanation: t(explanation)})}</Row>
+            return <Row key={index}>{t("defense.safetyRating", { rating: index, explanation: t(explanation) })}</Row>
         }).reverse();
 
         return (
             <Container>
-                <DefenseSettings onChange={this.onSettingsChanged}/>
+                <DefenseSettings onChange={this.onSettingsChanged} />
                 <Container>
                     <Button color="primary" onClick={() => this.toggleChart()}>{t("defense.safetyRatings")}</Button>
                     <Collapse isOpen={!this.state.chartCollapsed}>
@@ -478,21 +478,21 @@ class DefenseState extends React.Component {
                         </CardBody></Card>
                     </Collapse>
                 </Container>
-                { this.state.players.length &&
+                {this.state.players.length &&
                     <React.Fragment>
                         <Row className="mb-2 mt-2">
                             <span>{t("defense.instructions")}</span>
                         </Row>
-                            <Hand tiles={this.state.players[0].hand}
-                                lastDraw={this.state.lastDraw}
-                                onTileClick={this.onTileClicked} />
+                        <Hand tiles={this.state.players[0].hand}
+                            lastDraw={this.state.lastDraw}
+                            onTileClick={this.onTileClicked} />
                         <Row className="mt-2">
                             <Col xs="6" sm="3" md="3" lg="2">
                                 <Button className="btn-block" color={this.state.isComplete ? "success" : "warning"} onClick={() => this.onNewHand()}>{t("trainer.newHandButtonLabel")}</Button>
                             </Col>
                         </Row>
                         <Row className="mt-2 no-gutters">
-                            <History history={this.state.history} concise={true} verbose={this.state.settings.verbose} spoilers={this.state.settings.spoilers}/>
+                            <History history={this.state.history} concise={true} verbose={this.state.settings.verbose} spoilers={this.state.settings.spoilers} />
                             <DiscardPool players={this.state.players} discardCount={this.state.discardCount} wallCount={this.state.tilePool && this.state.tilePool.length} />
                         </Row>
                     </React.Fragment>

@@ -66,11 +66,11 @@ class HandExplorer extends React.Component {
                 <Row className="mb-2">
                     <span>
                         {t("explorer.warning")}
-                        <br/>{t("explorer.shanten")}
-                        <br/>{t("explorer.ukeire")}
+                        <br />{t("explorer.shanten")}
+                        <br />{t("explorer.ukeire")}
                     </span></Row>
                 <LoadButton callback={this.loadHand} />
-                <Col xs="12"><Button onClick={()=>this.onShowToggled()}>{this.state.showAll ? t("explorer.notableDiscards") : t("explorer.allDiscards")}</Button></Col>
+                <Col xs="12"><Button onClick={() => this.onShowToggled()}>{this.state.showAll ? t("explorer.notableDiscards") : t("explorer.allDiscards")}</Button></Col>
                 <Row className="mt-2 mb-2">{this.state.message}</Row>
                 <Hand tiles={this.state.hand} />
                 <HandFutures hand={this.state.hand} showAll={this.state.showAll} />

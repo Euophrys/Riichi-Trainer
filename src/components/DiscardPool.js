@@ -20,17 +20,17 @@ class DiscardPool extends React.Component {
         let pools = [];
         let { t } = this.props;
 
-        for(let i = 0; i < players.length; i++) {
+        for (let i = 0; i < players.length; i++) {
             if (players[i].discards.length < 1) continue;
-            
+
             pools.push(
                 <ListGroupItem key={i}>
                     <Row><u>{t(players[i].name)} ({t(SEAT_NAMES[players[i].seat])})</u></Row>
                     <Row className="no-gutters px-sm-0 px-md-4 px-lg-5 px-xl-0 mx-lg-4">
                         {players[i].discards.map((tile, index) => {
                             return (
-                                <Col xs="1" sm="2" md="2" xl="1" key={players[i].name + index} style={index === players[i].riichiIndex ? {backgroundColor: "red"} : {}}>
-                                    <Tile className="discardTile" tile={tile}/>
+                                <Col xs="1" sm="2" md="2" xl="1" key={players[i].name + index} style={index === players[i].riichiIndex ? { backgroundColor: "red" } : {}}>
+                                    <Tile className="discardTile" tile={tile} />
                                 </Col>
                             );
                         })}
@@ -45,8 +45,8 @@ class DiscardPool extends React.Component {
                 <Collapse isOpen={!this.state.collapsed}>
                     <ListGroup>
                         <ListGroupItem className="justify-content-center">
-                            <span className="blackText">{t("discards.discardCount", {count: this.props.discardCount})}</span>&nbsp;
-                            <span className="blackText">{t("discards.tilesLeft", {count: this.props.wallCount})}</span>
+                            <span className="blackText">{t("discards.discardCount", { count: this.props.discardCount })}</span>&nbsp;
+                            <span className="blackText">{t("discards.tilesLeft", { count: this.props.wallCount })}</span>
                         </ListGroupItem>
                         {pools}
                     </ListGroup>

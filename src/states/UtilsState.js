@@ -5,15 +5,15 @@ import ConvertHand from '../components/utils/ConvertHand';
 import RCalculation from '../components/utils/RCalculation';
 import { useTranslation } from 'react-i18next';
 
-function UtilsState (props) {
+function UtilsState(props) {
     let { t } = useTranslation();
     return (
         <Container>
-            <h2 style={{"textAlign": "center"}}>{t("utils.convertHeader")}</h2>
-            <ConvertHand/>
-            <br/>
-            <h2 style={{"textAlign": "center"}}>{t("utils.stateHeader")}</h2>
-            <RandomGameState/>
+            <h2 style={{ "textAlign": "center" }}>{t("utils.convertHeader")}</h2>
+            <ConvertHand />
+            <br />
+            <h2 style={{ "textAlign": "center" }}>{t("utils.stateHeader")}</h2>
+            <RandomGameState />
         </Container>
     );
 }

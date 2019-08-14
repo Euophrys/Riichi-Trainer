@@ -19,7 +19,7 @@ class RandomGameState extends React.Component {
     }
 
     componentDidMount() {
-        if(!this.state.init) {
+        if (!this.state.init) {
             this.generateState();
         }
     }
@@ -28,23 +28,23 @@ class RandomGameState extends React.Component {
         let round = Math.floor(Math.random() * 9);
 
         let players = [];
-        for(let i = 0; i < 4; i++) {
+        for (let i = 0; i < 4; i++) {
             players.push(new Player());
             players[i].seat = i;
         }
-        
+
         // Generate random point totals for each player
         let maxPoints = 450;
         let pointsRemaining = 1000;
 
-        if(round === 0) {
-            for(let i = 0; i < 4; i++) {
+        if (round === 0) {
+            for (let i = 0; i < 4; i++) {
                 players[i].points = 25000;
             }
-        } else if(round === 8) {
+        } else if (round === 8) {
             maxPoints = 65;
 
-            for(let i = 0; i < 3; i++) {
+            for (let i = 0; i < 3; i++) {
                 let points = Math.floor(Math.random() * maxPoints) + 235;
                 players[i].points = points * 100;
                 pointsRemaining -= points;
@@ -53,7 +53,7 @@ class RandomGameState extends React.Component {
 
             players[3].points = pointsRemaining * 100;
         } else {
-            for(let i = 0; i < 3; i++) {
+            for (let i = 0; i < 3; i++) {
                 let points = Math.floor(Math.random() * maxPoints);
                 players[i].points = points * 100;
                 pointsRemaining -= points;
@@ -69,16 +69,16 @@ class RandomGameState extends React.Component {
         // Generate random discards for each player
         let tilePool = [];
 
-        for(let i = 1; i < 38; i++) {
-            if(i % 10 === 0) continue;
+        for (let i = 1; i < 38; i++) {
+            if (i % 10 === 0) continue;
             tilePool.push(i);
 
             // This stuff is just to make middle tiles less likely to be in the discards
-            if(i > 30 || (i % 10 > 6 || i % 10 < 4)) {
+            if (i > 30 || (i % 10 > 6 || i % 10 < 4)) {
                 tilePool.push(i);
             }
 
-            if(i > 30 || (i % 10 > 7 || i % 10 < 3)) {
+            if (i > 30 || (i % 10 > 7 || i % 10 < 3)) {
                 tilePool.push(i);
                 tilePool.push(i);
             }
@@ -86,20 +86,20 @@ class RandomGameState extends React.Component {
 
         let turn = Math.floor(Math.random() * 11) + 3;
 
-        for(let i = 0; i < turn; i++) {
-            for(let player = 0; player < 4; player++) {
+        for (let i = 0; i < turn; i++) {
+            for (let player = 0; player < 4; player++) {
                 let tile = tilePool.splice(Math.floor(Math.random() * tilePool.length), 1);
                 players[player].discards.push(tile);
             }
         }
 
-        for(let player = 0; player < userSeat; player++) {
+        for (let player = 0; player < userSeat; player++) {
             let tile = tilePool.splice(Math.floor(Math.random() * tilePool.length), 1);
             players[player].discards.push(tile);
         }
 
         let doraIndicator = 0;
-        
+
         do {
             doraIndicator = Math.floor(Math.random() * 38);
         } while (tilePool.indexOf(doraIndicator) === -1)
@@ -115,7 +115,7 @@ class RandomGameState extends React.Component {
     }
 
     render() {
-        if(this.state.init === false) {
+        if (this.state.init === false) {
             return <Row>Please wait...</Row>;
         }
 
@@ -125,9 +125,9 @@ class RandomGameState extends React.Component {
             return (
                 <ListGroupItem key={index + 1}>
                     <Row>{t("utils.playerLabel", {
-                        seat: t(SEAT_NAMES[player.seat]), 
-                        you: player.seat === this.state.userSeat 
-                            ? `(${t("allLast.you")})` 
+                        seat: t(SEAT_NAMES[player.seat]),
+                        you: player.seat === this.state.userSeat
+                            ? `(${t("allLast.you")})`
                             : ""
                     })}</Row>
                     <Row>{t("utils.points")} {player.points}</Row>
@@ -138,7 +138,7 @@ class RandomGameState extends React.Component {
 
         return (
             <Container>
-                <Button xs="12" color="primary" className="btn-block" onClick={()=>this.generateState()}>{t("utils.stateButtonLabel")}</Button>
+                <Button xs="12" color="primary" className="btn-block" onClick={() => this.generateState()}>{t("utils.stateButtonLabel")}</Button>
                 <ListGroup>
                     <ListGroupItem key={0}>
                         <Row>{t("utils.info", {
@@ -146,7 +146,7 @@ class RandomGameState extends React.Component {
                             round: t("roundName", ROUND_PARAMETERS[this.state.round]),
                             seat: t(SEAT_NAMES[this.state.userSeat])
                         })}</Row>
-                        <Row>{t("utils.dora", {tile: getTileAsText(t, this.state.doraIndicator, true)})}</Row>
+                        <Row>{t("utils.dora", { tile: getTileAsText(t, this.state.doraIndicator, true) })}</Row>
                     </ListGroupItem>
                     {playerItems}
                 </ListGroup>

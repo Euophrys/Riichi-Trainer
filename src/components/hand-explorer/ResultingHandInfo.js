@@ -22,13 +22,13 @@ class ResultingHandInfo extends React.Component {
     toggleUpgrades() {
         this.setState({ upgradesCollapsed: !this.state.upgradesCollapsed });
     }
-    
+
     toggleShanten() {
         this.setState({ shantenCollapsed: !this.state.shantenCollapsed });
     }
 
     render() {
-        if(!this.props.hand) return <Row/>;
+        if (!this.props.hand) return <Row />;
 
         let upgradeTiles = this.props.upgrades.tiles.map((tile) => tile.tile);
         let total = this.props.upgrades.tiles.reduce((total, tile) => total + tile.resultingUkeire, 0);
@@ -39,12 +39,12 @@ class ResultingHandInfo extends React.Component {
             .map((tile) => {
                 return (
                     <Row>
-                        {t("explorer.discardInfo.draw", {draw: getTileAsText(t, tile.tile, false), discard: getTileAsText(t, tile.discard, false), count: tile.resultingUkeire})}
+                        {t("explorer.discardInfo.draw", { draw: getTileAsText(t, tile.tile, false), discard: getTileAsText(t, tile.discard, false), count: tile.resultingUkeire })}
                     </Row>
                 );
             });
 
-        let shantenResults = <Row/>;
+        let shantenResults = <Row />;
         let totalShantenUkeire = 0;
         let remainingTiles = ALL_TILES_REMAINING.slice();
 
@@ -52,7 +52,7 @@ class ResultingHandInfo extends React.Component {
             remainingTiles[i] = Math.max(0, remainingTiles[i] - this.props.hand[i]);
         }
 
-        if(!this.state.shantenCollapsed && this.props.shanten > 0) {
+        if (!this.state.shantenCollapsed && this.props.shanten > 0) {
             shantenResults = this.props.ukeire.tiles.map((tile) => {
                 let resultHand = this.props.hand.slice();
                 resultHand[tile]++;
@@ -65,7 +65,7 @@ class ResultingHandInfo extends React.Component {
                 totalShantenUkeire += discards[bestDiscard].value;
                 return (
                     <Row>
-                        {t("explorer.discardInfo.draw", {draw: getTileAsText(t, tile, false), discard: getTileAsText(t, bestDiscard, false), count: discards[bestDiscard].value})}
+                        {t("explorer.discardInfo.draw", { draw: getTileAsText(t, tile, false), discard: getTileAsText(t, bestDiscard, false), count: discards[bestDiscard].value })}
                     </Row>
                 );
             });
@@ -74,16 +74,16 @@ class ResultingHandInfo extends React.Component {
         return (
             <Row>
                 <Col xs="12">
-                    {t("explorer.discardInfo.discard", {tile: getTileAsText(t, this.props.discard, false)})}
+                    {t("explorer.discardInfo.discard", { tile: getTileAsText(t, this.props.discard, false) })}
                 </Col>
                 <Col xs="12">
                     {convertHandToAsciiSymbols(this.props.hand)}
                 </Col>
                 <Col xs="12">
-                    {t("explorer.discardInfo.shanten", {count: this.props.shanten})}
+                    {t("explorer.discardInfo.shanten", { count: this.props.shanten })}
                 </Col>
                 <Col xs="12">
-                    {t("explorer.discardInfo.ukeire", {count: this.props.ukeire.value, tiles: convertTilesToAsciiSymbols(this.props.ukeire.tiles)})}
+                    {t("explorer.discardInfo.ukeire", { count: this.props.ukeire.value, tiles: convertTilesToAsciiSymbols(this.props.ukeire.tiles) })}
                 </Col>
                 <Col xs="12">
                     <Button color="primary" onClick={this.toggleShanten}>{t("explorer.discardInfo.expand")}</Button>
@@ -93,13 +93,13 @@ class ResultingHandInfo extends React.Component {
                         <Card><CardBody>
                             {shantenResults}
                             <Row>
-                                {t("explorer.discardInfo.average", { average: Math.round(totalShantenUkeire / shantenResults.length)})}
+                                {t("explorer.discardInfo.average", { average: Math.round(totalShantenUkeire / shantenResults.length) })}
                             </Row>
                         </CardBody></Card>
                     </Collapse>
                 </Col>
                 <Col xs="12">
-                    {t("explorer.discardInfo.upgrades", {count: this.props.upgrades.value, tiles: convertTilesToAsciiSymbols(upgradeTiles)})}
+                    {t("explorer.discardInfo.upgrades", { count: this.props.upgrades.value, tiles: convertTilesToAsciiSymbols(upgradeTiles) })}
                 </Col>
                 <Col xs="12">
                     <Button color="primary" onClick={this.toggleUpgrades}>{t("explorer.discardInfo.expandUpgrades")}</Button>
@@ -109,7 +109,7 @@ class ResultingHandInfo extends React.Component {
                         <Card><CardBody>
                             {upgradeResults}
                             <Row>
-                                {t("explorer.discardInfo.average", {average: Math.round(total / upgradeResults.length)})}
+                                {t("explorer.discardInfo.average", { average: Math.round(total / upgradeResults.length) })}
                             </Row>
                         </CardBody></Card>
                     </Collapse>

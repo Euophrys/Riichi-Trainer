@@ -14,7 +14,7 @@ export default class SafetyHistoryData extends HistoryData {
     }
 
     getMessage(t, concise, verbose, spoilers) {
-        let result = t(`history.concise.discard`, {tile: getTileAsText(t, this.chosenTile, verbose)});
+        let result = t(`history.concise.discard`, { tile: getTileAsText(t, this.chosenTile, verbose) });
 
         result += ". ";
 
@@ -24,7 +24,7 @@ export default class SafetyHistoryData extends HistoryData {
             explanation: t(SAFETY_RATING_EXPLANATIONS[Math.floor(this.chosenSafety)])
         });
 
-        if(this.chosenSafety === this.bestSafety) {
+        if (this.chosenSafety === this.bestSafety) {
             result += t("analyzer.correctSafety");
         } else {
             result += t("analyzer.bestSafety", {
@@ -34,8 +34,8 @@ export default class SafetyHistoryData extends HistoryData {
             });
         }
 
-        if(this.drawnTile >= 0) {
-            result += t("history.verbose.draw", {tile: getTileAsText(t, this.drawnTile, verbose)});
+        if (this.drawnTile >= 0) {
+            result += t("history.verbose.draw", { tile: getTileAsText(t, this.drawnTile, verbose) });
         }
 
         result += super.getMessage(t);

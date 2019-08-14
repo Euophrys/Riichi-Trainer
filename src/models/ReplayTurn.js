@@ -10,7 +10,7 @@ export default class ReplayTurn {
         /** @type {number[]} */
         this.hand = hand;
         this.message = new LocalizedMessageChain();
-        if(message) this.message.appendMessage(message);
+        if (message) this.message.appendMessage(message);
         this.className = className;
         this.draw = draw;
         /** @type {number[]} */
@@ -25,10 +25,10 @@ export default class ReplayTurn {
      * @param {number} playerShanten The player's shanten.
      */
     riichiDeclared(who, playerShanten) {
-        this.message.appendLocalizedMessage("analyzer.otherRiichi", {number: who});
+        this.message.appendLocalizedMessage("analyzer.otherRiichi", { number: who });
 
-        if(playerShanten > 1) {
-            this.message.appendLocalizedMessage("analyzer.fold", {shanten: playerShanten});
+        if (playerShanten > 1) {
+            this.message.appendLocalizedMessage("analyzer.fold", { shanten: playerShanten });
         } else if (playerShanten === 1) {
             this.message.appendLocalizedMessage("analyzer.probablyFold");
         }
@@ -42,10 +42,10 @@ export default class ReplayTurn {
      * @param {Player} player The current player.
      * @param {number} tile The index of the tile drawn.
      */
-    tileDrawn(t, player, tile) {        
+    tileDrawn(t, player, tile) {
         this.hand = player.hand;
         this.draw = tile;
-        this.message.appendLocalizedMessage("analyzer.draw", {tile: getTileAsText(t, tile), hand: convertHandToTenhouString(player.hand)});
+        this.message.appendLocalizedMessage("analyzer.draw", { tile: getTileAsText(t, tile), hand: convertHandToTenhouString(player.hand) });
         this.message.appendLineBreak();
     }
 
@@ -70,26 +70,26 @@ export default class ReplayTurn {
      * @param {number} handUkeire The ukeire of the hand without considering tiles outside of it.
      */
     addEfficiencyMessage(t, chosenTile, chosenUkeire, bestTile, bestUkeire, shanten, handUkeire) {
-        this.message.appendLocalizedMessage("history.verbose.discard", {tile: getTileAsText(t, chosenTile, true)});
-        
+        this.message.appendLocalizedMessage("history.verbose.discard", { tile: getTileAsText(t, chosenTile, true) });
+
         if (chosenUkeire.value > 0 || shanten === 0) {
-            this.message.appendLocalizedMessage("history.verbose.acceptance", {count: chosenUkeire.value});
+            this.message.appendLocalizedMessage("history.verbose.acceptance", { count: chosenUkeire.value });
             this.message.appendMessage(` ${convertTilesToAsciiSymbols(chosenUkeire.tiles)} (${convertIndexesToTenhouTiles(chosenUkeire.tiles)})`);
         }
         else {
             this.message.appendLocalizedMessage("history.verbose.loweredShanten");
             this.className = "bg-danger text-white";
         }
-    
+
         this.message.appendLineBreak();
-    
+
         if (chosenUkeire.value < bestUkeire.value) {
             this.message.appendLocalizedMessage("history.verbose.optimal");
-            this.message.appendLocalizedMessage("history.verbose.optimalSpoiler", {tile: getTileAsText(t, bestTile, true)});
-            this.message.appendLocalizedMessage("history.verbose.acceptance", {count: bestUkeire.value});
+            this.message.appendLocalizedMessage("history.verbose.optimalSpoiler", { tile: getTileAsText(t, bestTile, true) });
+            this.message.appendLocalizedMessage("history.verbose.acceptance", { count: bestUkeire.value });
             this.message.appendMessage(` ${convertTilesToAsciiSymbols(bestUkeire.tiles)} (${convertIndexesToTenhouTiles(bestUkeire.tiles)})`);
-    
-            if(!this.className) {
+
+            if (!this.className) {
                 this.className = "bg-warning";
             }
         }
@@ -97,11 +97,11 @@ export default class ReplayTurn {
             this.message.appendLocalizedMessage("history.verbose.best");
             this.className = "bg-success text-white";
         }
-    
+
         if (shanten <= 0 && handUkeire === 0) {
             this.message.appendLocalizedMessage("history.verbose.exceptionalNoten");
         }
-    
+
         this.message.appendLineBreak();
     }
 
@@ -121,8 +121,8 @@ export default class ReplayTurn {
             explanation: SAFETY_RATING_EXPLANATIONS[Math.floor(chosenSafety / riichiCount)]
         });
         this.message.appendLineBreak();
-        
-        if(bestSafety === chosenSafety) {
+
+        if (bestSafety === chosenSafety) {
             this.message.appendLocalizedMessage("analyzer.correctSafety");
         } else {
             this.message.appendLocalizedMessage("analyzer.bestSafety", {
@@ -131,7 +131,7 @@ export default class ReplayTurn {
                 explanation: SAFETY_RATING_EXPLANATIONS[Math.floor(bestSafety / riichiCount)]
             });
         }
-    
+
         this.message.appendLineBreak();
     }
 }

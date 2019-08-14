@@ -37,34 +37,34 @@ class MainMenu extends React.Component {
 
     render() {
         let { t } = this.props;
-        let page = <Row/>;
-        switch(this.state.active) {
+        let page = <Row />;
+        switch (this.state.active) {
             case 0:
-                page = <UkeireQuiz/>; break;
+                page = <UkeireQuiz />; break;
             case 1:
-                page = <ReplayAnalysis/>; break;
+                page = <ReplayAnalysis />; break;
             case 2:
-                page = <UtilsState/>; break;
+                page = <UtilsState />; break;
             case 3:
-                page = <HandExplorer/>; break;
+                page = <HandExplorer />; break;
             case 4:
-                page = <SouthFourQuiz/>; break;
+                page = <SouthFourQuiz />; break;
             case 5:
-                page = <DefenseState/>; break;
+                page = <DefenseState />; break;
             default:
-                page = <UkeireQuiz/>;
+                page = <UkeireQuiz />;
         }
 
         return (
             <React.Fragment>
                 <Container className="mb-4">
                     <Row>
-                        <Button color="success" xs="4" disabled={this.state.active === 0} onClick={()=>this.onSetActivePage(0)}>{t("menu.trainer")}</Button>
-                        <Button xs="4" disabled={this.state.active === 1} onClick={()=>this.onSetActivePage(1)}>{t("menu.analyzer")}</Button>
-                        <Button xs="4" disabled={this.state.active === 4} onClick={()=>this.onSetActivePage(4)}>{t("menu.allLast")}</Button>
-                        <Button xs="4" disabled={this.state.active === 5} onClick={()=>this.onSetActivePage(5)}>{t("menu.defense")}</Button>
-                        <Button xs="4" disabled={this.state.active === 3} onClick={()=>this.onSetActivePage(3)}>{t("menu.explorer")}</Button>
-                        <Button xs="4" disabled={this.state.active === 2} onClick={()=>this.onSetActivePage(2)}>{t("menu.utils")}</Button>
+                        <Button color="success" xs="4" disabled={this.state.active === 0} onClick={() => this.onSetActivePage(0)}>{t("menu.trainer")}</Button>
+                        <Button xs="4" disabled={this.state.active === 1} onClick={() => this.onSetActivePage(1)}>{t("menu.analyzer")}</Button>
+                        <Button xs="4" disabled={this.state.active === 4} onClick={() => this.onSetActivePage(4)}>{t("menu.allLast")}</Button>
+                        <Button xs="4" disabled={this.state.active === 5} onClick={() => this.onSetActivePage(5)}>{t("menu.defense")}</Button>
+                        <Button xs="4" disabled={this.state.active === 3} onClick={() => this.onSetActivePage(3)}>{t("menu.explorer")}</Button>
+                        <Button xs="4" disabled={this.state.active === 2} onClick={() => this.onSetActivePage(2)}>{t("menu.utils")}</Button>
                     </Row>
                     <Row>
                         <Dropdown isOpen={this.state.dropdownOpen} toggle={() => this.toggleDropdown()}>
