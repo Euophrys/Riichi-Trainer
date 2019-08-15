@@ -118,7 +118,7 @@ export default class ReplayTurn {
         this.message.appendLocalizedMessage("analyzer.chosenSafety", {
             tile: getTileAsText(t, chosenTile, true),
             rating: chosenSafety,
-            explanation: SAFETY_RATING_EXPLANATIONS[Math.floor(chosenSafety / riichiCount)]
+            explanation: t(SAFETY_RATING_EXPLANATIONS[Math.floor(chosenSafety / riichiCount)])
         });
         this.message.appendLineBreak();
 
@@ -128,7 +128,7 @@ export default class ReplayTurn {
             this.message.appendLocalizedMessage("analyzer.bestSafety", {
                 tile: getTileAsText(t, bestTile, true),
                 rating: bestSafety,
-                explanation: SAFETY_RATING_EXPLANATIONS[Math.floor(bestSafety / riichiCount)]
+                explanation: t(SAFETY_RATING_EXPLANATIONS[Math.floor(bestSafety / riichiCount)])
             });
         }
 
