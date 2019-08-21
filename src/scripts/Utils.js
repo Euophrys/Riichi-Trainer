@@ -37,14 +37,14 @@ export function shuffleArray(array) {
     var currentIndex = array.length, tmp, randomIndex;
 
     while (0 !== currentIndex) {
-      randomIndex = randomInt(currentIndex);
-      currentIndex -= 1;
-  
-      tmp = array[currentIndex];
-      array[currentIndex] = array[randomIndex];
-      array[randomIndex] = tmp;
+        randomIndex = randomInt(currentIndex);
+        currentIndex -= 1;
+
+        tmp = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = tmp;
     }
-  
+
     return array;
 }
 

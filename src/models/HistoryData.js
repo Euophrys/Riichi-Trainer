@@ -18,16 +18,16 @@ export default class HistoryData {
      * @returns {string} The localized text associated with this history message.
      */
     getMessage(t, concise, verbose, spoilers) {
-        if(!this.message) return "";
+        if (!this.message) return "";
 
         return this.message.generateString(t);
     }
 
     /** Gets the class that this history message should have. */
     getClassName() {
-        if(!this.message || !this.message.key) return "";
+        if (!this.message || !this.message.key) return "";
 
-        if(this.message.key.indexOf("error") > -1) {
+        if (this.message.key.indexOf("error") > -1) {
             return "bg-danger text-white";
         }
 

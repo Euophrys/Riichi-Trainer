@@ -15,13 +15,13 @@ export function evaluateBestDiscard(ukeireObjects, dora = -1) {
             bests.push(i);
         }
     }
-    
+
     if (!bests.length) return -1;
     if (bests.length === 1) return bests[0];
-    
+
     // Avoid suggesting to discard the dora.
     if (bests.indexOf(dora) > -1) bests.splice(bests.indexOf(dora), 1);
-    
+
     // Suggest discarding winds first, then dragons, if any are present.
     if (bests.indexOf(32) > -1) return 32;
     if (bests.indexOf(33) > -1) return 33;
@@ -64,18 +64,18 @@ export function evaluateBestDiscard(ukeireObjects, dora = -1) {
 export function evaluateDiscardSafety(hand, opponentDiscards, remainingTiles, tilesDiscardedAfterRiichi, riichiTile) {
     let safetyRanks = Array(38).fill(0);
 
-    for(let i = 0; i < hand.length; i++) {
-        if(hand[i] <= 0) continue;
+    for (let i = 0; i < hand.length; i++) {
+        if (hand[i] <= 0) continue;
 
         // Genbutsu
-        if(opponentDiscards.indexOf(i) >= 0 || tilesDiscardedAfterRiichi.indexOf(i) >= 0) {
+        if (opponentDiscards.indexOf(i) >= 0 || tilesDiscardedAfterRiichi.indexOf(i) >= 0) {
             safetyRanks[i] = 15;
             continue;
         }
 
-        if(i < 30 && (i % 10 === 1 || i % 10 === 9)) {
+        if (i < 30 && (i % 10 === 1 || i % 10 === 9)) {
             // Terminal
-            if(checkIfIsSuji(i, opponentDiscards, remainingTiles, riichiTile)) {
+            if (checkIfIsSuji(i, opponentDiscards, remainingTiles, riichiTile)) {
                 safetyRanks[i] = 14 - remainingTiles[i];
             } else {
                 safetyRanks[i] = 5;
@@ -83,9 +83,9 @@ export function evaluateDiscardSafety(hand, opponentDiscards, remainingTiles, ti
             continue;
         }
 
-        if(i > 30) {
+        if (i > 30) {
             // Honor
-            switch(remainingTiles[i]) {
+            switch (remainingTiles[i]) {
                 case 0:
                     safetyRanks[i] = 14; break;
                 case 1:
@@ -93,13 +93,13 @@ export function evaluateDiscardSafety(hand, opponentDiscards, remainingTiles, ti
                 case 2:
                     safetyRanks[i] = 10; break;
                 default: // 3 remain
-                    safetyRanks[i] =  6; break;
+                    safetyRanks[i] = 6; break;
             }
             continue;
         }
 
-        if(checkIfIsSuji(i, opponentDiscards, remainingTiles, riichiTile)) {
-            switch(i % 10) {
+        if (checkIfIsSuji(i, opponentDiscards, remainingTiles, riichiTile)) {
+            switch (i % 10) {
                 case 4:
                 case 5:
                 case 6:
@@ -114,7 +114,7 @@ export function evaluateDiscardSafety(hand, opponentDiscards, remainingTiles, ti
                     break;
             }
         } else {
-            switch(i % 10) {
+            switch (i % 10) {
                 case 4:
                 case 5:
                 case 6:
@@ -148,21 +148,21 @@ function checkIfIsSuji(tile, opponentDiscards, remainingTiles, riichiTile) {
     let sujiAPassed = false;
     let sujiBPassed = false;
 
-    if(sujiA % 10 === 0 || Math.floor(sujiA / 10) !== Math.floor(tile / 10)) {
+    if (sujiA % 10 === 0 || Math.floor(sujiA / 10) !== Math.floor(tile / 10)) {
         sujiAPassed = true;
     } else {
         // Riichi suji isn't seen as safe, so just ignore it
-        if(sujiA === riichiTile) return false;
+        if (sujiA === riichiTile) return false;
 
         sujiAPassed = opponentDiscards.indexOf(sujiA) >= 0;
         sujiAPassed = sujiAPassed || remainingTiles[sujiA + 1] === 0 || remainingTiles[sujiA + 2] === 0;
     }
 
-    if(sujiB % 10 === 0 || Math.floor(sujiB / 10) !== Math.floor(tile / 10)) {
+    if (sujiB % 10 === 0 || Math.floor(sujiB / 10) !== Math.floor(tile / 10)) {
         sujiBPassed = true;
     } else {
         // Riichi suji isn't seen as safe, so just ignore it
-        if(sujiB === riichiTile) return false;
+        if (sujiB === riichiTile) return false;
 
         sujiBPassed = opponentDiscards.indexOf(sujiB) >= 0;
         sujiBPassed = sujiBPassed || remainingTiles[sujiB - 1] === 0 || remainingTiles[sujiB - 2] === 0;

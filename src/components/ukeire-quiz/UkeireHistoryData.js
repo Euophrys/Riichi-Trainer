@@ -18,12 +18,12 @@ export default class UkeireHistoryData extends HistoryData {
 
     getMessage(t, concise, verbose, spoilers) {
         let mode = "verbose";
-        if(concise) mode = "concise";
+        if (concise) mode = "concise";
 
-        let result = t(`history.${mode}.discard`, {tile: getTileAsText(t, this.chosenTile, verbose)});
+        let result = t(`history.${mode}.discard`, { tile: getTileAsText(t, this.chosenTile, verbose) });
 
         if (this.chosenUkeire.value > 0 || this.shanten === 0) {
-            result += t(`history.${mode}.acceptance`, {count: this.chosenUkeire.value});
+            result += t(`history.${mode}.acceptance`, { count: this.chosenUkeire.value });
         }
         else {
             result += t(`history.${mode}.loweredShanten`)
@@ -33,15 +33,15 @@ export default class UkeireHistoryData extends HistoryData {
             result += t(`history.${mode}.optimal`);
 
             if (spoilers) {
-                result += t(`history.${mode}.optimalSpoiler`, {tile: getTileAsText(t, this.bestTile, verbose)});
+                result += t(`history.${mode}.optimalSpoiler`, { tile: getTileAsText(t, this.bestTile, verbose) });
             }
 
-            result += t(`history.${mode}.acceptance`, {count: this.bestUkeire});
+            result += t(`history.${mode}.acceptance`, { count: this.bestUkeire });
         }
         else {
             result += t(`history.${mode}.best`);
         }
-        
+
         if (this.shanten <= 0 && this.handUkeire.value === 0) {
             result += t(`history.${mode}.exceptionalNoten`);
         }
@@ -53,12 +53,12 @@ export default class UkeireHistoryData extends HistoryData {
                 result += t(`history.${mode}.furitenWarning`);
             }
         }
-        
-        if(this.shanten > 0) {
-            if(this.drawnTile === -1) {
+
+        if (this.shanten > 0) {
+            if (this.drawnTile === -1) {
                 result += t(`history.${mode}.exhausted`);
             } else {
-                result += t(`history.${mode}.draw`, {tile: getTileAsText(t, this.drawnTile, verbose)})
+                result += t(`history.${mode}.draw`, { tile: getTileAsText(t, this.drawnTile, verbose) })
             }
         }
 

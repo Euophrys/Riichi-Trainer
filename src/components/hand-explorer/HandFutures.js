@@ -6,7 +6,7 @@ import { calculateStandardShanten } from '../../scripts/ShantenCalculator';
 import { ALL_TILES_REMAINING } from '../../Constants';
 
 function HandFutures(props) {
-    if(!props.hand) return <Row/>;
+    if (!props.hand) return <Row />;
 
     let tiles = [];
     let hand = props.hand.slice();
@@ -16,8 +16,8 @@ function HandFutures(props) {
         remainingTiles[i] = Math.max(0, remainingTiles[i] - hand[i]);
     }
 
-    for(let i = 0; i < hand.length; i++) {
-        if(hand[i] > 0) {
+    for (let i = 0; i < hand.length; i++) {
+        if (hand[i] > 0) {
             tiles.push(i);
         }
     }
@@ -38,18 +38,18 @@ function HandFutures(props) {
     });
 
     infoObjects = infoObjects.sort((a, b) => {
-        if(a.shanten !== b.shanten) {
+        if (a.shanten !== b.shanten) {
             return a.shanten - b.shanten;
         }
 
-        if(a.ukeire.value !== b.ukeire.value) {
+        if (a.ukeire.value !== b.ukeire.value) {
             return b.ukeire.value - a.ukeire.value;
         }
 
         return b.upgrades.value - a.upgrades.value;
     });
 
-    if(!props.showAll) {
+    if (!props.showAll) {
         infoObjects = infoObjects.filter((obj) => {
             let strictlyBetter = infoObjects.find((other) => {
                 return (other.shanten <= obj.shanten

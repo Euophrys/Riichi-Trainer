@@ -38,15 +38,15 @@ export default class Player {
     callTiles(calledTiles) {
         this.calledTiles.push(calledTiles);
 
-        if(calledTiles.length === 1) {
+        if (calledTiles.length === 1) {
             // kita
             this.hand[calledTiles[0]]--;
-        } else if(calledTiles.length === 4) {
+        } else if (calledTiles.length === 4) {
             // kan
             this.hand[calledTiles[0]] = 0;
         } else {
             // pon / chi
-            for(let i = 1; i < calledTiles.length; i++) {
+            for (let i = 1; i < calledTiles.length; i++) {
                 this.hand[calledTiles[i]]--;
             }
         }
@@ -60,7 +60,7 @@ export default class Player {
         this.discards.push(tile);
         this.hand[tile]--;
 
-        if(this.riichiTile === -2) {
+        if (this.riichiTile === -2) {
             // This player just declared riichi, so this is their riichi tile.
             this.riichiTile = tile;
             this.riichiIndex = this.discards.length - 1;

@@ -4,6 +4,7 @@ import { initReactI18next } from "react-i18next";
 import { en } from "./translations/en";
 import { ja } from "./translations/ja";
 import { fr } from "./translations/fr";
+import { pl } from "./translations/pl";
 
 i18n
   .use(LanguageDetector)
@@ -12,7 +13,8 @@ i18n
     resources: {
       en: en,
       ja: ja,
-      fr: fr
+      fr: fr,
+      pl: pl
     },
     fallbackLng: "en",
 
