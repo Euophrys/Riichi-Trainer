@@ -206,7 +206,7 @@ class SouthFourQuiz extends React.Component {
         let { t } = this.props;
         let scores = this.state.players.map((player, index) => {
             if (this.state.showDifferences) {
-                return <Row key={index}>{t(SEAT_NAMES[player.seat]) + ": " + player.points} ({index === 0 ? "YOU" : "+" + (player.points - this.state.players[0].points)})</Row>;
+                return <Row key={index}>{t(SEAT_NAMES[player.seat]) + ": " + player.points} ({index === 0 ? t("allLast.you") : "+" + (player.points - this.state.players[0].points)})</Row>;
             } else {
                 return <Row key={index}>{t(SEAT_NAMES[player.seat]) + ": " + player.points}</Row>;
             }

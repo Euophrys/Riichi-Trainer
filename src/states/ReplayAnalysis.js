@@ -263,7 +263,7 @@ class ReplayAnalysis extends React.Component {
                 <Row>
                     <Input type="file" id="fileInput" onChange={this.onFileChanged} />
                 </Row>
-                {this.state.rounds.length && (
+                {this.state.rounds.length ? (
                     <Row>
                         <Col xs="6">
                             <Dropdown isOpen={this.state.roundDropdownOpen} toggle={this.toggleRoundDropdown}>
@@ -286,8 +286,8 @@ class ReplayAnalysis extends React.Component {
                             </Dropdown>
                         </Col>
                     </Row>
-                )}
-                {this.state.turns.length && (
+                ) : ""}
+                {this.state.turns.length ? (
                     <React.Fragment>
                         <br />
                         <Hand tiles={currentTurn.hand} lastDraw={currentTurn.draw} />
@@ -318,7 +318,7 @@ class ReplayAnalysis extends React.Component {
                             </ListGroupItem>
                         </ListGroup>
                     </React.Fragment>
-                )}
+                ) : ""}
             </Container>
         );
     }
