@@ -535,7 +535,7 @@ class UkeireQuiz extends React.Component {
                         <Button className="btn-block" color={this.state.isComplete ? "success" : "warning"} onClick={() => this.onNewHand()}>{t("trainer.newHandButtonLabel")}</Button>
                     </Col>
                     <CopyButton hand={this.state.hand} />
-                    <LoadButton callback={this.onHandLoaded} />
+                    <LoadButton callback={this.loadHand} />
                 </Row>
                 <Row className="mt-2 no-gutters">
                     <History history={this.state.history} concise={this.state.settings.extraConcise} verbose={this.state.settings.verbose} spoilers={this.state.settings.spoilers} />
