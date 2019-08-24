@@ -1,4 +1,4 @@
-export const en = {
+export const ru = {
     translations: {
         values: {
             one: "единица",

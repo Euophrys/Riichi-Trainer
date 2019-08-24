@@ -74,9 +74,9 @@ class MainMenu extends React.Component {
                             <DropdownMenu>
                                 <DropdownItem onClick={() => this.changeLanguage("en")}>English</DropdownItem>
                                 <DropdownItem onClick={() => this.changeLanguage("ja")}>日本語</DropdownItem>
+                                <DropdownItem onClick={() => this.changeLanguage("ru")}>Русский</DropdownItem>
                                 <DropdownItem onClick={() => this.changeLanguage("fr")}>Français</DropdownItem>
                                 <DropdownItem onClick={() => this.changeLanguage("pl")}>polski</DropdownItem>
-                                <DropdownItem onClick={() => this.changeLanguage("ru")}>Русский</DropdownItem>
                             </DropdownMenu>
                         </Dropdown>
                     </Row>
