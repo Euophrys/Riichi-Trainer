@@ -5,6 +5,7 @@ import { en } from "./translations/en";
 import { ja } from "./translations/ja";
 import { fr } from "./translations/fr";
 import { pl } from "./translations/pl";
+import { ru } from "./translations/ru";
 
 i18n
   .use(LanguageDetector)
@@ -14,7 +15,8 @@ i18n
       en: en,
       ja: ja,
       fr: fr,
-      pl: pl
+      pl: pl,
+      ru: ru
     },
     fallbackLng: "en",
 
