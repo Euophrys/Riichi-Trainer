@@ -72,7 +72,7 @@ export const chs = {
                 furiten: "振听。",
                 furitenWarning: "请注意可能的振听。",
                 exhausted: "牌山已经没有牌了，下次好运！",
-                draw: "自摸：{{tile}}。"
+                draw: "你自摸：{{tile}}。"
             },
             verbose: {
                 discard: "You chose to discard the {{tile}}, which",
@@ -86,7 +86,7 @@ export const chs = {
                 furiten: " You are in furiten. You cannot win this hand by ron, because you have a winning tile in your discards.",
                 furitenWarning: " Be careful of future furiten. Some of the tiles that improve your hand are in your discards.",
                 exhausted: " There are no tiles left in the wall. Better luck next time! ",
-                draw: " You drew the {{tile}}. "
+                draw: "你自摸{{tile}}。"
             }
         },
         discards: {
@@ -228,27 +228,27 @@ export const chs = {
             probablyFold: "You are one tile from ready. You should consider folding.",
             win: "Player {{number}} won the round.",
             kandora: "The new dora indicator is the {{tile}}.",
-            draw: "You drew the {{tile}}. ({{hand}})",
-            chosenSafety: "The {{tile}}'s safety rating is {{rating}}. ({{- explanation}}) ",
-            correctSafety: "That was the safest tile.",
-            bestSafety: "Safest tile: {{tile}}, with a safety rating of {{rating}}. ({{- explanation}})",
+            draw: "自摸{{tile}}。（{{hand}}）",
+            chosenSafety: "{{tile}}的安全等级是{{rating}}。（{{- explanation}}）",
+            correctSafety: "那是最安全的牌。",
+            bestSafety: "最安全的牌是{{tile}}，安全等级{{rating}}。（{{- explanation}}）",
             safetyExplanations: {
                 zero: "You shouldn't see this message. Tell me if you do.",
-                one: "non-suji 4/5/6",
-                two: "non-suji 3/7",
-                three: "non-suji 2/8",
+                one: "无筋 4/5/6",
+                two: "无筋 3/7",
+                three: "无筋 2/8",
                 four: "one-chance",
-                five: "non-suji 1/9",
-                six: "first honor tile",
-                seven: "suji 3/7",
-                eight: "suji 2/8",
-                nine: "suji 4/5/6",
-                ten: "second honor tile",
-                eleven: "first suji terminal",
-                twelve: "second suji terminal",
-                thirteen: "third suji terminal / third honor",
-                fourteen: "fourth suji terminal / fourth honor",
-                fifteen: "genbutsu, 100% safe"
+                five: "无筋 1/9",
+                six: "生张 字牌",
+                seven: "筋牌 3/7",
+                eight: "筋牌 2/8",
+                nine: "筋牌 4/5/6",
+                ten: "现一 字牌",
+                eleven: "生张 筋牌 老头牌",
+                twelve: "现一 筋牌 老头牌",
+                thirteen: "现二 筋牌 老头牌 / 现二 字牌",
+                fourteen: "绝张 筋牌 老头牌 / 绝张 字牌",
+                fifteen: "现物，100% 安全"
             }
         },
         explorer: {
@@ -269,15 +269,15 @@ export const chs = {
             }
         },
         defense: {
-            instructions: "Discard the safest tile.",
-            finalHands: "Final Hands:",
-            hand: "{{player}}: {{hand}}",
-            safetyRatings: "Safety Ratings",
-            averagedSafetyRating: "Against multiple riichis, the safety ratings will be averaged together, and the highest chosen as best.",
+            instructions: "请打最安全的牌。",
+            finalHands: "最终手牌：",
+            hand: "{{player}}：{{hand}}",
+            safetyRatings: "安全等级",
+            averagedSafetyRating: "针对多家立直，安全等级将一并取平均值，并选择最高的为最佳。",
             safetyRating: "{{rating}}: {{- explanation}}",
-            riichiCount: "Number of riichis: ",
-            minTurns: "Minimum turns before a riichi is declared: ",
-            tilesInHand: "Number of tiles in hand: "
+            riichiCount: "立直数：",
+            minTurns: "立直前最小巡数：",
+            tilesInHand: "手牌枚数："
         },
         utils: {
             convertHeader: "Hand Conversion",
