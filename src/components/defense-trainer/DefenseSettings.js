@@ -13,7 +13,7 @@ class Settings extends React.Component {
                 verbose: true,
                 numberOfRiichis: 1,
                 minimumTurnsBeforeRiichi: 5,
-                tilesInHand: 13,
+                tilesInHand: 14,
             }
         };
 
@@ -34,7 +34,7 @@ class Settings extends React.Component {
                     verbose: savedSettings.verbose,
                     numberOfRiichis: savedSettings.numberOfRiichis || 1,
                     minimumTurnsBeforeRiichi: savedSettings.minimumTurnsBeforeRiichi || 4,
-                    tilesInHand: savedSettings.tilesInHand || 13
+                    tilesInHand: savedSettings.tilesInHand || 14
                 }
 
                 this.setState({
