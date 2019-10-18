@@ -22,7 +22,7 @@ export const chs = {
         },
         suits: {
             characters: "万",
-            circles: "筒",
+            circles: "饼",
             bamboo: "索"
         },
         shuupai: "{{value}}{{suit}}",
@@ -100,7 +100,7 @@ export const chs = {
             buttonLabel: "设置",
             tilesAllowed: "允许的牌种类：",
             characters: "万子",
-            circles: "筒子",
+            circles: "饼子",
             bamboo: "索子",
             honors: "字牌",
             sanma: "三麻",
