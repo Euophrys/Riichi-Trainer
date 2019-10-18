@@ -37,7 +37,7 @@ export const chs = {
             disclaimer: "免责声明：这个工具将训练你在当前巡目中使手牌效率最大化的能力。它不会帮你在未来巡目最大化程度地提高效率，也无法了解何时应该忽略效率追求打点。训练工具所建议的方式并不是打麻将的最佳方法，但你会有想要这么打的地方。高手并非总是这么打，但是高手都可以这样玩。确保通过进一步阅读补充本训练内容，以了解何时这么打可能不是最佳玩法。此外，查看设置以进行更有针对性的培训。",
             instructions: "请点击你要打的牌。",
             start: "开始了一副新的手牌：{{hand}}",
-            complete: "恭喜你听牌了！你的效率是 {{achieved}}/{{total}}或{{percent}}%.",
+            complete: "恭喜你听牌了！你的效率是{{achieved}}/{{total}}或{{percent}}%.",
             newHandButtonLabel: "新的手牌",
             loadButtonLabel: "加载手牌",
             roundWind: "场风：",
@@ -59,7 +59,7 @@ export const chs = {
         },
         history: {
             label: "手牌历史",
-            tenhouLinkText: "[Accepted Tiles]",
+            tenhouLinkText: "【天凤牌理】",
             concise: {
                 discard: "舍牌{{tile}}",
                 acceptance: "（{{count}}枚进张）。",
@@ -213,7 +213,7 @@ export const chs = {
             discards: "Tiles in your discards: {{symbols}} ({{tiles}})",
             calls: "Your Calls: {{calls}}",
             callsSeparator: ", ",
-            tenhouLinkText: "[Tenhou Ukeire Analysis]",
+            tenhouLinkText: "【天凤牌理】",
             replayError: "Send me this replay, something broke.",
             noName: "Unknown",
             startingHand: "Your starting hand is {{hand}}. It's {{count}} tile from ready. The dora indicator is {{dora}}.",
