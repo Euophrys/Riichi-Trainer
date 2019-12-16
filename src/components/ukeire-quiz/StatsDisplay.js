@@ -47,28 +47,28 @@ class StatsDisplay extends React.Component {
                             {t("stats.info")}
                         </Row>
                         <Row>
-                            {t("stats.ready", {count: this.props.values.totalTenpai})}
+                            {t("stats.ready", { count: this.props.values.totalTenpai })}
                         </Row>
                         <Row>
-                            {t("stats.discards", {count: this.props.values.totalDiscards})}
+                            {t("stats.discards", { count: this.props.values.totalDiscards })}
                         </Row>
                         <Row>
-                            {t("stats.average", {average: averageDiscards})}
+                            {t("stats.average", { average: averageDiscards })}
                         </Row>
                         <Row>
-                            {t("stats.optimal", {count: this.props.values.totalOptimalDiscards})}
+                            {t("stats.optimal", { count: this.props.values.totalOptimalDiscards })}
                         </Row>
                         <Row>
-                            {t("stats.optimalRate", {percent: optimalDiscardRate, achieved: this.props.values.totalOptimalDiscards, total: this.props.values.totalDiscards})}
+                            {t("stats.optimalRate", { percent: optimalDiscardRate, achieved: this.props.values.totalOptimalDiscards, total: this.props.values.totalDiscards })}
                         </Row>
                         <Row>
-                            {t("stats.efficiency", {count: this.props.values.totalEfficiency})}
+                            {t("stats.efficiency", { count: this.props.values.totalEfficiency })}
                         </Row>
                         <Row>
-                            {t("stats.possible", {count: this.props.values.totalPossibleEfficiency})}
+                            {t("stats.possible", { count: this.props.values.totalPossibleEfficiency })}
                         </Row>
                         <Row>
-                            {t("stats.overall", {percent: efficiency, achieved: this.props.values.totalEfficiency, total: this.props.values.totalPossibleEfficiency})}
+                            {t("stats.overall", { percent: efficiency, achieved: this.props.values.totalEfficiency, total: this.props.values.totalPossibleEfficiency })}
                         </Row>
                         <Row className="mt-4">
                             <Button color="danger" onClick={this.toggleConfirm}>{t("stats.reset")}</Button>

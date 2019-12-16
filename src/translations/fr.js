@@ -202,7 +202,7 @@ export const fr = {
             instructions7: "Vous pouvez également charger directement les fichiers XML de replay si vous avez un programme qui les récupère pour vous.",
             instructions8: "L'avertissement de l'entraînement à l'efficacité s'appique aussi ici",
             instructions9: "Pour les évaluations de sécurité, plus la cote est élevée, mieux c'est. 1 est le pire, et 15 est le meilleur.",
-            URLplaceholder: "URL de replay Tenhou",
+            URLplaceholder: "URL de replay",
             invalidURL: "URL invalide",
             downloadInstructions: "Faites un clic droit sur ce lien et sélectionnez \"Enregistrer sous...\" !",
             roundSelect: "Sélectionner une main",

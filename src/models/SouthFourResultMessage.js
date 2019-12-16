@@ -8,15 +8,15 @@ export default class SouthFourResultMessage {
         this.scores = [];
         this.feedback = "";
         this.placement = 0;
-        this.requiredScore = {han: 1, fu: 20};
+        this.requiredScore = { han: 1, fu: 20 };
     }
 
     generateJSX(t, showDifferences) {
-        let feedback = t(this.feedback, {placement: t(PLACEMENTS[this.placement])});
+        let feedback = t(this.feedback, { placement: t(PLACEMENTS[this.placement]) });
 
         return (
             <Container>
-                <Row>{feedback}&nbsp;<span>{t("allLast.score", {han: this.requiredScore.han, fu: this.requiredScore.fu})}</span></Row>
+                <Row>{feedback}&nbsp;<span>{t("allLast.score", { han: this.requiredScore.han, fu: this.requiredScore.fu })}</span></Row>
                 <Row>{t("allLast.results")}</Row>
                 <Row>{t(SEAT_NAMES[this.playerSeats[0]]) + ": " + this.scores[0]} {showDifferences ? `(${t("allLast.you")})` : ""}</Row>
                 <Row>{t(SEAT_NAMES[this.playerSeats[1]]) + ": " + this.scores[1]} {showDifferences ? `(${this.scores[1] - this.scores[0]})` : ""}</Row>

@@ -202,7 +202,7 @@ export const en = {
             instructions7: "You can also just upload replay XML files directly if you have a program that fetches them for you.",
             instructions8: "The disclaimer from the efficiency trainer applies here as well.",
             instructions9: "For safety ratings, higher is better. 1 is the worst, and 15 is the best.",
-            URLplaceholder: "Tenhou Replay URL",
+            URLplaceholder: "Replay URL",
             invalidURL: "Invalid URL",
             downloadInstructions: "Right click this link and choose Save As!",
             roundSelect: "Select a Round",

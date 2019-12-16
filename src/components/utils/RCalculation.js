@@ -31,42 +31,42 @@ class RCalculation extends React.Component {
         let thirdRate = parseFloat(document.getElementById("thirdRate").value);
         let fourthRate = parseFloat(document.getElementById("fourthRate").value);
 
-        if(isNaN(currentR)) {
-            this.setState({output: "Current R is not a number."});
+        if (isNaN(currentR)) {
+            this.setState({ output: "Current R is not a number." });
             return;
         }
-        if(isNaN(targetR)) {
-            this.setState({output: "Target R is not a number."});
+        if (isNaN(targetR)) {
+            this.setState({ output: "Target R is not a number." });
             return;
         }
-        if(isNaN(games)) {
-            this.setState({output: "Game count is not a number."});
+        if (isNaN(games)) {
+            this.setState({ output: "Game count is not a number." });
             return;
         }
-        if(isNaN(opponentR)) {
-            this.setState({output: "Opponent average R is not a number."});
+        if (isNaN(opponentR)) {
+            this.setState({ output: "Opponent average R is not a number." });
             return;
         }
-        if(isNaN(firstRate)) {
-            this.setState({output: "First rate is not a number."});
+        if (isNaN(firstRate)) {
+            this.setState({ output: "First rate is not a number." });
             return;
         }
-        if(isNaN(secondRate)) {
-            this.setState({output: "Second rate is not a number."});
+        if (isNaN(secondRate)) {
+            this.setState({ output: "Second rate is not a number." });
             return;
         }
-        if(isNaN(thirdRate)) {
-            this.setState({output: "Third rate is not a number."});
+        if (isNaN(thirdRate)) {
+            this.setState({ output: "Third rate is not a number." });
             return;
         }
-        if(isNaN(fourthRate)) {
-            this.setState({output: "Fourth rate is not a number."});
+        if (isNaN(fourthRate)) {
+            this.setState({ output: "Fourth rate is not a number." });
             return;
         }
 
         let totalRate = firstRate + secondRate + thirdRate + fourthRate;
-        if(totalRate < 98 || totalRate > 102) {
-            this.setState({output: "Placements don't add up to 100%."});
+        if (totalRate < 98 || totalRate > 102) {
+            this.setState({ output: "Placements don't add up to 100%." });
             return;
         }
 
@@ -79,7 +79,7 @@ class RCalculation extends React.Component {
         let fourthRChange = adjustment * (-30 + ((averageRate - currentR) / 40));
 
         let averageChange =
-              firstRChange * firstRate 
+            firstRChange * firstRate
             + secondRChange * secondRate
             + thirdRChange * thirdRate
             + fourthRChange * fourthRate;
@@ -92,11 +92,11 @@ class RCalculation extends React.Component {
         if (averageChange === 0
             || (averageChange < 0 && higherTargetR)
             || (averageChange > 0 && !higherTargetR)) {
-            this.setState({output: `You will never reach your goal with those placements. ${output}`});
+            this.setState({ output: `You will never reach your goal with those placements. ${output}` });
             return;
         }
 
-        this.setState({output: output});
+        this.setState({ output: output });
     }
 
     render() {

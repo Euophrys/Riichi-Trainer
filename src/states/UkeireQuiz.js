@@ -138,22 +138,22 @@ class UkeireQuiz extends React.Component {
      * @param {TileIndex} roundWind The round.
      */
     setNewHandState(hand, availableTiles, tilePool, history, dora, lastDraw = false, seatWind = false, roundWind = false) {
-        history.unshift(new HistoryData(new LocalizedMessage("trainer.start", {hand: convertHandToTenhouString(hand)})));
+        history.unshift(new HistoryData(new LocalizedMessage("trainer.start", { hand: convertHandToTenhouString(hand) })));
 
         let players = [];
         let numberOfPlayers = this.state.settings.threePlayer ? 3 : 4;
         seatWind = seatWind || this.pickSeatWind();
 
-        for(let i = 0; i < numberOfPlayers; i++) {
+        for (let i = 0; i < numberOfPlayers; i++) {
             let player = new Player();
             player.name = PLAYER_NAMES[i];
             player.seat = (seatWind - 31 + i) % numberOfPlayers;
             players.push(player);
         }
 
-        if(lastDraw !== false) hand[lastDraw]--;
+        if (lastDraw !== false) hand[lastDraw]--;
         let shuffle = convertHandToTileIndexArray(hand);
-        if(lastDraw !== false) hand[lastDraw]++;
+        if (lastDraw !== false) hand[lastDraw]++;
         shuffle = shuffleArray(shuffle);
 
         this.setState({
@@ -326,7 +326,7 @@ class UkeireQuiz extends React.Component {
         let tilePool = this.state.tilePool.slice();
         let drawnTile = -1;
 
-        let historyData = new UkeireHistoryData (
+        let historyData = new UkeireHistoryData(
             chosenTile,
             chosenUkeire,
             bestTile,
@@ -339,7 +339,7 @@ class UkeireQuiz extends React.Component {
 
         if (shanten <= 0 && handUkeire.value > 0) {
             // If the hand is tenpai, and has winning tiles outside of the hand, training is complete
-            let message = new LocalizedMessage("trainer.complete", {achieved: achievedTotal, total: possibleTotal, percent: Math.floor(achievedTotal / possibleTotal * 1000) / 10})
+            let message = new LocalizedMessage("trainer.complete", { achieved: achievedTotal, total: possibleTotal, percent: Math.floor(achievedTotal / possibleTotal * 1000) / 10 })
             historyData.message = message;
             isComplete = true;
         }
@@ -367,15 +367,15 @@ class UkeireQuiz extends React.Component {
                 isComplete = true;
             }
         }
-        
+
         let history = this.state.history;
         history.unshift(historyData);
 
         let shuffle = this.state.shuffle.slice();
 
-        if(chosenTile !== this.state.lastDraw) {
-            for(let i = 0; i < shuffle.length; i++) {
-                if(shuffle[i] === chosenTile) {
+        if (chosenTile !== this.state.lastDraw) {
+            for (let i = 0; i < shuffle.length; i++) {
+                if (shuffle[i] === chosenTile) {
                     shuffle[i] = this.state.lastDraw;
                     break;
                 }
@@ -455,7 +455,7 @@ class UkeireQuiz extends React.Component {
         }
 
         let dora = loadData.dora;
-        if(dora !== false) {
+        if (dora !== false) {
             dora = Math.min(Math.max(0, dora), 37);
             remainingTiles[dora]--;
         }
@@ -467,7 +467,7 @@ class UkeireQuiz extends React.Component {
             return;
         }
 
-        if(dora === false) {
+        if (dora === false) {
             if (tilePool.length > 0) {
                 dora = removeRandomItem(tilePool);
                 availableTiles[dora]--;
@@ -478,16 +478,16 @@ class UkeireQuiz extends React.Component {
         let seatWind = loadData.seatWind;
         let draw = loadData.draw;
 
-        if(roundWind !== false) {
+        if (roundWind !== false) {
             roundWind = Math.min(Math.max(1, roundWind), 4) + 30;
         }
-        if(seatWind !== false) {
+        if (seatWind !== false) {
             seatWind = Math.min(Math.max(1, seatWind), 4) + 30;
         }
-        if(draw !== false) {
+        if (draw !== false) {
             draw = Math.min(Math.max(0, draw), 37);
             // Ensure the drawn tile is in the hand
-            if(hand[draw] <= 0) draw = false;
+            if (hand[draw] <= 0) draw = false;
         }
 
         this.setNewHandState(hand, availableTiles, tilePool, [], dora, draw, seatWind, roundWind);
@@ -520,24 +520,24 @@ class UkeireQuiz extends React.Component {
                 <Row className="mb-2 mt-2">
                     <span>{t("trainer.instructions")}</span>
                 </Row>
-                { this.state.settings.sort
+                {this.state.settings.sort
                     ? <Hand tiles={this.state.hand}
                         lastDraw={this.state.lastDraw}
                         onTileClick={this.onTileClicked}
                         showIndexes={this.state.settings.showIndexes && !blind}
                         blind={blind} />
                     : <SortedHand tiles={this.state.shuffle}
-                        lastDraw={this.state.lastDraw} 
-                        onTileClick={this.onTileClicked} 
+                        lastDraw={this.state.lastDraw}
+                        onTileClick={this.onTileClicked}
                         showIndexes={this.state.settings.showIndexes && !blind}
-                        blind={blind}/>
+                        blind={blind} />
                 }
                 <Row className="mt-2">
                     <Col xs="6" sm="3" md="3" lg="2">
                         <Button className="btn-block" color={this.state.isComplete ? "success" : "warning"} onClick={() => this.onNewHand()}>{t("trainer.newHandButtonLabel")}</Button>
                     </Col>
                     <CopyButton hand={this.state.hand} />
-                    <LoadButton callback={this.onHandLoaded} />
+                    <LoadButton callback={this.loadHand} />
                 </Row>
                 <Row className="mt-2 no-gutters">
                     <History history={this.state.history} concise={this.state.settings.extraConcise} verbose={this.state.settings.verbose} spoilers={this.state.settings.spoilers}/>

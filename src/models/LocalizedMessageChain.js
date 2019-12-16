@@ -66,8 +66,8 @@ export default class LocalizedMessageChain {
     generateArray(t) {
         let result = [];
 
-        for(let i = 0; i < this.messages.length; i++) {
-            if(typeof this.messages[i] === "object") {
+        for (let i = 0; i < this.messages.length; i++) {
+            if (typeof this.messages[i] === "object") {
                 result.push(this.messages[i].generateString(t));
             } else if (typeof this.messages[i] === "string" || typeof this.messages[i] === "number") {
                 result.push(this.messages[i]);

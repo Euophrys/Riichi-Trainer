@@ -38,6 +38,7 @@ import chun from '../tileImages/chun.png';
 import back from '../tileImages/back.png';
 import { convertHandToTenhouString } from './HandConversions';
 import { SUIT_CHARACTERS, ASCII_TILES } from '../Constants';
+import { characterToSuit } from './Utils';
 
 /** Array of png images for each tile. */
 const images = [
@@ -79,11 +80,11 @@ export function getTileAsText(t, index, verbose = true) {
         const value = valueKeys[index % 10];
         const suit = suitKeys[Math.floor(index / 10)];
 
-        return t("shuupai", {value: t(value), suit: t(suit)});
+        return t("shuupai", { value: t(value), suit: t(suit) });
     }
     else {
         const value = index % 10;
-        
+
         const suit = SUIT_CHARACTERS[Math.floor(index / 10)];
 
         return `${value}${suit}`;
@@ -122,14 +123,14 @@ export function convertRedFives(tiles) {
  * @returns {string|string[]} The ascii representation of the tile(s).
  */
 export function convertTilesToAsciiSymbols(tiles) {
-    if(typeof tiles === 'number') {
+    if (typeof tiles === 'number') {
         return ASCII_TILES[tiles];
     }
-    
+
     if (typeof tiles === 'object' && tiles.length) {
         let result = "";
 
-        for(let i = 0; i < tiles.length; i++) {
+        for (let i = 0; i < tiles.length; i++) {
             result += ASCII_TILES[tiles[i]];
         }
 
@@ -147,10 +148,10 @@ export function convertTilesToAsciiSymbols(tiles) {
 export function convertIndexesToTenhouTiles(indexes) {
     let hand = Array(38).fill(0);
 
-    if(typeof indexes === 'number') {
+    if (typeof indexes === 'number') {
         hand[indexes] = 1;
     } else if (typeof indexes === 'object' && indexes.length) {
-        for(let i = 0; i < indexes.length; i++) {
+        for (let i = 0; i < indexes.length; i++) {
             hand[indexes[i]] += 1;
         }
     } else {
@@ -180,7 +181,7 @@ export function convertTenhouTilesToIndex(tenhouTiles) {
  * @param {number} tenhouTiles The Tenhou-style tile index to convert.
  * @returns {TileIndex} The converted tile index.
  */
-function convertTenhouTileToIndex(tenhouTile){
+function convertTenhouTileToIndex(tenhouTile) {
     let base = Math.floor(tenhouTile / 4);
     let index = tenhouToIndexLookup[base];
 
@@ -202,3 +203,11 @@ const tenhouToIndexLookup = [
     21, 22, 23, 24, 25, 26, 27, 28, 29,
     31, 32, 33, 34, 35, 36, 37
 ];
+
+/**
+ * Converts a string representation of a tile into the index.
+ * @param {string} tile A string tile, such as 3z
+ */
+export function convertStringTileToIndex(tile) {
+    return parseInt(tile.charAt(0)) + characterToSuit(tile.charAt(1));
+}

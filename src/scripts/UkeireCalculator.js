@@ -21,7 +21,7 @@ export function calculateDiscardUkeire(hand, remainingTiles, shantenFunction, ba
     // Check the ukeire of each hand that results from each discard
     for (let handIndex = 0; handIndex < convertedHand.length; handIndex++) {
         if (convertedHand[handIndex] === 0) {
-            results[handIndex] = {value: 0, tiles: []};
+            results[handIndex] = { value: 0, tiles: [] };
             continue;
         }
 
@@ -88,7 +88,7 @@ export function calculateUkeire(hand, remainingTiles, shantenFunction, baseShant
 export function calculateDiscardUkeireUpgrades(hand, remainingTiles, shantenFunction, baseShanten = -2) {
     let results = Array(hand.length).fill(0);
     let convertedHand = convertRedFives(hand);
-    
+
     if (baseShanten === -2) {
         baseShanten = shantenFunction(convertedHand);
     }
@@ -154,7 +154,7 @@ export function calculateUkeireUpgrades(hand, remainingTiles, shantenFunction, b
 
                 if (newUkeire > baseUkeire) {
                     value += convertedTiles[addedTile];
-                    tiles.push({tile: addedTile, discard: bestDiscard, count: convertedTiles[addedTile], resultingUkeire: newUkeire});
+                    tiles.push({ tile: addedTile, discard: bestDiscard, count: convertedTiles[addedTile], resultingUkeire: newUkeire });
                 }
 
                 convertedHand[bestDiscard]++;
