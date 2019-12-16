@@ -28,6 +28,7 @@ function Hand(props) {
                         tile={i - 5}
                         displayTile={hasLastDraw && props.blind ? 30 : i - 5}
                         onClick={props.onTileClick}
+                        showIndexes={props.showIndexes}
                     />
                 ));
             }
@@ -43,6 +44,7 @@ function Hand(props) {
                     tile={i}
                     displayTile={hasLastDraw && props.blind ? 30 : i}
                     onClick={props.onTileClick}
+                    showIndexes={props.showIndexes}
                 />
             ));
         }
@@ -57,6 +59,7 @@ function Hand(props) {
                 tile={lastDraw}
                 displayTile={lastDraw}
                 onClick={props.onTileClick}
+                showIndexes={props.showIndexes}
             />
         ));
     }

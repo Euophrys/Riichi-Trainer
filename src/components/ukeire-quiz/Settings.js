@@ -17,6 +17,7 @@ class Settings extends React.Component {
                 threePlayer: false,
                 redFives: 3,
                 verbose: true,
+                showIndexes: false,
                 extraConcise: false,
                 spoilers: true,
                 reshuffle: true,
@@ -49,6 +50,7 @@ class Settings extends React.Component {
                     threePlayer: savedSettings.threePlayer,
                     redFives: savedSettings.redFives || 3,
                     verbose: savedSettings.verbose,
+                    showIndexes: savedSettings.showIndexes,
                     extraConcise: savedSettings.extraConcise,
                     spoilers: savedSettings.spoilers,
                     reshuffle: savedSettings.reshuffle,
@@ -147,6 +149,13 @@ class Settings extends React.Component {
                                 <Input className="form-check-input" type="checkbox" id="verbose"
                                     checked={this.state.settings.verbose} onChange={this.onSettingChanged} />
                                 <Label className="form-check-label" for="verbose">{t("settings.verbose")}</Label>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col className="form-check form-check-inline">
+                                <Input className="form-check-input" type="checkbox" id="showIndexes"
+                                    checked={this.state.settings.showIndexes} onChange={this.onSettingChanged} />
+                                <Label className="form-check-label" for="showIndexes">{t("settings.showIndexes")}</Label>
                             </Col>
                         </Row>
                         <Row>

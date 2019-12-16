@@ -106,6 +106,7 @@ export const fr = {
             sanma: "Règles du mahjong à 3 joueurs",
             redFives: "Nombre de cinq rouges:",
             verbose: "Nom complet des tuiles (\"un de bambou\" ou \"1s\")",
+            showIndexes: "Afficher les étiquettes de tuile",
             concise: "Historique abrégé",
             spoilers: "Montrer quelle était la meilleure option",
             shuffle: "Remélanger les tuiles défaussées dans le mur avant de commencer une nouvelle main",

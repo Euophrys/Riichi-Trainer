@@ -106,6 +106,7 @@ export const en = {
             sanma: "Three player rules",
             redFives: "Number of Red Fives:",
             verbose: "Verbose tile names (\"one of bamboo\" vs \"1s\")",
+            showIndexes: "Show Tile Indexes",
             concise: "Concise history",
             spoilers: "Show what the best option was",
             shuffle: "Shuffle discarded tiles back into the wall after starting a new hand",

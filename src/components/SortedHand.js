@@ -20,6 +20,7 @@ function SortedHand(props) {
                 key={index++}
                 tile={hand[i]}
                 onClick={props.onTileClick}
+                showIndexes={props.showIndexes}
             />
         ));
     }
@@ -30,6 +31,7 @@ function SortedHand(props) {
                 key={index++}
                 tile={lastDraw}
                 onClick={props.onTileClick}
+                showIndexes={props.showIndexes}
             />
         ));
     }

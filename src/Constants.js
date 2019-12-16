@@ -9,6 +9,14 @@ export const ALL_TILES_REMAINING = [
 /** @readonly Array of characters representing each suit. */
 export const SUIT_CHARACTERS = ["m", "p", "s", "z"];
 
+/** @readonly Array of indexes to show on the tiles. */
+export const TILE_INDEXES = [
+    5, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+    5, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+    5, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+    " ", "E", "S", "W", "N", "W", "G", "R"
+];
+
 /** @readonly Array of ascii characters for each tile. */
 export const ASCII_TILES = [
     "🀋", "🀇", "🀈", "🀉", "🀊", "🀋", "🀌", "🀍", "🀎", "🀏",

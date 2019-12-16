@@ -516,7 +516,7 @@ class UkeireQuiz extends React.Component {
                 <Row>
                     {this.state.disclaimerSeen ? "" : <span>{t("trainer.disclaimer")}</span>}
                 </Row>
-                <ValueTileDisplay roundWind={this.state.roundWind} seatWind={this.state.seatWind} dora={this.state.dora} />
+                <ValueTileDisplay roundWind={this.state.roundWind} seatWind={this.state.seatWind} dora={this.state.dora} showIndexes={this.state.settings.showIndexes} />
                 <Row className="mb-2 mt-2">
                     <span>{t("trainer.instructions")}</span>
                 </Row>
@@ -524,10 +524,12 @@ class UkeireQuiz extends React.Component {
                     ? <Hand tiles={this.state.hand}
                         lastDraw={this.state.lastDraw}
                         onTileClick={this.onTileClicked}
+                        showIndexes={this.state.settings.showIndexes && !blind}
                         blind={blind} />
                     : <SortedHand tiles={this.state.shuffle}
                         lastDraw={this.state.lastDraw}
                         onTileClick={this.onTileClicked}
+                        showIndexes={this.state.settings.showIndexes && !blind}
                         blind={blind} />
                 }
                 <Row className="mt-2">
@@ -538,8 +540,8 @@ class UkeireQuiz extends React.Component {
                     <LoadButton callback={this.loadHand} />
                 </Row>
                 <Row className="mt-2 no-gutters">
-                    <History history={this.state.history} concise={this.state.settings.extraConcise} verbose={this.state.settings.verbose} spoilers={this.state.settings.spoilers} />
-                    <DiscardPool players={this.state.players} discardCount={this.state.discardCount} wallCount={this.state.tilePool && this.state.tilePool.length} />
+                    <History history={this.state.history} concise={this.state.settings.extraConcise} verbose={this.state.settings.verbose} spoilers={this.state.settings.spoilers}/>
+                    <DiscardPool players={this.state.players} discardCount={this.state.discardCount} wallCount={this.state.tilePool && this.state.tilePool.length} showIndexes={this.state.settings.showIndexes} />
                 </Row>
             </Container>
         );
