@@ -26,8 +26,9 @@ class SouthFourQuiz extends React.Component {
     }
 
     componentDidMount() {
-        if (typeof (Storage) !== "undefined") {
+        try {
             let savedFu = window.localStorage.getItem("maxS4Fu");
+
             if (savedFu) {
                 savedFu = parseInt(savedFu);
 
@@ -37,8 +38,7 @@ class SouthFourQuiz extends React.Component {
             } else {
                 this.generateNewQuiz();
             }
-        }
-        else {
+        } catch {
             this.generateNewQuiz();
         }
     }
@@ -172,9 +172,9 @@ class SouthFourQuiz extends React.Component {
         let fu = validateFu(event.target.value, this.state.maxFu);
         event.target.value = fu;
 
-        if (typeof (Storage) !== "undefined") {
+        try {
             window.localStorage.setItem("maxS4Fu", fu);
-        }
+        } catch { }
 
         this.setState({
             maxFu: fu

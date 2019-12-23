@@ -58,7 +58,7 @@ class UkeireQuiz extends React.Component {
     }
 
     componentDidMount() {
-        if (typeof (Storage) !== "undefined") {
+        try {
             let savedStats = window.localStorage.getItem("stats");
             if (savedStats) {
                 savedStats = JSON.parse(savedStats);
@@ -75,8 +75,7 @@ class UkeireQuiz extends React.Component {
             } else {
                 this.setState({}, () => this.onNewHand());
             }
-        }
-        else {
+        } catch {
             this.setState({}, () => this.onNewHand());
         }
     }
@@ -211,7 +210,7 @@ class UkeireQuiz extends React.Component {
             } while (calculateMinimumShanten(hand) < minShanten)
 
             if (!hand) {
-                history.push({ message: new LocalizedMessage("trainer.error.wallEmptyShuffle") });
+                history.push(new HistoryData(new LocalizedMessage("trainer.error.wallEmptyShuffle")));
                 // Continues into the normal flow, rebuilding the wall.
             }
             else {
@@ -228,7 +227,8 @@ class UkeireQuiz extends React.Component {
             tilePool = generationResult.tilePool;
 
             if (!hand) {
-                history.push({ message: new LocalizedMessage("trainer.error.wallEmpty") });
+                history.push(new HistoryData(new LocalizedMessage("trainer.error.wallEmpty")));
+
                 this.setState({
                     history: history
                 });
@@ -413,9 +413,9 @@ class UkeireQuiz extends React.Component {
             stats: stats
         });
 
-        if (typeof (Storage) !== "undefined") {
+        try {
             window.localStorage.setItem("stats", JSON.stringify(stats));
-        }
+        } catch { }
     }
 
     /** Reset the player's stats to nothing. */
@@ -432,9 +432,9 @@ class UkeireQuiz extends React.Component {
             stats: stats
         });
 
-        if (typeof (Storage) !== "undefined") {
+        try {
             window.localStorage.setItem("stats", JSON.stringify(stats));
-        }
+        } catch { }
     }
 
     /**

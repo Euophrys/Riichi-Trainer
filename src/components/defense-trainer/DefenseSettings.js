@@ -26,7 +26,7 @@ class Settings extends React.Component {
     }
 
     componentDidMount() {
-        if (typeof (Storage) !== "undefined") {
+        try {
             let savedSettings = window.localStorage.getItem("defenseSettings");
             if (savedSettings) {
                 savedSettings = JSON.parse(savedSettings);
@@ -47,7 +47,7 @@ class Settings extends React.Component {
             } else {
                 this.props.onChange(this.state.settings);
             }
-        } else {
+        } catch {
             this.props.onChange(this.state.settings);
         }
     }
@@ -68,9 +68,9 @@ class Settings extends React.Component {
             settings: settings
         });
 
-        if (typeof (Storage) !== "undefined") {
+        try {
             window.localStorage.setItem("defenseSettings", JSON.stringify(settings));
-        }
+        } catch { }
 
         this.props.onChange(settings);
     }

@@ -15,7 +15,7 @@
     "react-dom": "^16.8.6",
     "react-i18next": "^10.11.5",
     "react-numeric-input": "^2.2.3",
-    "react-scripts": "^3.0.1",
+    "react-scripts": "^3.3.0",
     "reactstrap": "^7.1.0",
     "typescript": "^3.5.3"
   },
