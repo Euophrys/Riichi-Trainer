@@ -6,6 +6,7 @@ import { ja } from "./translations/ja";
 import { fr } from "./translations/fr";
 import { pl } from "./translations/pl";
 import { ru } from "./translations/ru";
+import { pt } from "./translations/pt";
 import { zh_CN } from "./translations/zh_CN";
 
 i18n
@@ -18,6 +19,7 @@ i18n
       fr: fr,
       pl: pl,
       ru: ru,
+      pt: pt,
       zh: zh_CN,
       zh_CN: zh_CN
     },
