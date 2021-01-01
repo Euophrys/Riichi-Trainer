@@ -8,6 +8,7 @@ import { pl } from "./translations/pl";
 import { ru } from "./translations/ru";
 import { pt } from "./translations/pt";
 import { zh_CN } from "./translations/zh_CN";
+import { ko } from "./translations/ko";
 
 i18n
   .use(LanguageDetector)
@@ -21,7 +22,8 @@ i18n
       ru: ru,
       pt: pt,
       zh: zh_CN,
-      zh_CN: zh_CN
+      zh_CN: zh_CN,
+      ko: ko
     },
     fallbackLng: "en",
 
