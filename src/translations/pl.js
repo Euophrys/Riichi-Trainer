@@ -115,6 +115,7 @@ export const pl = {
             minShantenLimit: "(równy lub niższy liczbie dozwolonych Rodzin)",
             sort: "Sortuj rękę",
             blind: "Zakryj rękę",
+            useTimer: "Use timer",
             time: "Time per discard:",
             extraTime: "Bonus time per hand:",
             seconds: "sekundy"

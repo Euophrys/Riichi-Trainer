@@ -115,6 +115,7 @@ export const zh_CN = {
             minShantenLimit: "(up to the number of allowed suits)",
             sort: "自动理牌",
             blind: "隐藏手牌",
+            useTimer: "Use timer",
             time: "Time per discard:",
             extraTime: "Bonus time per hand:",
             seconds: "秒"

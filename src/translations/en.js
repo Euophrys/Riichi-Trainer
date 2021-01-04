@@ -116,6 +116,7 @@ export const en = {
             minShantenLimit: "(up to the number of allowed suits)",
             sort: "Sort hand",
             blind: "Conceal hand tiles",
+            useTimer: "Use timer",
             time: "Time per discard:",
             extraTime: "Bonus time per hand:",
             seconds: "seconds"

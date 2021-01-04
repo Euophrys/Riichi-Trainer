@@ -93,6 +93,13 @@ class UkeireQuiz extends React.Component {
     }
 
     onSettingsChanged(settings) {
+        if (!settings.useTimer) {
+            if (this.timer != null) {
+                clearTimeout(this.timer);
+                clearInterval(this.timerUpdate);
+            }
+        }
+
         this.setState({
             settings: settings
         });
@@ -187,7 +194,7 @@ class UkeireQuiz extends React.Component {
             currentBonus: this.state.settings.extraTime
         });
 
-        if (this.state.disclaimerSeen && this.state.settings.time > 0) {
+        if (this.state.disclaimerSeen && this.state.settings.useTimer) {
             this.timer = setTimeout(
                 () => {
                     this.onTileClicked({target:{name:this.state.lastDraw}});
@@ -336,7 +343,7 @@ class UkeireQuiz extends React.Component {
             clearTimeout(this.timer);
             clearInterval(this.timerUpdate);
         }
-        
+
         let isComplete = this.state.isComplete;
         if (isComplete) return;
 
@@ -399,7 +406,7 @@ class UkeireQuiz extends React.Component {
 
                 historyData.drawnTile = drawnTile;
 
-                if (this.state.settings.time > 0) {
+                if (this.state.settings.useTimer) {
                     this.timer = setTimeout(
                         () => {
                             this.onTileClicked({target:{name:this.state.lastDraw}});
@@ -595,7 +602,7 @@ class UkeireQuiz extends React.Component {
                         showIndexes={this.state.settings.showIndexes && !blind}
                         blind={blind} />
                 }
-                {this.state.settings.time > 0 ?
+                {this.state.settings.useTimer ?
                     <Row className="mt-2" style={{justifyContent:'flex-end', marginRight:1}}><span>{this.state.currentTime.toFixed(1)} + {this.state.currentBonus.toFixed(1)}</span></Row>
                     : ""
                 }

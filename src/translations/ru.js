@@ -115,6 +115,7 @@ export const ru = {
             minShantenLimit: "(не больше количества включенных видов тайлов)",
             sort: "Сортировать руку",
             blind: "Скрыть тайлы в руке",
+            useTimer: "Use timer",
             time: "Time per discard:",
             extraTime: "Bonus time per hand:",
             seconds: "секунды"

@@ -116,6 +116,7 @@ export const pt = {
             minShantenLimit: "(ate o numero de naipes permitidos)",
             sort: "Organizar mao",
             blind: "Ocultar pecas da mao",
+            useTimer: "Use timer",
             time: "Time per discard:",
             extraTime: "Bonus time per hand:",
             seconds: "segundos"

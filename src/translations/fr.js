@@ -116,6 +116,7 @@ export const fr = {
             minShantenLimit: "(maximum : nombre de familles autorisées)",
             sort: "Trier la main",
             blind: "Cacher les tuiles de la main",
+            useTimer: "Use timer",
             time: "Time per discard:",
             extraTime: "Bonus time per hand:",
             seconds: "secondes"

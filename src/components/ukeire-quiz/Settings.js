@@ -26,6 +26,7 @@ class Settings extends React.Component {
                 minShanten: 0,
                 sort: true,
                 blind: false,
+                useTimer: false,
                 time: 0,
                 extraTime: 5,
             }
@@ -61,6 +62,7 @@ class Settings extends React.Component {
                     minShanten: savedSettings.minShanten || 0,
                     sort: savedSettings.sort === undefined ? true : savedSettings.sort,
                     blind: savedSettings.blind,
+                    useTimer: savedSettings.useTimer,
                     time: savedSettings.time || 0,
                     extraTime: savedSettings.extraTime === undefined ? 5 : savedSettings.extraTime
                 }
@@ -222,9 +224,16 @@ class Settings extends React.Component {
                         </Row>
                         <Row>
                             <Col className="form-check form-check-inline">
+                                <Input className="form-check-input" type="checkbox" id="useTimer"
+                                    checked={this.state.settings.useTimer} onChange={this.onSettingChanged} />
+                                <Label className="form-check-label" for="useTimer">{t("settings.useTimer")}</Label>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col className="form-check form-check-inline">
                                 <Label className="form-check-label" for="time">{t("settings.time")}&nbsp;</Label>
                                 <NumericInput className="form-check-input" type="number" id="time"
-                                    min={0} max={99} step={1}
+                                    min={1} max={99} step={1}
                                     value={this.state.settings.time} onChange={this.onSettingChanged} />
                                 <span className="blackText">&nbsp;{t("settings.seconds")}</span>
                             </Col>
