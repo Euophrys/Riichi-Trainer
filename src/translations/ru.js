@@ -114,7 +114,10 @@ export const ru = {
             minShanten: "Минимальный шантен стартовой руки:",
             minShantenLimit: "(не больше количества включенных видов тайлов)",
             sort: "Сортировать руку",
-            blind: "Скрыть тайлы в руке"
+            blind: "Скрыть тайлы в руке",
+            time: "Time per discard:",
+            extraTime: "Bonus time per hand:",
+            seconds: "секунды"
         },
         stats: {
             buttonLabel: "Статистика",

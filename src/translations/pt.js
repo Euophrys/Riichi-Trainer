@@ -115,7 +115,10 @@ export const pt = {
             minShanten: "Shanten minimo da mao inicial:",
             minShantenLimit: "(ate o numero de naipes permitidos)",
             sort: "Organizar mao",
-            blind: "Ocultar pecas da mao"
+            blind: "Ocultar pecas da mao",
+            time: "Time per discard:",
+            extraTime: "Bonus time per hand:",
+            seconds: "segundos"
         },
         stats: {
             buttonLabel: "Estatisticas",

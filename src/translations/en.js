@@ -115,7 +115,10 @@ export const en = {
             minShanten: "Minimum starting hand shanten:",
             minShantenLimit: "(up to the number of allowed suits)",
             sort: "Sort hand",
-            blind: "Conceal hand tiles"
+            blind: "Conceal hand tiles",
+            time: "Time per discard:",
+            extraTime: "Bonus time per hand:",
+            seconds: "seconds"
         },
         stats: {
             buttonLabel: "Statistics",

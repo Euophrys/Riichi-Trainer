@@ -25,7 +25,9 @@ class Settings extends React.Component {
                 exceptions: true,
                 minShanten: 0,
                 sort: true,
-                blind: false
+                blind: false,
+                time: 0,
+                extraTime: 5,
             }
         };
 
@@ -58,7 +60,9 @@ class Settings extends React.Component {
                     exceptions: savedSettings.exceptions,
                     minShanten: savedSettings.minShanten || 0,
                     sort: savedSettings.sort === undefined ? true : savedSettings.sort,
-                    blind: savedSettings.blind
+                    blind: savedSettings.blind,
+                    time: savedSettings.time || 0,
+                    extraTime: savedSettings.extraTime === undefined ? 5 : savedSettings.extraTime
                 }
 
                 this.setState({
@@ -214,6 +218,24 @@ class Settings extends React.Component {
                                 <Input className="form-check-input" type="checkbox" id="blind"
                                     checked={this.state.settings.blind} onChange={this.onSettingChanged} />
                                 <Label className="form-check-label" for="blind">{t("settings.blind")}</Label>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col className="form-check form-check-inline">
+                                <Label className="form-check-label" for="time">{t("settings.time")}&nbsp;</Label>
+                                <NumericInput className="form-check-input" type="number" id="time"
+                                    min={0} max={99} step={1}
+                                    value={this.state.settings.time} onChange={this.onSettingChanged} />
+                                <span className="blackText">&nbsp;{t("settings.seconds")}</span>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col className="form-check form-check-inline">
+                                <Label className="form-check-label" for="time">{t("settings.extraTime")}&nbsp;</Label>
+                                <NumericInput className="form-check-input" type="number" id="extraTime"
+                                    min={0} max={99} step={1}
+                                    value={this.state.settings.extraTime} onChange={this.onSettingChanged} />
+                                <span className="blackText">&nbsp;{t("settings.seconds")}</span>
                             </Col>
                         </Row>
                     </CardBody></Card>

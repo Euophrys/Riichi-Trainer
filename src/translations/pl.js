@@ -114,7 +114,10 @@ export const pl = {
             minShanten: "Minimalny shanten nowej ręki:",
             minShantenLimit: "(równy lub niższy liczbie dozwolonych Rodzin)",
             sort: "Sortuj rękę",
-            blind: "Zakryj rękę"
+            blind: "Zakryj rękę",
+            time: "Time per discard:",
+            extraTime: "Bonus time per hand:",
+            seconds: "sekundy"
         },
         stats: {
             buttonLabel: "Statystyki",

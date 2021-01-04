@@ -111,7 +111,10 @@ export const ja = {
             minShanten: "手牌開始時の最小シャンテン数:",
             minShantenLimit: "(最大値＝使用する牌の種類数)",
             sort: "自動理牌",
-            blind: "手牌を隠す"
+            blind: "手牌を隠す",
+            time: "Time per discard:",
+            extraTime: "Bonus time per hand:",
+            seconds: "秒"
         },
         stats: {
             buttonLabel: "統計",

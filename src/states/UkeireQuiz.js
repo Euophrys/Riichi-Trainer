@@ -29,6 +29,9 @@ class UkeireQuiz extends React.Component {
         this.onSettingsChanged = this.onSettingsChanged.bind(this);
         this.onTileClicked = this.onTileClicked.bind(this);
         this.loadHand = this.onHandLoaded.bind(this);
+        this.updateTime = this.onUpdateTime.bind(this);
+        this.timerUpdate = null;
+        this.timer = null;
         this.state = {
             hand: null,
             lastDraw: -1,
@@ -54,6 +57,8 @@ class UkeireQuiz extends React.Component {
             dora: 1,
             shuffle: [],
             disclaimerSeen: false,
+            currentTime: 0,
+            currentBonus: 0,
         }
     }
 
@@ -77,6 +82,13 @@ class UkeireQuiz extends React.Component {
             }
         } catch {
             this.setState({}, () => this.onNewHand());
+        }
+    }
+
+    componentWillUnmount() {
+        if (this.timer != null) {
+            clearTimeout(this.timer);
+            clearInterval(this.timerUpdate);
         }
     }
 
@@ -170,12 +182,32 @@ class UkeireQuiz extends React.Component {
             roundWind: roundWind || this.pickRoundWind(),
             seatWind: seatWind,
             dora: dora,
-            shuffle: shuffle
+            shuffle: shuffle,
+            currentTime: this.state.settings.time + 2,
+            currentBonus: this.state.settings.extraTime
         });
+
+        if (this.state.disclaimerSeen && this.state.settings.time > 0) {
+            this.timer = setTimeout(
+                () => {
+                    this.onTileClicked({target:{name:this.state.lastDraw}});
+                    this.setState({
+                        currentBonus: 0
+                    });
+                },
+                (this.state.settings.time + this.state.settings.extraTime + 2) * 1000
+            );
+            this.timerUpdate = setInterval(this.updateTime, 100);
+        }
     }
 
     /** Generates a new hand and fresh game state. */
     onNewHand() {
+        if (this.timer != null) {
+            clearTimeout(this.timer);
+            clearInterval(this.timerUpdate);
+        }
+
         let history = [];
         let dora = 1;
         let hand, availableTiles, tilePool;
@@ -300,6 +332,11 @@ class UkeireQuiz extends React.Component {
 
     /** Discards the clicked tile, adds a message comparing its efficiency with the best tile, and draws a new tile */
     onTileClicked(event) {
+        if (this.timer != null) {
+            clearTimeout(this.timer);
+            clearInterval(this.timerUpdate);
+        }
+        
         let isComplete = this.state.isComplete;
         if (isComplete) return;
 
@@ -361,6 +398,19 @@ class UkeireQuiz extends React.Component {
                 remainingTiles[drawnTile]--;
 
                 historyData.drawnTile = drawnTile;
+
+                if (this.state.settings.time > 0) {
+                    this.timer = setTimeout(
+                        () => {
+                            this.onTileClicked({target:{name:this.state.lastDraw}});
+                            this.setState({
+                                currentBonus: 0
+                            });
+                        },
+                        (this.state.settings.time + this.state.currentBonus) * 1000
+                    );
+                    this.timerUpdate = setInterval(this.updateTime, 100);
+                }
             }
             else {
                 // No tiles left in the wall
@@ -397,7 +447,20 @@ class UkeireQuiz extends React.Component {
             lastDraw: drawnTile,
             shuffle: shuffle,
             disclaimerSeen: true,
+            currentTime: this.state.settings.time,
         }, isComplete ? () => this.saveStats() : undefined);
+    }
+
+    onUpdateTime() {
+        if (this.state.currentTime > 0.1) {
+            this.setState({
+                currentTime: Math.max(this.state.currentTime - 0.1, 0)
+            });
+        } else {
+            this.setState({
+                currentBonus: Math.max(this.state.currentBonus - 0.1, 0)
+            });
+        }
     }
 
     /** Save the player's current stats into local storage. */
@@ -531,6 +594,10 @@ class UkeireQuiz extends React.Component {
                         onTileClick={this.onTileClicked}
                         showIndexes={this.state.settings.showIndexes && !blind}
                         blind={blind} />
+                }
+                {this.state.settings.time > 0 ?
+                    <Row className="mt-2" style={{justifyContent:'flex-end', marginRight:1}}><span>{this.state.currentTime.toFixed(1)} + {this.state.currentBonus.toFixed(1)}</span></Row>
+                    : ""
                 }
                 <Row className="mt-2">
                     <Col xs="6" sm="3" md="3" lg="2">

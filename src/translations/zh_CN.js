@@ -114,7 +114,10 @@ export const zh_CN = {
             minShanten: "起始手牌最小向听数：",
             minShantenLimit: "(up to the number of allowed suits)",
             sort: "自动理牌",
-            blind: "隐藏手牌"
+            blind: "隐藏手牌",
+            time: "Time per discard:",
+            extraTime: "Bonus time per hand:",
+            seconds: "秒"
         },
         stats: {
             buttonLabel: "统计",
