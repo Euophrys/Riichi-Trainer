@@ -27,8 +27,8 @@ class Settings extends React.Component {
                 sort: true,
                 blind: false,
                 useTimer: false,
-                time: 0,
-                extraTime: 5,
+                time: 5,
+                extraTime: 10,
             }
         };
 
@@ -63,8 +63,8 @@ class Settings extends React.Component {
                     sort: savedSettings.sort === undefined ? true : savedSettings.sort,
                     blind: savedSettings.blind,
                     useTimer: savedSettings.useTimer,
-                    time: savedSettings.time || 0,
-                    extraTime: savedSettings.extraTime === undefined ? 5 : savedSettings.extraTime
+                    time: savedSettings.time || 5,
+                    extraTime: savedSettings.extraTime === undefined ? 10 : savedSettings.extraTime
                 }
 
                 this.setState({
