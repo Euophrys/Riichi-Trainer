@@ -37,7 +37,7 @@ export const fr = {
             disclaimer: "Avertissement : Ce programme sert à entraîner votre capacité à maximiser l'efficacité de votre main dans une main. Cela ne vous aidera pas à maximiser votre efficacité dans les mains futures, ni à apprendre quand il convient d'ignorer l'efficacité ou comment créer de la valeur. Jouer comme ce programme le suggère dans chaque main n'est pas la meilleure façon de jouer au mahjong, mais certaines mains vous demanderons d'être capable de jouer de cette façon. Les joueurs de haut niveau ne jouent pas toujours comme ça, mais tous les joueurs de haut niveau PEUVENT jouer comme ça. Assurez-vous de compléter cette formation par une plus ample documentation pour savoir quand ce n'est pas la meilleure stratégie, et vérifiez les réglages pour un entraînement plus ciblé.",
             instructions: "Cliquez sur la tuile que vous souhaitez défausser.",
             start: "Vous avez débuté une nouvelle main : {{hand}}",
-            complete: "Votre main est maintenant prête. Félicitation ! Votre efficacité a été de {{achieved}}/{{total}}, soit {{percent}}%.",
+            complete: " Votre main est maintenant prête. Félicitation ! Votre efficacité a été de {{achieved}}/{{total}}, soit {{percent}}%.",
             newHandButtonLabel: "Nouvelle main",
             loadButtonLabel: "Charger une main",
             roundWind: "Vent du tour :",
@@ -116,9 +116,9 @@ export const fr = {
             minShantenLimit: "(maximum : nombre de familles autorisées)",
             sort: "Trier la main",
             blind: "Cacher les tuiles de la main",
-            useTimer: "Use timer",
-            time: "Time per discard:",
-            extraTime: "Bonus time per hand:",
+            useTimer: "Activer la minuterie",
+            time: "Temps pour défaussé:",
+            extraTime: "Temps bonus pour main:",
             seconds: "secondes"
         },
         stats: {

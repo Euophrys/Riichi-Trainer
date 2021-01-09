@@ -112,12 +112,12 @@ export const zh_CN = {
             simulate: "模拟其他玩家的舍牌",
             exceptions: "考虑特殊牌型（国士无双和七对子）",
             minShanten: "起始手牌最小向听数：",
-            minShantenLimit: "(up to the number of allowed suits)",
+            minShantenLimit: "(不超过允许的西服数量)",
             sort: "自动理牌",
             blind: "隐藏手牌",
-            useTimer: "Use timer",
-            time: "Time per discard:",
-            extraTime: "Bonus time per hand:",
+            useTimer: "启用计时器",
+            time: "每个决定的时间:",
+            extraTime: "每只手都需要额外的时间:",
             seconds: "秒"
         },
         stats: {

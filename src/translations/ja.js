@@ -112,9 +112,9 @@ export const ja = {
             minShantenLimit: "(最大値＝使用する牌の種類数)",
             sort: "自動理牌",
             blind: "手牌を隠す",
-            useTimer: "Use timer",
-            time: "Time per discard:",
-            extraTime: "Bonus time per hand:",
+            useTimer: "タイマーを使う",
+            time: "標準の持ち時間:",
+            extraTime: "予備の持ち時間:",
             seconds: "秒"
         },
         stats: {

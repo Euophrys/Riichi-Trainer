@@ -37,7 +37,7 @@ export const pl = {
             disclaimer: "Zastrzeżenie: przy pomocy tego narzędzia wyćwiczysz maksymalizowanie wydajności ręki w bieżącej kolejce. Nie pomoże Ci ono maksymalizować wydajności w nadchodzących kolejkach, ani nie wskaże, kiedy wydajność ignorować, czy jak zbudować wartość ręki. Granie zgodnie z podpowiedziami programu nie jest optymalnym sposobem gry w Mahjonga, ale niektóre ręce warto właśnie tak rozgrywać. Gracze zaawansowani nie zawsze grają w ten sposób, ale każdy z nich POTRAFI w ten sposób zagrać. Pamiętaj, by uzupełnić ćwiczenia o Madzianową lekturę, aby zrozumieć, kiedy taka gra może nie być wskazana. Sprawdź też opcje treningu nastawione na konkretne umiejętności.",
             instructions: "Kliknij na kamień, który chcesz odrzucić!",
             start: "Rozegraj nową rękę: {{hand}}",
-            complete: "Twoja ręka jest w tenpai. Gratulacje! Twoja wydajność to {{achieved}}/{{total}}, or {{percent}}%.",
+            complete: " Twoja ręka jest w tenpai. Gratulacje! Twoja wydajność to {{achieved}}/{{total}}, or {{percent}}%.",
             newHandButtonLabel: "Nowa ręka",
             loadButtonLabel: "Wczytaj rękę",
             roundWind: "Wiatr Rundy:",
@@ -115,9 +115,9 @@ export const pl = {
             minShantenLimit: "(równy lub niższy liczbie dozwolonych Rodzin)",
             sort: "Sortuj rękę",
             blind: "Zakryj rękę",
-            useTimer: "Use timer",
-            time: "Time per discard:",
-            extraTime: "Bonus time per hand:",
+            useTimer: "Włączyć timer",
+            time: "Czas na każdą decyzję:",
+            extraTime: "Dodatkowy czas na każde rozdanie:",
             seconds: "sekundy"
         },
         stats: {

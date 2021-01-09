@@ -37,7 +37,7 @@ export const ko = {
             disclaimer: "면책 조항: 이 트레이너는 지금 손패에서 가장 효율적으로 텐파이할 수 있도록 훈련합니다. 즉, 나중에 대기가 넓어지는 선택, 효율성을 무시하는 것이 더 나은 국면, 높은 점수를 얻는 방법을 배우는 데에는 도움이 되지 않습니다. 이 트레이너가 제안하는 방식이 모든 손패에서 최고의 방법은 아니지만, 패 효율성을 바탕으로 선택할 수 있도록 도와줄 것입니다. 고수는 패 효율성만을 고려하여 타패하는 것은 아니지만, 어떤 패가 가장 효율적인 타패인지 알고 있으며, 이러한 방식으로 타패하는 방법을 알고 있습니다. 이 트레이너는 어디까지나 패 효율을 단련하는 보조 도구로서 사용하십시오.",
             instructions: "타패할 패를 클릭하세요.",
             start: "새로운 손패로 시작했습니다: {{hand}}",
-            complete: "텐파이 했습니다. 축하합니다! 당신의 효율성은 {{achieved}}/{{total}}(으)로, {{percent}}% 입니다.",
+            complete: " 텐파이 했습니다. 축하합니다! 당신의 효율성은 {{achieved}}/{{total}}(으)로, {{percent}}% 입니다.",
             newHandButtonLabel: "새 손패",
             loadButtonLabel: "손패 불러오기",
             roundWind: "장풍:",
@@ -111,7 +111,11 @@ export const ko = {
             minShanten: "시작 손패의 최소 샹텐 수:",
             minShantenLimit: "(최대값은 사용하는 패의 수)",
             sort: "손패 자동 정렬",
-            blind: "손패 숨기기"
+            blind: "손패 숨기기",
+            useTimer: "타이머 사용",
+            time: "결정 당 시간 제한:",
+            extraTime: "추가 시간:",
+            seconds: "초"
         },
         stats: {
             buttonLabel: "통계",

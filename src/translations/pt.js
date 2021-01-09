@@ -37,7 +37,7 @@ export const pt = {
             disclaimer: "Aviso: Este treinador treinara sua habilidade de maximizar a eficiencia de sua mao no turno atual. Ele nao lhe ajudara a maximizar a eficiencia em turnos futuros, ou a aprender quando e apropriado ignorar a eficiencia, ou como construir valor. Jogar como este treinador sugere em toda mao nao e a melhor maneira de jogar mahjong, mas existem maos em que voce quer jogar dessa maneira. Jogadores de nivel alto nem sempre jogam assim, mas todos os jogadores de nivel alto SABEM jogar assim. Certifique-se de suplementar este treinamento com leitura adicional para aprender quando esta pode nao ser a melhor linha de jogo, e cheque as configuracoes para um treinamento mais objetivo.",
             instructions: "Clique na peca que voce deseja descartar.",
             start: "Comecou uma nova mao: {{hand}}",
-            complete: "Sua mao agora esta pronta. Parabens! Sua eficiencia foi {{achieved}}/{{total}}, ou {{percent}}%.",
+            complete: " Sua mao agora esta pronta. Parabens! Sua eficiencia foi {{achieved}}/{{total}}, ou {{percent}}%.",
             newHandButtonLabel: "Nova Mao",
             loadButtonLabel: "Carregar Mao",
             roundWind: "Vento da Rodada:",
@@ -116,9 +116,9 @@ export const pt = {
             minShantenLimit: "(ate o numero de naipes permitidos)",
             sort: "Organizar mao",
             blind: "Ocultar pecas da mao",
-            useTimer: "Use timer",
-            time: "Time per discard:",
-            extraTime: "Bonus time per hand:",
+            useTimer: "Habilitar cronômetro",
+            time: "Tempo para cada decisão:",
+            extraTime: "Tempo extra para cada mao:",
             seconds: "segundos"
         },
         stats: {
