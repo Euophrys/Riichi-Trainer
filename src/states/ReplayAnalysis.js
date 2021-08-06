@@ -46,7 +46,7 @@ class ReplayAnalysis extends React.Component {
                 let match = tenhouRegex.exec(URL);
 
                 if (match) {
-                    URLfeedback = <a href={`https://tenhou.net/3/mjlog2xml.cgi?${match[1]}`} target="_blank" rel="noopener noreferrer">{t("analyzer.downloadInstructions")}</a>;
+                    URLfeedback = <a href={`https://tenhou.net/0/log/?${match[1]}`} target="_blank" rel="noopener noreferrer">{t("analyzer.downloadInstructions")}</a>;
                 } else {
                     match = majsoulRegex.exec(URL);
 
