@@ -59,7 +59,7 @@ export const ko = {
         },
         history: {
             label: "손패 기록",
-            tenhouLinkText: "[천봉 패효율(유효패)]",
+            tenhouLinkText: "[천봉 패효율 (유효패)]",
             concise: {
                 discard: "타패: {{tile}}",
                 acceptance: " ({{count}} 개).",
@@ -107,7 +107,7 @@ export const ko = {
             spoilers: "최선의 패효율 선택이 무엇인지 표시",
             shuffle: "새 손패로 시작한 후 버림패를 섞어 패산 쌓기",
             simulate: "다른 작사의 타패를 시뮬레이션",
-            exceptions: "특수 형태의 손패 고려(국사무쌍/치또이츠)",
+            exceptions: "특수 형태의 손패 고려 (국사무쌍/치또이츠)",
             minShanten: "시작 손패의 최소 샹텐 수:",
             minShantenLimit: "(최대값은 사용하는 패의 수)",
             sort: "손패 자동 정렬",
