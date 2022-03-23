@@ -37,7 +37,7 @@ export const ko = {
             disclaimer: "면책 조항: 이 트레이너는 지금 손패에서 가장 효율적으로 텐파이할 수 있도록 훈련합니다. 즉, 나중에 대기가 넓어지는 선택, 효율성을 무시하는 것이 더 나은 국면, 높은 점수를 얻는 방법을 배우는 데에는 도움이 되지 않습니다. 이 트레이너가 제안하는 방식이 모든 손패에서 최고의 방법은 아니지만, 패 효율성을 바탕으로 선택할 수 있도록 도와줄 것입니다. 고수는 패 효율성만을 고려하여 타패하는 것은 아니지만, 어떤 패가 가장 효율적인 타패인지 알고 있으며, 이러한 방식으로 타패하는 방법을 알고 있습니다. 이 트레이너는 어디까지나 패 효율을 단련하는 보조 도구로서 사용하십시오.",
             instructions: "타패할 패를 클릭하세요.",
             start: "새로운 손패로 시작했습니다: {{hand}}",
-            complete: " 텐파이 했습니다. 축하합니다! 당신의 효율성은 {{achieved}}/{{total}}(으)로, {{percent}}% 입니다.",
+            complete: " 텐파이했습니다. 축하합니다! 당신의 효율성은 {{achieved}}/{{total}}(으)로, {{percent}}%입니다.",
             newHandButtonLabel: "새 손패",
             loadButtonLabel: "손패 불러오기",
             roundWind: "장풍:",
@@ -47,7 +47,7 @@ export const ko = {
             copied: "복사했습니다!",
             error: {
                 load: "오류: 입력한 손패를 이해할 수 없습니다",
-                wallEmpty: "오류: 손패의 갯수가 충분하지 않습니다.",
+                wallEmpty: "오류: 손패의 개수가 충분하지 않습니다.",
                 wallEmptyShuffle: "패산에 남아있는 패가 부족하여 새로운 손패를 만들 수 없습니다. 패를 다시 섞습니다."
             },
             playerNames: {
@@ -59,7 +59,7 @@ export const ko = {
         },
         history: {
             label: "손패 기록",
-            tenhouLinkText: "[천봉 패효율(유효패)]",
+            tenhouLinkText: "[천봉 패효율 (유효패)]",
             concise: {
                 discard: "타패: {{tile}}",
                 acceptance: " ({{count}} 개).",
@@ -75,7 +75,7 @@ export const ko = {
             },
             verbose: {
                 discard: "{{tile}}을(를) 타패하여, ",
-                acceptance: "유효패는 {{count}}개 입니다.",
+                acceptance: "유효패는 {{count}}개입니다.",
                 loweredShanten: " 샹텐 수가 올라가 텐파이에서 멀어졌습니다.",
                 optimal: " 가장 효율적인 타패는",
                 optimalSpoiler: " {{tile}}(으)로, ",
@@ -100,14 +100,14 @@ export const ko = {
             bamboo: "삭수패",
             honors: "자패",
             sanma: "삼인 마작",
-            redFives: "적도라의 갯수:",
+            redFives: "적도라 개수:",
             verbose: "패 이름을 상세하게 표시 (\"1s\"대신 \"일삭\"으로 표시)",
             showIndexes: "인덱스 보기",
             concise: "손패 기록을 간략하게",
             spoilers: "최선의 패효율 선택이 무엇인지 표시",
             shuffle: "새 손패로 시작한 후 버림패를 섞어 패산 쌓기",
             simulate: "다른 작사의 타패를 시뮬레이션",
-            exceptions: "특수 형태의 손패 고려(국사무쌍/치또이츠)",
+            exceptions: "특수 형태의 손패 고려 (국사무쌍/치또이츠)",
             minShanten: "시작 손패의 최소 샹텐 수:",
             minShantenLimit: "(최대값은 사용하는 패의 수)",
             sort: "손패 자동 정렬",
@@ -119,9 +119,9 @@ export const ko = {
         },
         stats: {
             buttonLabel: "통계",
-            info: "통계 데이터는 손패를 텐파이 할때마다 갱신됩니다.",
-            ready: "텐파이 횟수: {{count}} 회",
-            discards: "타패 횟수: {{count}} 개",
+            info: "통계 데이터는 손패를 텐파이할 때마다 갱신됩니다.",
+            ready: "텐파이 횟수: {{count}}회",
+            discards: "타패 횟수: {{count}}개",
             average: "텐파이까지 타패한 평균 개수: {{average}} 개",
             optimal: "최대 효율로 타패 횟수: {{count}} 개",
             optimalRate: "최대 효율 타패 비율: {{percent}}% ({{achieved}}/{{total}})",
@@ -130,7 +130,7 @@ export const ko = {
             overall: "종합 패효율: {{percent}}% ({{achieved}}/{{total}})",
             reset: "통계 초기화",
             confirmation: "모든 통계 데이터를 초기화하시겠습니까? 이 작업은 취소할 수 없습니다.",
-            yes: "네, 초기화해주세요!",
+            yes: "네, 초기화해 주세요!",
             no: "아니오, 초기화하지 않을래요!"
         },
         credits: {
@@ -162,7 +162,7 @@ export const ko = {
             title: "오라스 연습",
             maxFu: "최대 부수",
             showDifferences: "점수 차이 표시",
-            loadInstructions: "쉼표로 구분하여 동,남,서,북 순서로 점수를 입력해주세요.",
+            loadInstructions: "쉼표로 구분하여 동, 남, 서, 북 순서로 점수를 입력해 주세요.",
             loadLabel: "점수 상황 불러오기",
             newLabel: "임의의 상황에서 새로 시작",
             info: "현재 오라스에서 당신은 4위입니다. 점수 상황은 다음과 같습니다:",
@@ -210,7 +210,7 @@ export const ko = {
             calls: "내 후로: {{calls}}",
             callsSeparator: ", ",
             tenhouLinkText: "[천봉 유효패 분석기]",
-            replayError: "이 리플레이를 저에게 보내주세요. 문제가 발생했습니다.",
+            replayError: "이 리플레이를 저에게 보내 주세요. 문제가 발생했습니다.",
             noName: "알 수 없음",
             startingHand: "당신의 시작 손패는 {{hand}}입니다. 텐파이까지 {{count}}개의 패가 필요합니다. 도라표시패는 {{dora}}입니다.",
             unknownAction: "저기요, 이 리플레이는 제가 고려하지 못한 요소가 포함되어 있네요. 이 리플레이를 저에게 보내주시면 추가하겠습니다. {{debugInfo}}",
@@ -219,7 +219,7 @@ export const ko = {
             ryuukyoku: "유국되었습니다.",
             playerRiichi: "당신은 리치를 선언했습니다. 분석을 끝냅니다.",
             otherRiichi: "작사 {{number}}이(가) 리치를 선언했습니다. ",
-            fold: "당신은 아직 텐파이까지 {{shanten}}개의 타일이 필요합니다, 그러므로 베타오리를 해야합니다.",
+            fold: "당신은 아직 텐파이까지 {{shanten}}개의 타일이 필요합니다, 그러므로 베타오리를 해야 합니다.",
             probablyFold: "당신은 이샹텐입니다. 베타오리를 고려하십시오.",
             win: "작사 {{number}}이(가) 화료했습니다.",
             kandora: "새로운 도라표시패는 {{tile}}입니다.",
@@ -228,7 +228,7 @@ export const ko = {
             correctSafety: "가장 안전한 타패였습니다.",
             bestSafety: "가장 안전한 패: {{tile}}, 안전도 {{rating}}. ({{- explanation}})",
             safetyExplanations: {
-                zero: "이 메시지는 볼 수 없어야 합니다. 만약 보셨다면 저에게 알려주세요.",
+                zero: "이 메시지는 볼 수 없어야 합니다. 만약 보셨다면 저에게 알려 주세요.",
                 one: "스지가 아닌 4/5/6",
                 two: "스지가 아닌 3/7",
                 three: "스지가 아닌 2/8",
@@ -247,9 +247,9 @@ export const ko = {
             }
         },
         explorer: {
-            warning: "주의: 손패를 불러오면 컴퓨터 성능과 손패의 복잡도에 따라 페이지가 약 5-10초 또는 그 이상 멈춘 것 처럼 보일 수 있습니다. 손패를 불러오면 샹텐수가 늘어나는 경우까지 포함하여 모든 타패의 경우에 대한 유효패와 향상 가능성을 보여줍니다. 기본적으로는 다른 경우보다 훨씬 안좋은 타패의 경우에는 표시하지 않지만, 아래의 버튼을 눌러 표시하도록 변경할 수 있습니다. 만약 유효패 정보만 필요하시다면 tenhou.net/2/ 로도 충분할겁니다.",
-            shanten: "샹텐: 텐파이까지 남은 패의 갯수입니다.",
-            ukeire: "유효패: 샹텐수를 줄일 수 있는 패입니다.",
+            warning: "주의: 손패를 불러오면 컴퓨터 성능과 손패의 복잡도에 따라 페이지가 약 5-10초 또는 그 이상 멈춘 것 처럼 보일 수 있습니다. 손패를 불러오면 샹텐 수가 늘어나는 경우까지 포함하여 모든 타패의 경우에 대한 유효패와 향상 가능성을 보여줍니다. 기본적으로는 다른 경우보다 훨씬 안좋은 타패의 경우에는 표시하지 않지만, 아래의 버튼을 눌러 표시하도록 변경할 수 있습니다. 만약 유효패 정보만 필요하시다면 tenhou.net/2/ 로도 충분할겁니다.",
+            shanten: "샹텐: 텐파이까지 남은 패의 개수입니다.",
+            ukeire: "유효패: 샹텐 수를 줄일 수 있는 패입니다.",
             notableDiscards: "의미 있는 타패만 표시하기",
             allDiscards: "모든 타패를 표시하기",
             discardInfo: {
@@ -272,7 +272,7 @@ export const ko = {
             safetyRating: "{{rating}}: {{- explanation}}",
             riichiCount: "리치 수: ",
             minTurns: "리치가 선언되기 전의 최소 순: ",
-            tilesInHand: "손패에 포함할 패 갯수: "
+            tilesInHand: "손패에 포함할 패의 개수: "
         },
         utils: {
             convertHeader: "손패 변환기",
@@ -284,7 +284,7 @@ export const ko = {
             points: "점수:",
             discards: "버림패:",
             stateButtonLabel: "새 상태 생성",
-            info: "{{round}} {{turn}}순 입니다. 당신은 {{seat}}가입니다.",
+            info: "{{round}} {{turn}}순입니다. 당신은 {{seat}}가입니다.",
             dora: "도라표시패는 {{tile}}입니다."
         }
     }
