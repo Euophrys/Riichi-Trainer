@@ -47,7 +47,7 @@ export const ko = {
             copied: "복사했습니다!",
             error: {
                 load: "오류: 입력한 손패를 이해할 수 없습니다",
-                wallEmpty: "오류: 손패의 수가 충분하지 않습니다.",
+                wallEmpty: "오류: 손패의 개수가 충분하지 않습니다.",
                 wallEmptyShuffle: "패산에 남아있는 패가 부족하여 새로운 손패를 만들 수 없습니다. 패를 다시 섞습니다."
             },
             playerNames: {
@@ -100,7 +100,7 @@ export const ko = {
             bamboo: "삭수패",
             honors: "자패",
             sanma: "삼인 마작",
-            redFives: "적도라 수:",
+            redFives: "적도라 개수:",
             verbose: "패 이름을 상세하게 표시 (\"1s\"대신 \"일삭\"으로 표시)",
             showIndexes: "인덱스 보기",
             concise: "손패 기록을 간략하게",
@@ -109,7 +109,7 @@ export const ko = {
             simulate: "다른 작사의 타패를 시뮬레이션",
             exceptions: "특수 형태의 손패 고려(국사무쌍/치또이츠)",
             minShanten: "시작 손패의 최소 샹텐 수:",
-            minShantenLimit: "(최대값은 사용하는 패의 수)",
+            minShantenLimit: "(최대값을 사용하는 패의 수)",
             sort: "손패 자동 정렬",
             blind: "손패 숨기기",
             useTimer: "타이머 사용",
@@ -130,7 +130,7 @@ export const ko = {
             overall: "종합 패효율: {{percent}}% ({{achieved}}/{{total}})",
             reset: "통계 초기화",
             confirmation: "모든 통계 데이터를 초기화하시겠습니까? 이 작업은 취소할 수 없습니다.",
-            yes: "네, 초기화해주세요!",
+            yes: "네, 초기화해 주세요!",
             no: "아니오, 초기화하지 않을래요!"
         },
         credits: {
@@ -162,7 +162,7 @@ export const ko = {
             title: "오라스 연습",
             maxFu: "최대 부수",
             showDifferences: "점수 차이 표시",
-            loadInstructions: "쉼표로 구분하여 동,남,서,북 순서로 점수를 입력해주세요.",
+            loadInstructions: "쉼표로 구분하여 동, 남, 서, 북 순서로 점수를 입력해주세요.",
             loadLabel: "점수 상황 불러오기",
             newLabel: "임의의 상황에서 새로 시작",
             info: "현재 오라스에서 당신은 4위입니다. 점수 상황은 다음과 같습니다:",
@@ -219,7 +219,7 @@ export const ko = {
             ryuukyoku: "유국되었습니다.",
             playerRiichi: "당신은 리치를 선언했습니다. 분석을 끝냅니다.",
             otherRiichi: "작사 {{number}}이(가) 리치를 선언했습니다. ",
-            fold: "당신은 아직 텐파이까지 {{shanten}}개의 타일이 필요합니다, 그러므로 베타오리를 해야합니다.",
+            fold: "당신은 아직 텐파이까지 {{shanten}}개의 타일이 필요합니다, 그러므로 베타오리를 해야 합니다.",
             probablyFold: "당신은 이샹텐입니다. 베타오리를 고려하십시오.",
             win: "작사 {{number}}이(가) 화료했습니다.",
             kandora: "새로운 도라표시패는 {{tile}}입니다.",
