@@ -62,8 +62,9 @@ export const en = {
             tenhouLinkText: "[Accepted Tiles]",
             concise: {
                 discard: "Discard: {{tile}}",
-                acceptance: " ({{count}} tile).",
-                acceptance_plural: " ({{count}} tiles).",
+                acceptance: " ({{count}} tile):",
+                acceptance_plural: " ({{count}} tiles):",
+                tilesExpanded: " {{tiles}}.",
                 loweredShanten: " (went back in shanten).",
                 optimal: " Best:",
                 optimalSpoiler: " {{tile}}",
@@ -76,8 +77,9 @@ export const en = {
             },
             verbose: {
                 discard: "You chose to discard the {{tile}}, which",
-                acceptance: " results in {{count}} tile that can improve the hand.",
-                acceptance_plural: " results in {{count}} tiles that can improve the hand.",
+                acceptance: " results in {{count}} tile that can improve the hand:",
+                acceptance_plural: " results in {{count}} tiles that can improve the hand:",
+                tilesExpanded: " {{tiles}}.",
                 loweredShanten: " increases your shanten - you are now further from ready.",
                 optimal: " The most efficient tile to discard",
                 optimalSpoiler: ", the {{tile}}, ",
