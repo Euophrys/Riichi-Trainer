@@ -1,0 +1,215 @@
+.discard-table-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.discard-table-grid {
+    position: relative;
+    width: 600px;
+    height: 600px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+}
+
+/* Position containers for each player */
+.discard-position {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Bottom player (position 0) */
+.discard-row-bottom {
+    bottom: 10px;
+    left: 51.5%;
+    transform: translateX(-50%);
+    width: 280px;
+}
+
+.discard-row-bottom .discard-player-label {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.discard-row-bottom .discard-rows {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* Right player (position 1) */
+.discard-row-right {
+    right: 10px;
+    top: 57%;
+    transform: translateY(-50%);
+    width: 140px;
+    height: 280px;
+}
+
+.discard-row-right {
+    flex-direction: column;
+}
+
+.discard-row-right .discard-player-label {
+    text-align: center;
+    width: 100%;
+    margin-right: 200px;
+    transform: rotate(270deg);
+    transform-origin: center;
+}
+
+.discard-row-right .discard-rows {
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    gap: 2px;
+}
+
+/* Top player (position 2) */
+.discard-row-top {
+    top: 10px;
+    left: 48.5%;
+    transform: translateX(-50%);
+    width: 280px;
+}
+
+.discard-row-top .discard-player-label {
+    text-align: center;
+    margin-bottom: 8px;
+    order: 2;
+}
+
+.discard-row-top .discard-rows {
+    flex-direction: column;
+    align-items: flex-start;
+    order: 1;
+}
+
+/* Left player (position 3) */
+.discard-row-left {
+    left: 10px;
+    top: 43%;
+    transform: translateY(-50%);
+    width: 140px;
+    height: 280px;
+}
+
+.discard-row-left {
+    flex-direction: column;
+}
+
+.discard-row-left .discard-player-label {
+    text-align: center;
+    margin-left: 200px;
+    width: 100%;
+    order: 2;
+    transform: rotate(90deg);
+    transform-origin: center;
+}
+
+.discard-row-left .discard-rows {
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    gap: 2px;
+    order: 1;
+}
+
+/* Shared styles */
+.discard-player-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.discard-player-label {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #ffffff;
+    white-space: nowrap;
+    margin-bottom: 8px;
+}
+
+.discard-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+}
+
+.discard-row {
+    display: flex;
+    gap: 2px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.discard-row-bottom .discard-row,
+.discard-row-top .discard-row {
+    flex-direction: row;
+}
+
+.discard-row-right .discard-row,
+.discard-row-left .discard-row {
+    flex-direction: column;
+    gap: 2px;
+}
+
+.discard-tile-wrapper {
+    position: relative;
+    width: 42px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 192/256;
+}
+
+.discard-tile-wrapper.riichi-tile {
+    transform: rotate(90deg);
+    transform-origin: center;
+}
+
+/* Rotation classes for entire discard sections */
+.rotation-0 {
+    /* Bottom player - no rotation */
+}
+
+.rotation-90 {
+    /* Left player - rotate 90 degrees counter-clockwise */
+    transform: rotate(90deg);
+}
+
+.rotation-180 {
+    /* Top player - rotate 180 degrees */
+    transform: rotate(180deg);
+}
+
+.rotation-270 {
+    /* Right player - rotate 270 degrees (or 90 degrees clockwise) */
+    transform: rotate(270deg);
+}
+
+/* Adjust positions to account for rotation transforms */
+.discard-row-left .discard-rows {
+    transform-origin: center center;
+}
+
+.discard-row-right .discard-rows {
+    transform-origin: center center;
+}
+
+.discard-row-top .discard-rows {
+    transform-origin: center center;
+}
+
+.discard-table-info {
+    text-align: center;
+    margin-top: 1rem;
+}

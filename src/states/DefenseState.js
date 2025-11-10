@@ -1,7 +1,7 @@
 import React from 'react';
 import { withTranslation } from "react-i18next";
 import { Container, Row, Col, Button, Collapse, Card, CardBody } from 'reactstrap';
-import DiscardPool from '../components/DiscardPool';
+import DiscardTable from '../components/DiscardTable';
 import Hand from '../components/Hand';
 import History from '../components/History';
 import Player from "../models/Player";
@@ -244,7 +244,7 @@ class DefenseState extends React.Component {
         if (this.state.settings.useTimer) {
             this.timer = setTimeout(
                 () => {
-                    this.onTileClicked({target:{name:this.state.lastDraw}});
+                    this.onTileClicked({ target: { name: this.state.lastDraw } });
                     this.setState({
 
                         currentBonus: 0
@@ -468,7 +468,7 @@ class DefenseState extends React.Component {
             if (this.state.settings.useTimer) {
                 this.timer = setTimeout(
                     () => {
-                        this.onTileClicked({target:{name:this.state.lastDraw}});
+                        this.onTileClicked({ target: { name: this.state.lastDraw } });
                         this.setState({
                             currentBonus: 0
                         });
@@ -557,6 +557,7 @@ class DefenseState extends React.Component {
                         <Row className="mb-2 mt-2">
                             <span>{t("defense.instructions")}</span>
                         </Row>
+                        <DiscardTable players={this.state.players} discardCount={this.state.discardCount} wallCount={this.state.tilePool && this.state.tilePool.length} showIndexes={this.state.settings.showIndexes} />
                         <Hand tiles={this.state.players[0].hand}
                             lastDraw={this.state.lastDraw}
                             onTileClick={this.onTileClicked}
@@ -567,12 +568,11 @@ class DefenseState extends React.Component {
                             </Col>
                         </Row>
                         {this.state.settings.useTimer ?
-                        <Row className="mt-2" style={{justifyContent:'flex-end', marginRight:1}}><span>{this.state.currentTime.toFixed(1)} + {this.state.currentBonus.toFixed(1)}</span></Row>
+                            <Row className="mt-2" style={{ justifyContent: 'flex-end', marginRight: 1 }}><span>{this.state.currentTime.toFixed(1)} + {this.state.currentBonus.toFixed(1)}</span></Row>
                             : ""
                         }
                         <Row className="mt-2 no-gutters">
                             <History history={this.state.history} concise={true} verbose={this.state.settings.verbose} spoilers={this.state.settings.spoilers} />
-                            <DiscardPool players={this.state.players} discardCount={this.state.discardCount} wallCount={this.state.tilePool && this.state.tilePool.length} showIndexes={this.state.settings.showIndexes} />
                         </Row>
                     </React.Fragment>
                 }
