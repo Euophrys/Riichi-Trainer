@@ -240,7 +240,7 @@ class UkeireQuiz extends React.Component {
             }
 
             do {
-                let generationResult = generateHand(remainingTiles);
+                let generationResult = generateHand(remainingTiles, this.state.settings.tilesInHand);
                 hand = generationResult.hand;
                 availableTiles = generationResult.availableTiles;
                 tilePool = generationResult.tilePool;
@@ -260,7 +260,7 @@ class UkeireQuiz extends React.Component {
 
         let remainingTiles = this.getStartingTiles();
         do {
-            let generationResult = generateHand(remainingTiles);
+            let generationResult = generateHand(remainingTiles, this.state.settings.tilesInHand);
             hand = generationResult.hand;
             availableTiles = generationResult.availableTiles;
             tilePool = generationResult.tilePool;
@@ -531,7 +531,7 @@ class UkeireQuiz extends React.Component {
             remainingTiles[dora]--;
         }
 
-        let { hand, availableTiles, tilePool } = fillHand(remainingTiles, loadData.hand, 14 - loadData.tiles);
+        let { hand, availableTiles, tilePool } = fillHand(remainingTiles, loadData.hand, this.state.settings.tilesInHand - loadData.tiles);
 
         if (!hand) {
             this.logToHistory("trainer.error.wallEmpty");

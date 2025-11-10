@@ -26,6 +26,7 @@ class Settings extends React.Component {
                 minShanten: 0,
                 sort: true,
                 blind: false,
+                tilesInHand: 14,
                 useTimer: false,
                 time: 5,
                 extraTime: 10,
@@ -62,6 +63,7 @@ class Settings extends React.Component {
                     minShanten: savedSettings.minShanten || 0,
                     sort: savedSettings.sort === undefined ? true : savedSettings.sort,
                     blind: savedSettings.blind,
+                    tilesInHand: savedSettings.tilesInHand || 14,
                     useTimer: savedSettings.useTimer,
                     time: savedSettings.time || 5,
                     extraTime: savedSettings.extraTime === undefined ? 10 : savedSettings.extraTime
@@ -206,6 +208,14 @@ class Settings extends React.Component {
                                     min={0} max={4} step={1}
                                     value={this.state.settings.minShanten} onChange={this.onSettingChanged} />
                                 <span className="blackText">&nbsp;{t("settings.minShantenLimit")}</span>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col className="form-check form-check-inline">
+                                <Label className="form-check-label" for="tilesInHand">{t("defense.tilesInHand")}&nbsp;</Label>
+                                <NumericInput className="form-check-input" type="number" id="tilesInHand"
+                                    min={5} max={14} step={3}
+                                    value={this.state.settings.tilesInHand} onChange={this.onSettingChanged} />
                             </Col>
                         </Row>
                         <Row>

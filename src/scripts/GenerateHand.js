@@ -2,21 +2,26 @@ import { removeRandomItem } from "./Utils";
 import { convertHandToTileIndexArray } from "./HandConversions";
 
 /**
- * Generates a random hand of 14 tiles.
+ * Generates a random hand of the specified number of tiles.
  * @param {TileCounts} remainingTiles The number of each tile in the wall.
+ * @param {number} handSize The number of tiles in the hand (default: 14).
  */
-export function generateHand(remainingTiles) {
+export function generateHand(remainingTiles, handSize = 14) {
     let availableTiles = remainingTiles.slice();
     let tilePool = convertHandToTileIndexArray(availableTiles);
 
-    if (tilePool.length < 14) return { hand: undefined, availableTiles: undefined, tilePool: undefined };
+    if (tilePool.length < handSize) return { hand: undefined, availableTiles: undefined, tilePool: undefined };
 
     let hand = Array(38).fill(0);
 
-    for (let i = 0; i < 14; i++) {
+    for (let i = 0; i < handSize; i++) {
         let tile = removeRandomItem(tilePool);
         hand[tile]++;
         availableTiles[tile]--;
+    }
+
+    for (let i = handSize, j = 0; i < 14; j++, i += 3) {
+        hand[j + 31] += 3;
     }
 
     return {
