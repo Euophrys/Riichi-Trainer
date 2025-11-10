@@ -4,7 +4,7 @@ import { CSS_CLASSES } from "../../Constants";
 
 export default class UkeireHistoryData extends HistoryData {
     /** A history object for the ukeire trainer, which tells the efficiency of a given discard. */
-    constructor(chosenTile = -1, chosenUkeire = -1, bestTile = -1, bestUkeire = -1, shanten = -1, hand = "", handUkeire = -1, discards = [], drawnTile = -1, message = undefined) {
+    constructor(chosenTile = -1, chosenUkeire = -1, bestTile = -1, bestUkeire = undefined, shanten = -1, hand = "", handUkeire = -1, discards = [], drawnTile = -1, message = undefined) {
         super(message);
         this.chosenTile = chosenTile;
         this.chosenUkeire = chosenUkeire;
@@ -25,19 +25,25 @@ export default class UkeireHistoryData extends HistoryData {
 
         if (this.chosenUkeire.value > 0 || this.shanten === 0) {
             result += t(`history.${mode}.acceptance`, { count: this.chosenUkeire.value });
+            result += t(`history.${mode}.tilesExpanded`, { tiles: this.chosenUkeire.tiles.map(tile => getTileAsText(t, tile, verbose)).join(", ") });
         }
         else {
             result += t(`history.${mode}.loweredShanten`)
         }
 
-        if (this.chosenUkeire.value < this.bestUkeire) {
+
+        if (this.chosenUkeire.value < this.bestUkeire.value) {
             result += t(`history.${mode}.optimal`);
 
             if (spoilers) {
-                result += t(`history.${mode}.optimalSpoiler`, { tile: getTileAsText(t, this.bestTile, verbose) });
+                result += t(`history.${mode}.optimalSpoiler`, { tile: getTileAsText(t, this.bestTile, verbose), tiles: this.bestUkeire.tiles.map(tile => getTileAsText(t, tile, verbose)).join(", ") });
             }
 
-            result += t(`history.${mode}.acceptance`, { count: this.bestUkeire });
+            result += t(`history.${mode}.acceptance`, { count: this.bestUkeire.value });
+
+            if (spoilers) {
+                result += t(`history.${mode}.tilesExpanded`, { tiles: this.bestUkeire.tiles.map(tile => getTileAsText(t, tile, verbose)).join(", ") });
+            }
         }
         else {
             result += t(`history.${mode}.best`);
@@ -74,7 +80,7 @@ export default class UkeireHistoryData extends HistoryData {
         if (this.chosenUkeire.value <= 0 && this.shanten > 0) {
             className = CSS_CLASSES.INCORRECT;
         }
-        else if (this.bestUkeire === this.chosenUkeire.value) {
+        else if (this.bestUkeire.value === this.chosenUkeire.value) {
             className = CSS_CLASSES.CORRECT;
         }
         else {

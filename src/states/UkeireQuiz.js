@@ -370,11 +370,12 @@ class UkeireQuiz extends React.Component {
         let tilePool = this.state.tilePool.slice();
         let drawnTile = -1;
 
+
         let historyData = new UkeireHistoryData(
             chosenTile,
             chosenUkeire,
             bestTile,
-            ukeire[bestTile].value,
+            ukeire[bestTile],
             shanten,
             handString,
             handUkeire,
