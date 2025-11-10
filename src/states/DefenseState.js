@@ -65,17 +65,6 @@ class DefenseState extends React.Component {
                 clearTimeout(this.timer);
                 clearInterval(this.timerUpdate);
             }
-        } else {
-            this.timer = setTimeout(
-                () => {
-                    this.onTileClicked({target:{name:this.state.lastDraw}});
-                    this.setState({
-                        currentBonus: 0
-                    });
-                },
-                (this.state.settings.time + this.state.settings.extraTime + 2) * 1000
-            );
-            this.timerUpdate = setInterval(this.updateTime, 100);
         }
 
         this.setState({
@@ -248,7 +237,7 @@ class DefenseState extends React.Component {
             dora: dora,
             lastDraw: shuffle.pop(),
             isComplete: false,
-            currentTime: this.state.settings.time + 2,
+            currentTime: this.state.settings.time,
             currentBonus: this.state.settings.extraTime
         });
 
@@ -257,10 +246,11 @@ class DefenseState extends React.Component {
                 () => {
                     this.onTileClicked({target:{name:this.state.lastDraw}});
                     this.setState({
+
                         currentBonus: 0
                     });
                 },
-                (this.state.settings.time + this.state.settings.extraTime + 2) * 1000
+                (this.state.settings.time + this.state.settings.extraTime) * 1000
             );
             this.timerUpdate = setInterval(this.updateTime, 100);
         }
@@ -475,16 +465,18 @@ class DefenseState extends React.Component {
             draw = removeRandomItem(tilePool);
             players[0].hand[draw]++;
 
-            this.timer = setTimeout(
-                () => {
-                    this.onTileClicked({target:{name:this.state.lastDraw}});
-                    this.setState({
-                        currentBonus: 0
-                    });
-                },
-                (this.state.settings.time + this.state.currentBonus) * 1000
-            );
-            this.timerUpdate = setInterval(this.updateTime, 100);
+            if (this.state.settings.useTimer) {
+                this.timer = setTimeout(
+                    () => {
+                        this.onTileClicked({target:{name:this.state.lastDraw}});
+                        this.setState({
+                            currentBonus: 0
+                        });
+                    },
+                    (this.state.settings.time + this.state.currentBonus) * 1000
+                );
+                this.timerUpdate = setInterval(this.updateTime, 100);
+            }
         }
 
         let bestSafety = Math.max(...averageSafety);
